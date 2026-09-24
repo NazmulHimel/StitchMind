@@ -143,11 +143,12 @@ StitchMind is a full-stack, enterprise-grade garments industry management system
 - Washing & Finishing department
 - QC module (inline, end-line, final inspection)
 
-### Phase 4 — HR & Dispatch (Weeks 11-13)
-- HR & Employee management
-- Attendance (biometric-ready) & Leave management
-- Payroll processing
-- Packing & Dispatch with delivery challan
+### Phase 4 – HR & Dispatch (Weeks 11-13) [COMPLETED]
+- [x] HR & Employee Management (profiles, compensation structure, line assignments, banking)
+- [x] Biometric-Ready Attendance & Shift Management (punch simulator, overtime @ 1.5x)
+- [x] Leave Management Workflow (casual, sick, annual, maternity, supervisor approvals)
+- [x] Automated Monthly Payroll (1-click batch generation, payslips, deductions & net payable)
+- [x] Packing & Export Dispatch (Carton barcode tracking, Delivery Challans & Gate Passes)
 
 ### Phase 5 — Finance & Reporting (Weeks 14-16)
 - Chart of Accounts, Journal Vouchers, Ledger

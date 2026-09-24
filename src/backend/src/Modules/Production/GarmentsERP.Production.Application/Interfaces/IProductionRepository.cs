@@ -39,6 +39,17 @@ public interface IProductionRepository
     Task<QualityInspection?> GetQualityInspectionByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<QualityInspection> AddQualityInspectionAsync(QualityInspection inspection, CancellationToken cancellationToken = default);
 
+    // Packing & Dispatch (Phase 4)
+    Task<IEnumerable<CartonPack>> GetCartonPacksAsync(CartonStatus? status = null, CancellationToken cancellationToken = default);
+    Task<CartonPack?> GetCartonPackByBarcodeAsync(string barcode, CancellationToken cancellationToken = default);
+    Task<CartonPack> AddCartonPackAsync(CartonPack carton, CancellationToken cancellationToken = default);
+    Task UpdateCartonPackAsync(CartonPack carton, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<DeliveryChallan>> GetDeliveryChallansAsync(ChallanStatus? status = null, CancellationToken cancellationToken = default);
+    Task<DeliveryChallan?> GetDeliveryChallanByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<DeliveryChallan> AddDeliveryChallanAsync(DeliveryChallan challan, CancellationToken cancellationToken = default);
+    Task UpdateDeliveryChallanAsync(DeliveryChallan challan, CancellationToken cancellationToken = default);
+
     // Metrics
     Task<ProductionMetricsDto> GetProductionMetricsAsync(CancellationToken cancellationToken = default);
 

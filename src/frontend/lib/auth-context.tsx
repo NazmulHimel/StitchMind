@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AuthResponse, MenuItem, UserProfile } from "./types";
@@ -102,14 +102,15 @@ const DEFAULT_MENU_TREE: MenuItem[] = [
   {
     module: "Finance",
     label: "Accounting & Finance",
-    icon: "DollarSign",
+    icon: "Landmark",
     route: "/finance",
     sortOrder: 8,
     permissions: ["Finance.Read"],
     children: [
-      { module: "Finance", label: "Chart of Accounts", icon: "BookOpen", route: "/finance", sortOrder: 1, permissions: ["Finance.Read"], children: [] },
-      { module: "Finance", label: "Accounts Payable (AP)", icon: "ArrowDownCircle", route: "/finance/ap", sortOrder: 2, permissions: ["Finance.Read"], children: [] },
-      { module: "Finance", label: "General Ledger", icon: "FileSpreadsheet", route: "/finance/gl", sortOrder: 3, permissions: ["Finance.Read"], children: [] }
+      { module: "Finance", label: "Financial Overview", icon: "TrendingUp", route: "/finance", sortOrder: 1, permissions: ["Finance.Read"], children: [] },
+      { module: "Finance", label: "Chart of Accounts", icon: "BookOpen", route: "/finance", sortOrder: 2, permissions: ["Finance.Read"], children: [] },
+      { module: "Finance", label: "Journal Vouchers", icon: "Receipt", route: "/finance", sortOrder: 3, permissions: ["Finance.Read"], children: [] },
+      { module: "Finance", label: "Financial Statements", icon: "Scale", route: "/finance", sortOrder: 4, permissions: ["Finance.Read"], children: [] }
     ]
   },
   {
@@ -127,7 +128,7 @@ const DEFAULT_MENU_TREE: MenuItem[] = [
   },
   {
     module: "Reports",
-    label: "QuestPDF Reports",
+    label: "Enterprise Reporting",
     icon: "FileBarChart",
     route: "/reports",
     sortOrder: 10,

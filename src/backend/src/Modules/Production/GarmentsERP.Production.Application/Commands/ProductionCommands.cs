@@ -391,3 +391,31 @@ public class CreateQualityInspectionCommandHandler : IRequestHandler<CreateQuali
         return Result<QualityInspectionDto>.Success(dto);
     }
 }
+
+// --- Phase 4 Dispatch Commands ---
+public record CreateCartonPackCommand(
+    Guid BuyerOrderId,
+    string StyleNumber,
+    string Color,
+    string SizeBreakdownJson,
+    int TotalQuantityPcs,
+    decimal GrossWeightKg,
+    decimal NetWeightKg,
+    string? AssignedPallet
+) : IRequest<Result<CartonPackDto>>;
+
+public record CreateDeliveryChallanCommand(
+    Guid BuyerId,
+    string VehicleNumber,
+    string DriverName,
+    string DriverPhone,
+    string DestinationAddress,
+    DateTime DispatchDate,
+    string? Remarks,
+    List<string> CartonBarcodes
+) : IRequest<Result<DeliveryChallanDto>>;
+
+public record DispatchChallanCommand(
+    Guid ChallanId,
+    string GatePassNumber
+) : IRequest<Result<bool>>;

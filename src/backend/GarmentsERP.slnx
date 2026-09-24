@@ -39,6 +39,8 @@
     <Project Path="src/Modules/Reporting/GarmentsERP.Reporting.Infrastructure/GarmentsERP.Reporting.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
+  <Project Path="tests/GarmentsERP.Finance.UnitTests/GarmentsERP.Finance.UnitTests.csproj" />
+
     <Project Path="tests/GarmentsERP.Auth.UnitTests/GarmentsERP.Auth.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Inventory.UnitTests/GarmentsERP.Inventory.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Procurement.UnitTests/GarmentsERP.Procurement.UnitTests.csproj" />

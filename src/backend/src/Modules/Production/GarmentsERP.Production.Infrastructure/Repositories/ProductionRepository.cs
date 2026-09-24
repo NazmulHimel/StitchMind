@@ -255,4 +255,69 @@ public class ProductionRepository : IProductionRepository
     {
         return await _context.SaveChangesAsync(cancellationToken);
     }
+
+    // --- Phase 4 Packing & Dispatch Repository Implementation ---
+    public async Task<IEnumerable<CartonPack>> GetCartonPacksAsync(CartonStatus? status = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.CartonPacks.Include(c => c.BuyerOrder).ThenInclude(o => o.Buyer).AsQueryable();
+        if (status.HasValue)
+        {
+            query = query.Where(c => c.Status == status.Value);
+        }
+        return await query.OrderByDescending(c => c.CreatedAt).ToListAsync(cancellationToken);
+    }
+
+    public async Task<CartonPack?> GetCartonPackByBarcodeAsync(string barcode, CancellationToken cancellationToken = default)
+    {
+        return await _context.CartonPacks
+            .Include(c => c.BuyerOrder)
+            .ThenInclude(o => o.Buyer)
+            .FirstOrDefaultAsync(c => c.CartonBarcode == barcode, cancellationToken);
+    }
+
+    public async Task<CartonPack> AddCartonPackAsync(CartonPack carton, CancellationToken cancellationToken = default)
+    {
+        await _context.CartonPacks.AddAsync(carton, cancellationToken);
+        return carton;
+    }
+
+    public Task UpdateCartonPackAsync(CartonPack carton, CancellationToken cancellationToken = default)
+    {
+        _context.CartonPacks.Update(carton);
+        return Task.CompletedTask;
+    }
+
+    public async Task<IEnumerable<DeliveryChallan>> GetDeliveryChallansAsync(ChallanStatus? status = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.DeliveryChallans
+            .Include(d => d.Buyer)
+            .Include(d => d.Items)
+            .AsQueryable();
+        if (status.HasValue)
+        {
+            query = query.Where(d => d.Status == status.Value);
+        }
+        return await query.OrderByDescending(d => d.DispatchDate).ToListAsync(cancellationToken);
+    }
+
+    public async Task<DeliveryChallan?> GetDeliveryChallanByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.DeliveryChallans
+            .Include(d => d.Buyer)
+            .Include(d => d.Items)
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+    }
+
+    public async Task<DeliveryChallan> AddDeliveryChallanAsync(DeliveryChallan challan, CancellationToken cancellationToken = default)
+    {
+        await _context.DeliveryChallans.AddAsync(challan, cancellationToken);
+        return challan;
+    }
+
+    public Task UpdateDeliveryChallanAsync(DeliveryChallan challan, CancellationToken cancellationToken = default)
+    {
+        _context.DeliveryChallans.Update(challan);
+        return Task.CompletedTask;
+    }
+
 }

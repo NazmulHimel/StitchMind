@@ -11,7 +11,7 @@ import {
   Droplet, Package, Box, Tag, Archive, Grid, ListOrdered, Ticket,
   GitCommit, Clock, TrendingUp, Search, CheckCircle, Award, BookOpen,
   ArrowDownCircle, FileSpreadsheet, UserCheck, Fingerprint, CreditCard,
-  UserPlus, Key, LogOut, Sparkles, Building2, X
+  UserPlus, Key, LogOut, Sparkles, Building2, Landmark, Receipt, Scale, X
 } from "lucide-react";
 
 interface SidebarProps {
@@ -25,7 +25,7 @@ const ICON_MAP: Record<string, any> = {
   Truck, CheckSquare, Layers, Droplet, Package, Box, Tag, Archive,
   Grid, ListOrdered, Ticket, GitCommit, Clock, TrendingUp, Search,
   CheckCircle, Award, BookOpen, ArrowDownCircle, FileSpreadsheet,
-  UserCheck, Fingerprint, CreditCard, UserPlus, Key, Building2
+  UserCheck, Fingerprint, CreditCard, UserPlus, Key, Building2, Landmark, Receipt, Scale
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {

@@ -1,4 +1,12 @@
-﻿using System.Text;
+using GarmentsERP.Finance.Application;
+using GarmentsERP.Finance.Infrastructure;
+using GarmentsERP.Finance.Infrastructure.Data;
+using GarmentsERP.Finance.Infrastructure.Data.Seed;
+using GarmentsERP.HR.Application;
+using GarmentsERP.HR.Infrastructure;
+using GarmentsERP.HR.Infrastructure.Data;
+using GarmentsERP.HR.Infrastructure.Data.Seed;
+using System.Text;
 using GarmentsERP.API.Middleware;
 using GarmentsERP.API.Services;
 using GarmentsERP.Auth.Application;
@@ -73,6 +81,16 @@ builder.Services.AddProcurementInfrastructure(builder.Configuration);
 // Inventory & Thread Production Module (Phase 2)
 builder.Services.AddInventoryApplication();
 builder.Services.AddInventoryInfrastructure(builder.Configuration);
+
+
+// HR Module (Phase 4)
+builder.Services.AddHrApplication();
+builder.Services.AddHrInfrastructure(builder.Configuration);
+
+
+// Finance Module (Phase 5)
+builder.Services.AddFinanceApplication();
+builder.Services.AddFinanceInfrastructure(builder.Configuration);
 
 // Production Floor Module (Phase 3)
 builder.Services.AddProductionApplication();
@@ -172,6 +190,11 @@ using (var scope = app.Services.CreateScope())
 
         var prodContext = services.GetRequiredService<ProductionDbContext>();
         await ProductionDataSeeder.SeedAsync(prodContext);
+                var finContext = services.GetRequiredService<FinanceDbContext>();
+        await FinanceDataSeeder.SeedAsync(finContext, logger);
+        var hrContext = services.GetRequiredService<HrDbContext>();
+        await HrDataSeeder.SeedAsync(hrContext);
+
     }
     catch (Exception ex)
     {

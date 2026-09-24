@@ -16,6 +16,9 @@ public class ProductionDbContext : DbContext
     public DbSet<SewingLine> SewingLines => Set<SewingLine>();
     public DbSet<HourlyProductionLog> HourlyProductionLogs => Set<HourlyProductionLog>();
     public DbSet<QualityInspection> QualityInspections => Set<QualityInspection>();
+    public DbSet<CartonPack> CartonPacks => Set<CartonPack>();
+    public DbSet<DeliveryChallan> DeliveryChallans => Set<DeliveryChallan>();
+    public DbSet<DeliveryChallanItem> DeliveryChallanItems => Set<DeliveryChallanItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

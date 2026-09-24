@@ -197,3 +197,47 @@ public record ProductionMetricsDto(
     decimal PassRatePercentage,
     int ActiveSewingLines
 );
+
+// --- Phase 4 Packing & Dispatch DTOs ---
+public record CartonPackDto(
+    Guid Id,
+    string CartonBarcode,
+    Guid BuyerOrderId,
+    string OrderNumber,
+    string BuyerName,
+    string StyleNumber,
+    string Color,
+    string SizeBreakdownJson,
+    int TotalQuantityPcs,
+    decimal GrossWeightKg,
+    decimal NetWeightKg,
+    string StatusName,
+    string? AssignedPallet
+);
+
+public record DeliveryChallanDto(
+    Guid Id,
+    string ChallanNumber,
+    Guid BuyerId,
+    string BuyerName,
+    string VehicleNumber,
+    string DriverName,
+    string DriverPhone,
+    string DestinationAddress,
+    int TotalCartons,
+    int TotalGarmentPcs,
+    decimal TotalWeightKg,
+    DateTime DispatchDate,
+    string StatusName,
+    string? GatePassNumber,
+    string? Remarks,
+    List<DeliveryChallanItemDto> Items
+);
+
+public record DeliveryChallanItemDto(
+    Guid Id,
+    string CartonBarcode,
+    string StyleNumber,
+    string Color,
+    int QuantityPcs
+);

@@ -2,6 +2,8 @@ using GarmentsERP.Production.Domain.Entities;
 using GarmentsERP.Production.Domain.Enums;
 using GarmentsERP.Production.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace GarmentsERP.Production.Infrastructure.Data.Seed;
 
@@ -9,7 +11,62 @@ public static class ProductionDataSeeder
 {
     public static async Task SeedAsync(ProductionDbContext context)
     {
-        if (await context.Buyers.AnyAsync()) return;
+        try
+        {
+            var dbCreator = context.Database.GetService<IRelationalDatabaseCreator>();
+            if (dbCreator.Exists())
+            {
+                try { dbCreator.CreateTables(); } catch { }
+            }
+            else
+            {
+                dbCreator.Create();
+                dbCreator.CreateTables();
+            }
+        }
+        catch { }
+
+        if (await context.Buyers.AnyAsync()) 
+        {
+            if (!await context.CartonPacks.AnyAsync())
+            {
+                var order = await context.BuyerOrders.FirstOrDefaultAsync();
+                if (order != null)
+                {
+                    var c1 = new CartonPack
+                    {
+                        CartonBarcode = "CTN-2026-001-M",
+                        BuyerOrderId = order.Id,
+                        StyleNumber = order.StyleNumber,
+                        Color = "Navy Blue",
+                        SizeBreakdownJson = "{\"M\":24}",
+                        TotalQuantityPcs = 24,
+                        GrossWeightKg = 6.2m,
+                        NetWeightKg = 5.8m,
+                        Status = CartonStatus.Packed,
+                        AssignedPallet = "PLT-01"
+                    };
+
+                    var c2 = new CartonPack
+                    {
+                        CartonBarcode = "CTN-2026-002-L",
+                        BuyerOrderId = order.Id,
+                        StyleNumber = order.StyleNumber,
+                        Color = "Navy Blue",
+                        SizeBreakdownJson = "{\"L\":24}",
+                        TotalQuantityPcs = 24,
+                        GrossWeightKg = 6.4m,
+                        NetWeightKg = 6.0m,
+                        Status = CartonStatus.Packed,
+                        AssignedPallet = "PLT-01"
+                    };
+
+                    await context.CartonPacks.AddRangeAsync(c1, c2);
+                    await context.SaveChangesAsync();
+                }
+            }
+            return;
+        }
 
         // 1. Seed Buyers
         var zara = new Buyer
@@ -26,25 +83,25 @@ public static class ProductionDataSeeder
 
         var hm = new Buyer
         {
-            Name = "H&M Hennes & Mauritz",
-            Code = "HM",
+            Name = "H&M Hennes & Mauritz AB",
+            Code = "HM-GLOBAL",
             Country = "Sweden",
             ContactPerson = "Astrid Lindgren",
             Email = "astrid.l@hm.com",
-            Phone = "+46 8 796 55 00",
-            PaymentTerms = "LC 90 Days",
+            Phone = "+46 8 796 5500",
+            PaymentTerms = "TT 30 Days",
             IsActive = true
         };
 
         var levis = new Buyer
         {
             Name = "Levi Strauss & Co.",
-            Code = "LEVI",
+            Code = "LEVIS-USA",
             Country = "United States",
-            ContactPerson = "Jonathan Vance",
-            Email = "jvance@levi.com",
+            ContactPerson = "Michael Vance",
+            Email = "mvance@levi.com",
             Phone = "+1 415 501 6000",
-            PaymentTerms = "TT in Advance",
+            PaymentTerms = "LC 90 Days",
             IsActive = true
         };
 
@@ -57,7 +114,7 @@ public static class ProductionDataSeeder
             OrderNumber = "BO-2609-1001",
             BuyerId = zara.Id,
             StyleNumber = "ST-882",
-            StyleName = "Men's Pique Polo Shirt",
+            StyleName = "Slim Fit Pique Polo Shirt",
             Season = "SS-2026",
             OrderQuantity = 5000,
             UnitPrice = 7.50m,
@@ -178,6 +235,36 @@ public static class ProductionDataSeeder
         };
         await context.QualityInspections.AddRangeAsync(qcs);
 
+        // 7. Seed Cartons
+        var c1_initial = new CartonPack
+        {
+            CartonBarcode = "CTN-2026-001-M",
+            BuyerOrderId = order1.Id,
+            StyleNumber = order1.StyleNumber,
+            Color = "Navy Blue",
+            SizeBreakdownJson = "{\"M\":24}",
+            TotalQuantityPcs = 24,
+            GrossWeightKg = 6.2m,
+            NetWeightKg = 5.8m,
+            Status = CartonStatus.Packed,
+            AssignedPallet = "PLT-01"
+        };
+
+        var c2_initial = new CartonPack
+        {
+            CartonBarcode = "CTN-2026-002-L",
+            BuyerOrderId = order1.Id,
+            StyleNumber = order1.StyleNumber,
+            Color = "Navy Blue",
+            SizeBreakdownJson = "{\"L\":24}",
+            TotalQuantityPcs = 24,
+            GrossWeightKg = 6.4m,
+            NetWeightKg = 6.0m,
+            Status = CartonStatus.Packed,
+            AssignedPallet = "PLT-01"
+        };
+
+        await context.CartonPacks.AddRangeAsync(c1_initial, c2_initial);
         await context.SaveChangesAsync();
     }
 }
