@@ -1,0 +1,967 @@
+﻿<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"/><title>BRD - GarmentsERP</title><style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;margin:2.5cm;color:#1a1a2e;line-height:1.6}h1{font-size:22pt;color:#1a1a6e;text-align:center;border-bottom:3px solid #1a1a6e;padding-bottom:10px;margin-top:30px}h2{font-size:16pt;color:#0d3b6e;border-bottom:2px solid #0d3b6e;padding-bottom:6px;margin-top:28px;page-break-before:always}h3{font-size:13pt;color:#1a4f8a;margin-top:20px}h4{font-size:11pt;color:#2c6ea5;font-style:italic;margin-top:14px}p{margin:6px 0}hr{border:1px solid #ccc;margin:20px 0}table{border-collapse:collapse;width:100%;margin:14px 0;font-size:10pt}th{background-color:#1a1a6e;color:#fff;padding:8px 10px;text-align:left;font-weight:bold;border:1px solid #aaa}td{padding:6px 10px;border:1px solid #ccc;vertical-align:top}tr:nth-child(even) td{background-color:#f0f4ff}code{background:#f5f5f5;font-family:Consolas,monospace;font-size:9pt;padding:1px 4px;border-radius:3px}pre{background:#f5f5f5;border:1px solid #ddd;padding:12px;font-family:Consolas,monospace;font-size:9pt;border-radius:4px;white-space:pre-wrap}ul,ol{margin:6px 0 6px 24px}li{margin:3px 0}strong{color:#0d3b6e}</style></head><body><h1>BUSINESS REQUIREMENTS DOCUMENT (BRD)</h1>
+<h1>GarmentsERP — Enterprise Garments Industry Management System</h1>
+
+<hr/>
+
+<table>
+<tr><th>Field</th><th>Detail</th></tr>
+<tr><td>Document Title</td><td>Business Requirements Document (BRD)</td></tr>
+<tr><td>Project Name</td><td>GarmentsERP</td></tr>
+<tr><td>Document Version</td><td>1.0.0</td></tr>
+<tr><td>Prepared By</td><td>Project Team</td></tr>
+<tr><td>Review Status</td><td>Draft</td></tr>
+<tr><td>Created Date</td><td>2026-09-24</td></tr>
+<tr><td>Last Updated</td><td>2026-09-24</td></tr>
+<tr><td>Classification</td><td>Confidential</td></tr>
+</table>
+
+<hr/>
+
+<h2>TABLE OF CONTENTS</h2>
+
+<ol><li>Executive Summary</li></ol>
+<ol><li>Business Background & Problem Statement</li></ol>
+<ol><li>Project Objectives & Goals</li></ol>
+<ol><li>Project Scope</li></ol>
+<ol><li>Stakeholders</li></ol>
+<ol><li>Business Assumptions & Constraints</li></ol>
+<ol><li>User Roles & Permission Matrix</li></ol>
+<ol><li>Functional Requirements — All 23 Modules</li></ol>
+<ol><li>Non-Functional Requirements</li></ol>
+<ol><li>System Architecture Requirements</li></ol>
+<ol><li>Technology Stack Requirements</li></ol>
+<ol><li>Database Requirements</li></ol>
+<ol><li>Security Requirements</li></ol>
+<ol><li>UI/UX Requirements</li></ol>
+<ol><li>Integration Requirements</li></ol>
+<ol><li>Report & Document Requirements</li></ol>
+<ol><li>Performance Requirements</li></ol>
+<ol><li>Deployment Requirements</li></ol>
+<ol><li>Glossary of Terms</li></ol>
+<ol><li>Approval & Sign-Off</li></ol>
+
+<hr/>
+
+<h2>1. EXECUTIVE SUMMARY</h2>
+
+<p>GarmentsERP is a comprehensive, enterprise-grade, web-based ERP system designed specifically for the garments and apparel manufacturing industry. The system digitizes and automates all operational processes — from raw material procurement through the complete production lifecycle to final shipment, payroll, and financial accounting.</p>
+
+<p>The application supports multiple users with distinct roles and permissions, provides a responsive interface across all device types (desktop, tablet, mobile), generates professional PDF reports via QuestPDF, and is built on a modern technology stack:</p>
+<ul><li>**Backend:** ASP.NET Core 10 (Modular Monolithic + CQRS)</li></ul>
+<ul><li>**Frontend:** Next.js 14 (App Router, TypeScript)</li></ul>
+<ul><li>**Database:** Microsoft SQL Server 2022</li></ul>
+<ul><li>**Reports:** QuestPDF</li></ul>
+
+<p><strong>Key Business Value:</strong></p>
+<ul><li>Eliminate paper-based processes across all factory departments</li></ul>
+<ul><li>Achieve real-time visibility into production, stock, and finances</li></ul>
+<ul><li>Enforce accountability with role-based access control</li></ul>
+<ul><li>Reduce wastage through data-driven decisions</li></ul>
+<ul><li>Accelerate buyer reporting with automated PDF generation</li></ul>
+
+<hr/>
+
+<h2>2. BUSINESS BACKGROUND & PROBLEM STATEMENT</h2>
+
+<h3>2.1 Business Background</h3>
+
+<p>The garments industry involves a complex, multi-department operational flow:</p>
+<ul><li>Raw material procurement from domestic/international suppliers</li></ul>
+<ul><li>Thread, yarn, and accessory management</li></ul>
+<ul><li>Production floor operations (cutting, sewing, washing, finishing)</li></ul>
+<ul><li>Quality control at multiple checkpoints</li></ul>
+<ul><li>HR, payroll, and attendance management</li></ul>
+<ul><li>Financial accounting and reporting</li></ul>
+<ul><li>Buyer order management and shipment tracking</li></ul>
+
+<h3>2.2 Current Problems</h3>
+
+<table>
+<tr><th>Problem</th><th>Business Impact</th></tr>
+<tr><td>No centralized data system</td><td>Data silos, inconsistent records</td></tr>
+<tr><td>Manual stock tracking</td><td>Overstocking, stockouts, material wastage</td></tr>
+<tr><td>No production visibility</td><td>Missed delivery dates, poor buyer relations</td></tr>
+<tr><td>Paper-based attendance & payroll</td><td>Errors, fraud, slow processing</td></tr>
+<tr><td>No integrated accounting</td><td>Inaccurate P&L, delayed financial decisions</td></tr>
+<tr><td>Lack of QC tracking</td><td>High defect rate, buyer rejections</td></tr>
+<tr><td>No real-time dashboards</td><td>Management blind spots</td></tr>
+<tr><td>No audit trails</td><td>Accountability issues, compliance failures</td></tr>
+</table>
+
+<hr/>
+
+<h2>3. PROJECT OBJECTIVES & GOALS</h2>
+
+<h3>3.1 Primary Objectives</h3>
+
+<ol><li>Build a single, unified ERP platform covering all factory operations</li></ol>
+<ol><li>Implement a secure, role-based multi-user access system</li></ol>
+<ol><li>Digitize the complete garments production lifecycle</li></ol>
+<ol><li>Provide real-time inventory and stock management</li></ol>
+<ol><li>Automate payroll calculation and HR operations</li></ol>
+<ol><li>Deliver a complete double-entry accounting module</li></ol>
+<ol><li>Generate professional PDF reports for all business documents</li></ol>
+<ol><li>Provide actionable KPI dashboards for management</li></ol>
+
+<h3>3.2 SMART Goals</h3>
+
+<table>
+<tr><th>Goal</th><th>Target</th></tr>
+<tr><td>Reduce manual data entry time</td><td>By 80% within 3 months of go-live</td></tr>
+<tr><td>Achieve real-time stock accuracy</td><td>99%+ accuracy vs physical count</td></tr>
+<tr><td>Reduce payroll processing time</td><td>From 3 days to 4 hours per month</td></tr>
+<tr><td>QC defect tracking</td><td>100% digital, zero paper records</td></tr>
+<tr><td>Report generation time</td><td>Under 5 seconds for any PDF report</td></tr>
+<tr><td>System availability</td><td>99.5% uptime during business hours</td></tr>
+</table>
+
+<hr/>
+
+<h2>4. PROJECT SCOPE</h2>
+
+<h3>4.1 In Scope</h3>
+
+<table>
+<tr><th>Area</th><th>Included Features</th></tr>
+<tr><td>Authentication</td><td>Login, logout, JWT, refresh tokens, password reset</td></tr>
+<tr><td>User & Role Management</td><td>Multi-user, role-based permissions per module</td></tr>
+<tr><td>Procurement</td><td>Supplier management, PO, GRN, invoice matching</td></tr>
+<tr><td>Inventory</td><td>Multi-warehouse stock, movements, alerts</td></tr>
+<tr><td>Thread/Yarn</td><td>Thread-specific procurement and issue tracking</td></tr>
+<tr><td>Production</td><td>Cutting, sewing, washing, finishing, QC</td></tr>
+<tr><td>Buyer Orders</td><td>Order management, BOM, delivery schedule</td></tr>
+<tr><td>HR & Payroll</td><td>Employee management, attendance, leave, payroll</td></tr>
+<tr><td>Finance</td><td>Full double-entry accounting, ledger, financial statements</td></tr>
+<tr><td>Reports</td><td>QuestPDF-based PDF for all major documents</td></tr>
+<tr><td>Dashboard</td><td>KPI cards, trend charts, department summaries</td></tr>
+<tr><td>Audit Logs</td><td>All data changes tracked</td></tr>
+<tr><td>Notifications</td><td>In-app alerts for critical events</td></tr>
+<tr><td>Responsive UI</td><td>Works on desktop, tablet, and mobile</td></tr>
+</table>
+
+<h3>4.2 Out of Scope (Version 1.0)</h3>
+
+<table>
+<tr><th>Feature</th><th>Reason</th></tr>
+<tr><td>Mobile native app (iOS/Android)</td><td>Future phase (PWA covers mobile needs)</td></tr>
+<tr><td>AI/ML demand forecasting</td><td>Future enhancement</td></tr>
+<tr><td>Multi-currency accounting</td><td>Future phase (single currency v1)</td></tr>
+<tr><td>E-commerce integration</td><td>Out of current business scope</td></tr>
+<tr><td>IoT machine integration</td><td>Future enhancement</td></tr>
+<tr><td>ERP integration (SAP/Oracle)</td><td>Not required currently</td></tr>
+</table>
+
+<hr/>
+
+<h2>5. STAKEHOLDERS</h2>
+
+<table>
+<tr><th>Stakeholder</th><th>Role</th><th>Priority</th></tr>
+<tr><td>Factory Owner / MD</td><td>Project sponsor, final approval</td><td>High</td></tr>
+<tr><td>General Manager</td><td>Business requirements provider</td><td>High</td></tr>
+<tr><td>Production Manager</td><td>Production module requirements</td><td>High</td></tr>
+<tr><td>Store Manager</td><td>Inventory, procurement requirements</td><td>High</td></tr>
+<tr><td>Accounts Manager</td><td>Finance module requirements</td><td>High</td></tr>
+<tr><td>HR Manager</td><td>HR, payroll requirements</td><td>High</td></tr>
+<tr><td>QC Manager</td><td>QC module requirements</td><td>Medium</td></tr>
+<tr><td>Department Supervisors</td><td>Day-to-day users, UAT testing</td><td>Medium</td></tr>
+<tr><td>IT Administrator</td><td>System deployment, user management</td><td>High</td></tr>
+<tr><td>Buyers</td><td>Order, QC reports, shipment docs</td><td>Medium</td></tr>
+<tr><td>Suppliers</td><td>PO receipt, invoice submission</td><td>Low</td></tr>
+</table>
+
+<hr/>
+
+<h2>6. BUSINESS ASSUMPTIONS & CONSTRAINTS</h2>
+
+<h3>6.1 Assumptions</h3>
+
+<ol><li>Factory has stable internet connection for web application access</li></ol>
+<ol><li>Users have modern browsers (Chrome, Edge, Firefox)</li></ol>
+<ol><li>Microsoft SQL Server 2022 license will be procured</li></ol>
+<ol><li>Windows Server available for hosting backend API</li></ol>
+<ol><li>All departments will participate in UAT</li></ol>
+<ol><li>Data migration from Excel/manual records handled separately</li></ol>
+<ol><li>Training provided to all end users before go-live</li></ol>
+<ol><li>Single currency (BDT) for version 1.0</li></ol>
+
+<h3>6.2 Constraints</h3>
+
+<table>
+<tr><th>Constraint</th><th>Detail</th></tr>
+<tr><td>Technology</td><td>Must use ASP.NET Core 10, Next.js 14, MSSQL</td></tr>
+<tr><td>Report Library</td><td>Must use QuestPDF only</td></tr>
+<tr><td>Architecture</td><td>Modular Monolithic + CQRS mandatory</td></tr>
+<tr><td>Timeline</td><td>18 weeks (6 phases)</td></tr>
+<tr><td>Responsive Design</td><td>Must work on all device sizes</td></tr>
+<tr><td>Security</td><td>JWT authentication is mandatory</td></tr>
+</table>
+
+
+<hr/>
+
+<h2>7. USER ROLES & PERMISSION MATRIX</h2>
+
+<h3>7.1 Role Definitions</h3>
+
+<table>
+<tr><th>Role</th><th>Description</th></tr>
+<tr><td>Super Admin</td><td>Full system control, company/tenant management</td></tr>
+<tr><td>Admin</td><td>Full access within own company, manages users</td></tr>
+<tr><td>Accounts Manager</td><td>Full access to Finance and Accounting module</td></tr>
+<tr><td>Store Manager</td><td>Full access to Procurement and Inventory modules</td></tr>
+<tr><td>Production Manager</td><td>Full access to all Production department modules</td></tr>
+<tr><td>Cutting Supervisor</td><td>Access to Cutting Department module only</td></tr>
+<tr><td>Sewing Supervisor</td><td>Access to Sewing Department module only</td></tr>
+<tr><td>QC Supervisor</td><td>Access to QC module only</td></tr>
+<tr><td>HR Manager</td><td>Full access to HR, Attendance, Leave, and Payroll</td></tr>
+<tr><td>Dispatch Officer</td><td>Access to Packing and Dispatch module</td></tr>
+<tr><td>Viewer / Auditor</td><td>Read-only access to assigned modules</td></tr>
+</table>
+
+<h3>7.2 Permission Types</h3>
+<ul><li>**C** = Create  </li></ul>
+<ul><li>**R** = Read  </li></ul>
+<ul><li>**U** = Update  </li></ul>
+<ul><li>**D** = Delete  </li></ul>
+<ul><li>**E** = Export PDF  </li></ul>
+
+<h3>7.3 Permission Matrix</h3>
+
+<table>
+<tr><th>Module</th><th>Super Admin</th><th>Admin</th><th>Acct Mgr</th><th>Store Mgr</th><th>Prod Mgr</th><th>HR Mgr</th><th>Viewer</th></tr>
+<tr><td>Auth / Users</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>R</td><td>R</td><td>R</td><td>R</td></tr>
+<tr><td>Roles & Permissions</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Company Setup</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>R</td><td>R</td><td>R</td><td>R</td></tr>
+<tr><td>Suppliers</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>CRUDE</td><td>R</td><td>-</td><td>R</td></tr>
+<tr><td>Procurement</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>CRUDE</td><td>R</td><td>-</td><td>R</td></tr>
+<tr><td>Inventory</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Thread Management</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Buyer Orders</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Production Planning</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Cutting Dept</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Sewing Dept</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Washing Dept</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>QC</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>Packing & Dispatch</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>R</td><td>CRUDE</td><td>-</td><td>R</td></tr>
+<tr><td>HR & Employees</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>-</td><td>R</td><td>CRUDE</td><td>R</td></tr>
+<tr><td>Attendance & Leave</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>-</td><td>R</td><td>CRUDE</td><td>R</td></tr>
+<tr><td>Payroll</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>-</td><td>-</td><td>CRUDE</td><td>R</td></tr>
+<tr><td>Accounting</td><td>CRUDE</td><td>CRUDE</td><td>CRUDE</td><td>-</td><td>-</td><td>-</td><td>R</td></tr>
+<tr><td>Reports</td><td>CRUDE</td><td>CRUDE</td><td>CRUDE</td><td>CRUDE</td><td>CRUDE</td><td>CRUDE</td><td>RE</td></tr>
+<tr><td>Dashboard</td><td>CRUDE</td><td>CRUDE</td><td>RE</td><td>RE</td><td>RE</td><td>RE</td><td>R</td></tr>
+<tr><td>Audit Logs</td><td>R</td><td>R</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Notifications</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>R</td><td>R</td><td>R</td><td>R</td></tr>
+<tr><td>Settings</td><td>CRUDE</td><td>CRUDE</td><td>R</td><td>R</td><td>R</td><td>R</td><td>-</td></tr>
+</table>
+
+<hr/>
+
+<h2>8. FUNCTIONAL REQUIREMENTS — ALL MODULES</h2>
+
+<hr/>
+
+<h3>MODULE 8.01: AUTH & USER MANAGEMENT</h3>
+
+<p><strong>Business Purpose:</strong> Secure access control for all system users.</p>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>AU-001</td><td>Users log in with username/email + password</td><td>Critical</td></tr>
+<tr><td>AU-002</td><td>Issue JWT access token (15-minute expiry) on successful login</td><td>Critical</td></tr>
+<tr><td>AU-003</td><td>Issue refresh token (7-day expiry) for session continuity</td><td>Critical</td></tr>
+<tr><td>AU-004</td><td>Refresh tokens revoked on logout</td><td>Critical</td></tr>
+<tr><td>AU-005</td><td>Forgot password via email OTP/link</td><td>High</td></tr>
+<tr><td>AU-006</td><td>Password complexity: min 8 chars, uppercase, lowercase, number</td><td>High</td></tr>
+<tr><td>AU-007</td><td>Account lockout after 5 failed attempts (30 min lockout)</td><td>High</td></tr>
+<tr><td>AU-008</td><td>Admin can create, edit, activate, and deactivate user accounts</td><td>Critical</td></tr>
+<tr><td>AU-009</td><td>User profile: name, email, phone, avatar, department</td><td>High</td></tr>
+<tr><td>AU-010</td><td>Each user must belong to at least one role</td><td>Critical</td></tr>
+<tr><td>AU-011</td><td>All login/logout events logged with IP address and timestamp</td><td>High</td></tr>
+<tr><td>AU-012</td><td>"Remember Me" option for extended session</td><td>Medium</td></tr>
+</table>
+
+<p><strong>Business Rules:</strong></p>
+<ul><li>Deactivated users cannot log in</li></ul>
+<ul><li>Super Admin accounts cannot be deactivated by any other user</li></ul>
+<ul><li>Password change enforced every 90 days (configurable)</li></ul>
+
+<hr/>
+
+<h3>MODULE 8.02: ROLE & PERMISSION MANAGEMENT</h3>
+
+<p><strong>Business Purpose:</strong> Fine-grained, module-level access control.</p>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>RP-001</td><td>Admin can create and name custom roles</td><td>Critical</td></tr>
+<tr><td>RP-002</td><td>Permissions defined per module: Create, Read, Update, Delete, Export</td><td>Critical</td></tr>
+<tr><td>RP-003</td><td>Admin can assign/revoke permissions to roles</td><td>Critical</td></tr>
+<tr><td>RP-004</td><td>Admin can assign one or more roles to each user</td><td>Critical</td></tr>
+<tr><td>RP-005</td><td>Frontend sidebar dynamically renders only permitted modules</td><td>Critical</td></tr>
+<tr><td>RP-006</td><td>Each page/action validates permission before rendering</td><td>Critical</td></tr>
+<tr><td>RP-007</td><td>System-default roles cannot be deleted</td><td>High</td></tr>
+<tr><td>RP-008</td><td>Permission changes take effect on next login or token refresh</td><td>High</td></tr>
+<tr><td>RP-009</td><td>Admin can clone an existing role as a starting template</td><td>Medium</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.03: ORGANIZATION / COMPANY SETUP</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>CO-001</td><td>Admin configures company name, logo, address, contact details</td><td>Critical</td></tr>
+<tr><td>CO-002</td><td>Financial year start and end date configuration</td><td>Critical</td></tr>
+<tr><td>CO-003</td><td>Currency and default unit of measure setup</td><td>High</td></tr>
+<tr><td>CO-004</td><td>Create and manage departments</td><td>Critical</td></tr>
+<tr><td>CO-005</td><td>Create designations/job titles</td><td>High</td></tr>
+<tr><td>CO-006</td><td>Company logo appears on all generated PDF reports</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.04: SUPPLIER MANAGEMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>SM-001</td><td>Create supplier profiles</td><td>Critical</td></tr>
+<tr><td>SM-002</td><td>Profile includes: name, code, type, address, contact, trade license</td><td>Critical</td></tr>
+<tr><td>SM-003</td><td>Categorize suppliers (fabric, thread, accessories, packaging)</td><td>High</td></tr>
+<tr><td>SM-004</td><td>Store supplier bank details for payment processing</td><td>High</td></tr>
+<tr><td>SM-005</td><td>Track supplier outstanding balance in real time</td><td>High</td></tr>
+<tr><td>SM-006</td><td>Show complete purchase history per supplier</td><td>High</td></tr>
+<tr><td>SM-007</td><td>Support supplier deactivation (soft delete only)</td><td>High</td></tr>
+<tr><td>SM-008</td><td>Search suppliers by name, code, category</td><td>High</td></tr>
+<tr><td>SM-009</td><td>Generate supplier statement report (QuestPDF)</td><td>Medium</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.05: MATERIAL PROCUREMENT (PO / GRN / INVOICE)</h3>
+
+<p><strong>Business Process Flow:</strong></p>
+<pre><code>
+Purchase Requisition -&gt; Purchase Order -&gt; Approval -&gt; GRN -&gt; Supplier Invoice -&gt; Payment
+</code></pre>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>PR-001</td><td>Create Purchase Requisitions</td><td>Critical</td></tr>
+<tr><td>PR-002</td><td>POs created referencing a requisition or standalone</td><td>Critical</td></tr>
+<tr><td>PR-003</td><td>PO includes: supplier, date, delivery date, items (material, qty, unit, rate)</td><td>Critical</td></tr>
+<tr><td>PR-004</td><td>PO supports multi-item, multi-unit entries</td><td>Critical</td></tr>
+<tr><td>PR-005</td><td>PO goes through configurable approval workflow</td><td>High</td></tr>
+<tr><td>PR-006</td><td>Auto-generate PO number (e.g., PO-2026-0001)</td><td>Critical</td></tr>
+<tr><td>PR-007</td><td>GRN created against an approved PO</td><td>Critical</td></tr>
+<tr><td>PR-008</td><td>GRN supports partial delivery (multiple GRNs per PO)</td><td>High</td></tr>
+<tr><td>PR-009</td><td>GRN creation automatically updates stock in Inventory module</td><td>Critical</td></tr>
+<tr><td>PR-010</td><td>Supplier Invoice matched against GRN (3-way matching)</td><td>High</td></tr>
+<tr><td>PR-011</td><td>PO status tracking: Draft, Pending Approval, Approved, Partial, Closed</td><td>Critical</td></tr>
+<tr><td>PR-012</td><td>Generate Purchase Order report (QuestPDF)</td><td>High</td></tr>
+<tr><td>PR-013</td><td>Generate GRN report (QuestPDF)</td><td>High</td></tr>
+<tr><td>PR-014</td><td>PO cancellation with reason</td><td>High</td></tr>
+<tr><td>PR-015</td><td>Pending POs and overdue deliveries shown on dashboard</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.06: THREAD & YARN MANAGEMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>TY-001</td><td>Thread/yarn catalogue (type, count, color, supplier)</td><td>Critical</td></tr>
+<tr><td>TY-002</td><td>Thread procurement follows same PO/GRN cycle</td><td>Critical</td></tr>
+<tr><td>TY-003</td><td>Thread stock tracked by color, count, and cone/kg</td><td>Critical</td></tr>
+<tr><td>TY-004</td><td>Thread requisition from production departments</td><td>Critical</td></tr>
+<tr><td>TY-005</td><td>Track thread issue per order/style per department</td><td>High</td></tr>
+<tr><td>TY-006</td><td>Calculate thread consumption standard per style</td><td>Medium</td></tr>
+<tr><td>TY-007</td><td>Thread re-order alerts based on configured minimum stock level</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.07: INVENTORY / STOCK MANAGEMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>IN-001</td><td>Material master catalogue with categories</td><td>Critical</td></tr>
+<tr><td>IN-002</td><td>Multi-warehouse/store locations support</td><td>High</td></tr>
+<tr><td>IN-003</td><td>Stock-IN triggers on GRN approval</td><td>Critical</td></tr>
+<tr><td>IN-004</td><td>Stock-OUT triggers on departmental issue voucher</td><td>Critical</td></tr>
+<tr><td>IN-005</td><td>Manual stock adjustment with reason</td><td>High</td></tr>
+<tr><td>IN-006</td><td>Stock transfer between warehouses</td><td>High</td></tr>
+<tr><td>IN-007</td><td>Full stock ledger (all movements per material)</td><td>Critical</td></tr>
+<tr><td>IN-008</td><td>FIFO or Weighted Average costing (configurable)</td><td>High</td></tr>
+<tr><td>IN-009</td><td>Re-order alerts when stock reaches minimum level</td><td>High</td></tr>
+<tr><td>IN-010</td><td>Current stock value by material and warehouse</td><td>Critical</td></tr>
+<tr><td>IN-011</td><td>Stock summary and ledger reports (QuestPDF)</td><td>High</td></tr>
+<tr><td>IN-012</td><td>Barcode-ready material codes</td><td>Medium</td></tr>
+</table>
+
+
+<hr/>
+
+<h3>MODULE 8.08: BUYER / ORDER MANAGEMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>BO-001</td><td>Maintain buyer/brand profiles</td><td>Critical</td></tr>
+<tr><td>BO-002</td><td>Buyer profile: name, country, contact, payment terms, compliance docs</td><td>High</td></tr>
+<tr><td>BO-003</td><td>Create Sales/Production Orders per buyer</td><td>Critical</td></tr>
+<tr><td>BO-004</td><td>Order includes: style, item, quantity per size, unit price, delivery date</td><td>Critical</td></tr>
+<tr><td>BO-005</td><td>Order supports Bill of Materials (BOM) per style</td><td>High</td></tr>
+<tr><td>BO-006</td><td>Auto-calculate material requirement from BOM + order quantity</td><td>High</td></tr>
+<tr><td>BO-007</td><td>Order status: Draft, Confirmed, In Production, Shipped, Closed</td><td>Critical</td></tr>
+<tr><td>BO-008</td><td>Order amendments with full change log</td><td>High</td></tr>
+<tr><td>BO-009</td><td>Generate Buyer Order Confirmation report (QuestPDF)</td><td>High</td></tr>
+<tr><td>BO-010</td><td>Orders approaching deadline shown on dashboard</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.09: PRODUCTION PLANNING</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>PP-001</td><td>Create production plans per order/style</td><td>Critical</td></tr>
+<tr><td>PP-002</td><td>Plan defines start/end date per department</td><td>Critical</td></tr>
+<tr><td>PP-003</td><td>Gantt-style timeline view of active production orders</td><td>High</td></tr>
+<tr><td>PP-004</td><td>Track plan vs actual output daily</td><td>Critical</td></tr>
+<tr><td>PP-005</td><td>Alert management when any department falls behind schedule</td><td>High</td></tr>
+<tr><td>PP-006</td><td>Department-wise production efficiency report</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.10: CUTTING DEPARTMENT</h3>
+
+<p><strong>Process Flow:</strong></p>
+<pre><code>
+Order -&gt; Fabric Requisition -&gt; Marker Plan -&gt; Lay Plan -&gt; Cutting -&gt; Bundle Card -&gt; Issue to Sewing
+</code></pre>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>CD-001</td><td>Create Cutting Orders per production plan</td><td>Critical</td></tr>
+<tr><td>CD-002</td><td>Cutting Order: style, color, size ratio, fabric details</td><td>Critical</td></tr>
+<tr><td>CD-003</td><td>Record fabric requisition and issue from store</td><td>Critical</td></tr>
+<tr><td>CD-004</td><td>Marker Plan entry (panel count, size ratio)</td><td>High</td></tr>
+<tr><td>CD-005</td><td>Lay Plan entry (ply count, lay length, fabric required)</td><td>High</td></tr>
+<tr><td>CD-006</td><td>Auto-calculate fabric consumption from lay plan</td><td>High</td></tr>
+<tr><td>CD-007</td><td>Record actual cut quantity per size per color</td><td>Critical</td></tr>
+<tr><td>CD-008</td><td>Track cutting wastage (end bits, splice loss)</td><td>High</td></tr>
+<tr><td>CD-009</td><td>Generate Bundle Cards (bundle ID, size, quantity, destination line)</td><td>Critical</td></tr>
+<tr><td>CD-010</td><td>Track each bundle from creation to dispatch to sewing</td><td>High</td></tr>
+<tr><td>CD-011</td><td>Generate Cutting Order Sheet report (QuestPDF)</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.11: SEWING / STITCHING DEPARTMENT</h3>
+
+<p><strong>Process Flow:</strong></p>
+<pre><code>
+Bundle from Cutting -&gt; Line Assignment -&gt; Daily Target -&gt; Hourly Output Entry -&gt; WIP Tracking -&gt; Complete
+</code></pre>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>SD-001</td><td>Line Plan creation per order (lines, operators, target)</td><td>Critical</td></tr>
+<tr><td>SD-002</td><td>Supervisor enters hourly/daily actual output per line</td><td>Critical</td></tr>
+<tr><td>SD-003</td><td>Calculate efficiency: (Actual / Target) x 100%</td><td>Critical</td></tr>
+<tr><td>SD-004</td><td>Track WIP (Work-in-Progress) per bundle and per line</td><td>High</td></tr>
+<tr><td>SD-005</td><td>Log machine downtime with reason codes</td><td>Medium</td></tr>
+<tr><td>SD-006</td><td>Track thread and accessory consumption per order</td><td>High</td></tr>
+<tr><td>SD-007</td><td>Generate Sewing Production Report (QuestPDF)</td><td>High</td></tr>
+<tr><td>SD-008</td><td>Operator-wise efficiency summary</td><td>Medium</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.12: WASHING & FINISHING DEPARTMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>WF-001</td><td>Create Washing Orders from sewing output</td><td>Critical</td></tr>
+<tr><td>WF-002</td><td>Washing Order: wash type, chemical recipe, quantity, target delivery</td><td>High</td></tr>
+<tr><td>WF-003</td><td>Record output after washing (pass/reject quantity)</td><td>Critical</td></tr>
+<tr><td>WF-004</td><td>Track finishing operations: ironing, folding, tagging</td><td>High</td></tr>
+<tr><td>WF-005</td><td>Record finishing output quantity</td><td>Critical</td></tr>
+<tr><td>WF-006</td><td>Finished goods transferred to QC for final inspection</td><td>Critical</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.13: QUALITY CONTROL (QC)</h3>
+
+<p><strong>QC Checkpoints:</strong></p>
+<ol><li>Inline QC — During sewing (per hour/per bundle)</li></ol>
+<ol><li>End-Line QC — After sewing is complete</li></ol>
+<ol><li>Final Inspection — Before packing (AQL-based)</li></ol>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>QC-001</td><td>Configurable QC checklists per buyer/style</td><td>Critical</td></tr>
+<tr><td>QC-002</td><td>Defect catalogue with defect codes and descriptions</td><td>Critical</td></tr>
+<tr><td>QC-003</td><td>Record inspection results: Pass / Fail / Alter per bundle/piece</td><td>Critical</td></tr>
+<tr><td>QC-004</td><td>Record defects with defect type and location on garment</td><td>Critical</td></tr>
+<tr><td>QC-005</td><td>Calculate defect rate: (Defects / Inspected) x 100%</td><td>Critical</td></tr>
+<tr><td>QC-006</td><td>AQL (Acceptance Quality Limit) sampling table support</td><td>High</td></tr>
+<tr><td>QC-007</td><td>Track re-inspection results after alteration/repair</td><td>High</td></tr>
+<tr><td>QC-008</td><td>Generate QC Inspection Report (QuestPDF)</td><td>High</td></tr>
+<tr><td>QC-009</td><td>QC pass/fail trend shown on dashboard</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.14: PACKING & DISPATCH</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>PD-001</td><td>Create Packing Lists from QC-passed goods</td><td>Critical</td></tr>
+<tr><td>PD-002</td><td>Packing List: carton number, size, color, quantity per carton</td><td>Critical</td></tr>
+<tr><td>PD-003</td><td>Generate printable carton labels</td><td>High</td></tr>
+<tr><td>PD-004</td><td>Create Delivery Challan for each dispatch</td><td>Critical</td></tr>
+<tr><td>PD-005</td><td>Track dispatch: vehicle number, driver, dispatch date</td><td>High</td></tr>
+<tr><td>PD-006</td><td>Update buyer order status to Shipped on dispatch confirmation</td><td>Critical</td></tr>
+<tr><td>PD-007</td><td>Generate Packing List and Delivery Challan reports (QuestPDF)</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.15: HR & EMPLOYEE MANAGEMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>HR-001</td><td>Complete employee profiles</td><td>Critical</td></tr>
+<tr><td>HR-002</td><td>Profile: personal info, job info, salary grade, bank info, documents</td><td>Critical</td></tr>
+<tr><td>HR-003</td><td>Department and designation assignment</td><td>Critical</td></tr>
+<tr><td>HR-004</td><td>Store and manage employee documents (NID, passport, photo)</td><td>High</td></tr>
+<tr><td>HR-005</td><td>Track joining date, confirmation date, resignation</td><td>High</td></tr>
+<tr><td>HR-006</td><td>Generate employee ID cards (QuestPDF)</td><td>Medium</td></tr>
+<tr><td>HR-007</td><td>Employee roster per department</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.16: ATTENDANCE & LEAVE MANAGEMENT</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>AT-001</td><td>Manual daily attendance entry per department</td><td>Critical</td></tr>
+<tr><td>AT-002</td><td>Bulk attendance import from CSV (biometric export)</td><td>High</td></tr>
+<tr><td>AT-003</td><td>Status tracking: Present, Absent, Late, Half-Day, Holiday, Leave</td><td>Critical</td></tr>
+<tr><td>AT-004</td><td>Calculate late-in and early-out minutes</td><td>High</td></tr>
+<tr><td>AT-005</td><td>Configurable leave types (Annual, Sick, Casual, Maternity, etc.)</td><td>Critical</td></tr>
+<tr><td>AT-006</td><td>Employee leave application submission</td><td>High</td></tr>
+<tr><td>AT-007</td><td>Leave applications go through manager approval workflow</td><td>High</td></tr>
+<tr><td>AT-008</td><td>Available leave balance per employee</td><td>Critical</td></tr>
+<tr><td>AT-009</td><td>Generate monthly attendance report (QuestPDF)</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.17: PAYROLL PROCESSING</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>PY-001</td><td>Salary grade setup with basic, allowances, and deductions</td><td>Critical</td></tr>
+<tr><td>PY-002</td><td>Process monthly payroll for all active employees</td><td>Critical</td></tr>
+<tr><td>PY-003</td><td>Payroll includes: basic, HRA, medical, transport, overtime</td><td>Critical</td></tr>
+<tr><td>PY-004</td><td>Deduct salary for absent days and late attendance</td><td>Critical</td></tr>
+<tr><td>PY-005</td><td>Calculate overtime pay (configurable rate)</td><td>High</td></tr>
+<tr><td>PY-006</td><td>Apply provident fund and income tax deductions</td><td>High</td></tr>
+<tr><td>PY-007</td><td>Generate pay slips per employee (QuestPDF)</td><td>Critical</td></tr>
+<tr><td>PY-008</td><td>Generate department-wise salary sheet (QuestPDF)</td><td>Critical</td></tr>
+<tr><td>PY-009</td><td>Export bank transfer file (CSV format)</td><td>High</td></tr>
+<tr><td>PY-010</td><td>Processed payroll auto-posts to Finance module</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.18: ACCOUNTING & FINANCE</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>AC-001</td><td>Configurable Chart of Accounts (COA)</td><td>Critical</td></tr>
+<tr><td>AC-002</td><td>COA supports: Asset, Liability, Equity, Revenue, Expense groups</td><td>Critical</td></tr>
+<tr><td>AC-003</td><td>Cost center management</td><td>High</td></tr>
+<tr><td>AC-004</td><td>Journal Voucher entry (debit/credit lines)</td><td>Critical</td></tr>
+<tr><td>AC-005</td><td>Payment Voucher, Receipt Voucher, Contra Voucher</td><td>Critical</td></tr>
+<tr><td>AC-006</td><td>All vouchers require double-entry (total debit = total credit)</td><td>Critical</td></tr>
+<tr><td>AC-007</td><td>General Ledger per account</td><td>Critical</td></tr>
+<tr><td>AC-008</td><td>Trial Balance for any date range</td><td>Critical</td></tr>
+<tr><td>AC-009</td><td>Profit & Loss Statement</td><td>Critical</td></tr>
+<tr><td>AC-010</td><td>Balance Sheet</td><td>Critical</td></tr>
+<tr><td>AC-011</td><td>Bank account management and reconciliation</td><td>High</td></tr>
+<tr><td>AC-012</td><td>Payroll and procurement transactions auto-post to accounting</td><td>High</td></tr>
+<tr><td>AC-013</td><td>All financial reports exportable as QuestPDF</td><td>Critical</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.19: REPORT MODULE (QuestPDF)</h3>
+
+<p><strong>All reports are server-side PDF generated via QuestPDF library.</strong></p>
+
+<table>
+<tr><th>Report ID</th><th>Report Name</th><th>Module</th></tr>
+<tr><td>RPT-001</td><td>Purchase Order</td><td>Procurement</td></tr>
+<tr><td>RPT-002</td><td>Goods Received Note (GRN)</td><td>Procurement</td></tr>
+<tr><td>RPT-003</td><td>Supplier Statement</td><td>Procurement</td></tr>
+<tr><td>RPT-004</td><td>Stock Summary Report</td><td>Inventory</td></tr>
+<tr><td>RPT-005</td><td>Stock Ledger (per material)</td><td>Inventory</td></tr>
+<tr><td>RPT-006</td><td>Material Issue Voucher</td><td>Inventory</td></tr>
+<tr><td>RPT-007</td><td>Cutting Order Sheet</td><td>Cutting</td></tr>
+<tr><td>RPT-008</td><td>Bundle Card</td><td>Cutting</td></tr>
+<tr><td>RPT-009</td><td>Sewing Production Report</td><td>Sewing</td></tr>
+<tr><td>RPT-010</td><td>QC Inspection Report</td><td>QC</td></tr>
+<tr><td>RPT-011</td><td>Packing List</td><td>Dispatch</td></tr>
+<tr><td>RPT-012</td><td>Delivery Challan</td><td>Dispatch</td></tr>
+<tr><td>RPT-013</td><td>Buyer Order Confirmation</td><td>Orders</td></tr>
+<tr><td>RPT-014</td><td>Employee Pay Slip</td><td>Payroll</td></tr>
+<tr><td>RPT-015</td><td>Department Salary Sheet</td><td>Payroll</td></tr>
+<tr><td>RPT-016</td><td>Attendance Report</td><td>Attendance</td></tr>
+<tr><td>RPT-017</td><td>General Ledger</td><td>Finance</td></tr>
+<tr><td>RPT-018</td><td>Trial Balance</td><td>Finance</td></tr>
+<tr><td>RPT-019</td><td>Profit & Loss Statement</td><td>Finance</td></tr>
+<tr><td>RPT-020</td><td>Balance Sheet</td><td>Finance</td></tr>
+<tr><td>RPT-021</td><td>Audit Log Report</td><td>Audit</td></tr>
+</table>
+
+<p><strong>Report Standards:</strong></p>
+<ul><li>Header: Company logo, name, address, report title</li></ul>
+<ul><li>Footer: Page number (X of Y), generation date/time</li></ul>
+<ul><li>Render time: < 5 seconds</li></ul>
+<ul><li>Downloadable as binary PDF stream</li></ul>
+<ul><li>API endpoint: GET /api/v1/reports/{reportType}/{id}</li></ul>
+
+<hr/>
+
+<h3>MODULE 8.20: DASHBOARD & KPIs</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>DB-001</td><td>Role-specific KPI cards on dashboard</td><td>Critical</td></tr>
+<tr><td>DB-002</td><td>KPIs: production output, order fulfillment %, active POs, stock value</td><td>Critical</td></tr>
+<tr><td>DB-003</td><td>Production trend line chart (last 30 days)</td><td>High</td></tr>
+<tr><td>DB-004</td><td>Department-wise output bar chart</td><td>High</td></tr>
+<tr><td>DB-005</td><td>QC defect rate trend chart</td><td>High</td></tr>
+<tr><td>DB-006</td><td>Upcoming delivery deadlines widget</td><td>Critical</td></tr>
+<tr><td>DB-007</td><td>Low stock alerts widget</td><td>Critical</td></tr>
+<tr><td>DB-008</td><td>Dashboard data refreshes every 5 minutes (or manual refresh)</td><td>High</td></tr>
+<tr><td>DB-009</td><td>Dashboard exportable as PDF summary (QuestPDF)</td><td>Medium</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.21: AUDIT LOG & ACTIVITY TRACKING</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>AL-001</td><td>Auto-log all Create, Update, Delete operations</td><td>Critical</td></tr>
+<tr><td>AL-002</td><td>Log records: User, Module, Action, Old Value, New Value, Timestamp</td><td>Critical</td></tr>
+<tr><td>AL-003</td><td>Searchable by user, module, date range, and action type</td><td>High</td></tr>
+<tr><td>AL-004</td><td>Audit logs are non-editable and non-deletable</td><td>Critical</td></tr>
+<tr><td>AL-005</td><td>Generate Audit Log report as PDF (QuestPDF)</td><td>High</td></tr>
+<tr><td>AL-006</td><td>Retain audit logs for minimum 3 years</td><td>High</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.22: NOTIFICATIONS & ALERTS</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>NT-001</td><td>In-app notifications for critical events</td><td>High</td></tr>
+<tr><td>NT-002</td><td>Alert: Stock reaches re-order level</td><td>Critical</td></tr>
+<tr><td>NT-003</td><td>Alert: Production behind schedule</td><td>High</td></tr>
+<tr><td>NT-004</td><td>Alert: PO pending approval more than 24 hours</td><td>High</td></tr>
+<tr><td>NT-005</td><td>Alert: Leave application pending manager approval</td><td>Medium</td></tr>
+<tr><td>NT-006</td><td>Alert: QC rejection rate exceeds threshold</td><td>High</td></tr>
+<tr><td>NT-007</td><td>Notification bell icon shows unread count in header</td><td>High</td></tr>
+<tr><td>NT-008</td><td>Optional email notifications (SMTP configurable)</td><td>Medium</td></tr>
+</table>
+
+<hr/>
+
+<h3>MODULE 8.23: SETTINGS & CONFIGURATION</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Priority</th></tr>
+<tr><td>ST-001</td><td>Configure company information and logo</td><td>Critical</td></tr>
+<tr><td>ST-002</td><td>Configure financial year settings</td><td>Critical</td></tr>
+<tr><td>ST-003</td><td>Configure SMTP email server settings</td><td>Medium</td></tr>
+<tr><td>ST-004</td><td>Configure approval workflows (PO, Leave, etc.)</td><td>High</td></tr>
+<tr><td>ST-005</td><td>Configure re-order level thresholds per material</td><td>High</td></tr>
+<tr><td>ST-006</td><td>Configure payroll components (allowances, deductions)</td><td>Critical</td></tr>
+<tr><td>ST-007</td><td>Configure QC defect catalogue</td><td>High</td></tr>
+<tr><td>ST-008</td><td>Configure PDF report header and footer templates</td><td>Medium</td></tr>
+<tr><td>ST-009</td><td>Maintain application changelog/version history</td><td>Low</td></tr>
+</table>
+
+
+<hr/>
+
+<h2>9. NON-FUNCTIONAL REQUIREMENTS</h2>
+
+<h3>9.1 Performance</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Target</th></tr>
+<tr><td>NF-001</td><td>API response — list queries</td><td>< 2 seconds</td></tr>
+<tr><td>NF-002</td><td>API response — single record fetch</td><td>< 500 ms</td></tr>
+<tr><td>NF-003</td><td>PDF report generation</td><td>< 5 seconds</td></tr>
+<tr><td>NF-004</td><td>Dashboard KPI load time</td><td>< 3 seconds</td></tr>
+<tr><td>NF-005</td><td>Concurrent user support without degradation</td><td>50 users</td></tr>
+<tr><td>NF-006</td><td>Database query response time</td><td>< 1 second</td></tr>
+</table>
+
+<h3>9.2 Availability & Reliability</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th><th>Target</th></tr>
+<tr><td>NF-007</td><td>Uptime during business hours (8 AM - 10 PM)</td><td>99.5%</td></tr>
+<tr><td>NF-008</td><td>Scheduled maintenance window</td><td>Off-hours only</td></tr>
+<tr><td>NF-009</td><td>Data backup frequency</td><td>Daily full + hourly incremental</td></tr>
+<tr><td>NF-010</td><td>Recovery Time Objective (RTO)</td><td>< 4 hours</td></tr>
+<tr><td>NF-011</td><td>Recovery Point Objective (RPO)</td><td>< 1 hour</td></tr>
+</table>
+
+<h3>9.3 Scalability</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th></tr>
+<tr><td>NF-012</td><td>Architecture must support future horizontal scaling</td></tr>
+<tr><td>NF-013</td><td>Modular design allows new modules without core changes</td></tr>
+<tr><td>NF-014</td><td>DB must efficiently handle 5 years of transactional data</td></tr>
+</table>
+
+<h3>9.4 Usability</h3>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th></tr>
+<tr><td>NF-015</td><td>Fully responsive: desktop (1920px), laptop (1366px), tablet (768px), mobile (375px)</td></tr>
+<tr><td>NF-016</td><td>All forms provide real-time validation feedback</td></tr>
+<tr><td>NF-017</td><td>All data tables support search, sort, filter, and pagination</td></tr>
+<tr><td>NF-018</td><td>Operable without browser plugins or special software</td></tr>
+<tr><td>NF-019</td><td>English UI (Bengali language support in future phase)</td></tr>
+</table>
+
+<hr/>
+
+<h2>10. SYSTEM ARCHITECTURE REQUIREMENTS</h2>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th></tr>
+<tr><td>AR-001</td><td>Backend must follow Modular Monolithic architecture pattern</td></tr>
+<tr><td>AR-002</td><td>CQRS implemented via MediatR 12</td></tr>
+<tr><td>AR-003</td><td>Each module must have Domain, Application, Infrastructure layers</td></tr>
+<tr><td>AR-004</td><td>Modules must not directly reference each other's internal classes</td></tr>
+<tr><td>AR-005</td><td>Cross-module communication via published interfaces only</td></tr>
+<tr><td>AR-006</td><td>Repository pattern used for all data access</td></tr>
+<tr><td>AR-007</td><td>API follows RESTful conventions with versioning (/api/v1/)</td></tr>
+<tr><td>AR-008</td><td>All API responses use standard envelope (success, data, message)</td></tr>
+</table>
+
+<hr/>
+
+<h2>11. TECHNOLOGY STACK REQUIREMENTS</h2>
+
+<table>
+<tr><th>Layer</th><th>Required Technology</th></tr>
+<tr><td>Backend Framework</td><td>ASP.NET Core 10 Web API</td></tr>
+<tr><td>Architecture Pattern</td><td>Modular Monolithic + CQRS</td></tr>
+<tr><td>CQRS Mediator</td><td>MediatR 12+</td></tr>
+<tr><td>ORM</td><td>Entity Framework Core 10</td></tr>
+<tr><td>Validation</td><td>FluentValidation</td></tr>
+<tr><td>Object Mapping</td><td>AutoMapper or Mapster</td></tr>
+<tr><td>Logging</td><td>Serilog with Seq sink</td></tr>
+<tr><td>Authentication</td><td>ASP.NET Core Identity + JWT Bearer</td></tr>
+<tr><td>PDF Reports</td><td>QuestPDF (mandatory, no substitution)</td></tr>
+<tr><td>API Documentation</td><td>Swagger / Scalar</td></tr>
+<tr><td>Frontend Framework</td><td>Next.js 14 (App Router)</td></tr>
+<tr><td>Frontend Language</td><td>TypeScript</td></tr>
+<tr><td>UI Components</td><td>shadcn/ui + Radix UI</td></tr>
+<tr><td>CSS</td><td>Tailwind CSS</td></tr>
+<tr><td>State Management</td><td>Zustand</td></tr>
+<tr><td>API Client</td><td>TanStack Query (React Query)</td></tr>
+<tr><td>Form Handling</td><td>React Hook Form + Zod</td></tr>
+<tr><td>Charts/Graphs</td><td>Recharts or Chart.js</td></tr>
+<tr><td>Database</td><td>Microsoft SQL Server 2022</td></tr>
+<tr><td>DB Migrations</td><td>EF Core Code-First Migrations</td></tr>
+<tr><td>Unit Testing</td><td>xUnit + Moq + FluentAssertions</td></tr>
+</table>
+
+<hr/>
+
+<h2>12. DATABASE REQUIREMENTS</h2>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th></tr>
+<tr><td>DB-001</td><td>Database engine: Microsoft SQL Server 2022</td></tr>
+<tr><td>DB-002</td><td>All primary keys must be GUID (uniqueidentifier)</td></tr>
+<tr><td>DB-003</td><td>All critical tables must have soft-delete columns (IsDeleted, DeletedAt, DeletedBy)</td></tr>
+<tr><td>DB-004</td><td>All tables must have audit columns (CreatedAt, CreatedBy, UpdatedAt, UpdatedBy)</td></tr>
+<tr><td>DB-005</td><td>Schema-per-module strategy: auth, inventory, procurement, production, hr, finance</td></tr>
+<tr><td>DB-006</td><td>All money columns: DECIMAL(18,4)</td></tr>
+<tr><td>DB-007</td><td>All date columns: DATETIME2(7)</td></tr>
+<tr><td>DB-008</td><td>Daily database backup must be automated</td></tr>
+<tr><td>DB-009</td><td>Database connections must use connection pooling</td></tr>
+<tr><td>DB-010</td><td>All FK columns and filter columns must be indexed</td></tr>
+</table>
+
+<hr/>
+
+<h2>13. SECURITY REQUIREMENTS</h2>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th></tr>
+<tr><td>SE-001</td><td>All endpoints except login require valid JWT</td></tr>
+<tr><td>SE-002</td><td>JWT access tokens expire after 15 minutes</td></tr>
+<tr><td>SE-003</td><td>Refresh tokens expire after 7 days (single-use)</td></tr>
+<tr><td>SE-004</td><td>Passwords hashed using BCrypt via ASP.NET Identity</td></tr>
+<tr><td>SE-005</td><td>All API inputs validated server-side via FluentValidation</td></tr>
+<tr><td>SE-006</td><td>SQL injection prevented via parameterized EF Core queries</td></tr>
+<tr><td>SE-007</td><td>XSS protection on all user-input fields</td></tr>
+<tr><td>SE-008</td><td>CORS configured for trusted frontend origins only</td></tr>
+<tr><td>SE-009</td><td>All communication over HTTPS with TLS 1.2 minimum</td></tr>
+<tr><td>SE-010</td><td>Sensitive data never logged (passwords, tokens, PII)</td></tr>
+<tr><td>SE-011</td><td>Account lockout after 5 consecutive failed login attempts</td></tr>
+<tr><td>SE-012</td><td>All permission checks enforced server-side</td></tr>
+<tr><td>SE-013</td><td>API rate limiting to prevent abuse</td></tr>
+</table>
+
+<hr/>
+
+<h2>14. UI/UX REQUIREMENTS</h2>
+
+<table>
+<tr><th>Req ID</th><th>Requirement</th></tr>
+<tr><td>UX-001</td><td>Fully responsive: desktop, tablet, mobile</td></tr>
+<tr><td>UX-002</td><td>Sidebar navigation dynamically renders based on user permissions</td></tr>
+<tr><td>UX-003</td><td>All data lists: search, server-side filter/sort/paginate</td></tr>
+<tr><td>UX-004</td><td>Forms show real-time validation errors</td></tr>
+<tr><td>UX-005</td><td>Confirmation dialogs before all destructive operations</td></tr>
+<tr><td>UX-006</td><td>Loading spinners during all async operations</td></tr>
+<tr><td>UX-007</td><td>Success and error toast notifications after all actions</td></tr>
+<tr><td>UX-008</td><td>Application supports light and dark mode</td></tr>
+<tr><td>UX-009</td><td>All interactive elements have unique, descriptive IDs</td></tr>
+<tr><td>UX-010</td><td>Page load time under 3 seconds on standard broadband</td></tr>
+</table>
+
+<hr/>
+
+<h2>15. INTEGRATION REQUIREMENTS</h2>
+
+<table>
+<tr><th>Integration</th><th>Type</th><th>Priority</th><th>Phase</th></tr>
+<tr><td>Biometric attendance system</td><td>CSV import</td><td>High</td><td>V1</td></tr>
+<tr><td>Bank payment file export</td><td>CSV export</td><td>High</td><td>V1</td></tr>
+<tr><td>SMTP email server</td><td>Outbound only</td><td>Medium</td><td>V1</td></tr>
+<tr><td>Future: SMS Gateway</td><td>Outbound</td><td>Low</td><td>V2</td></tr>
+<tr><td>Future: ERP system integration</td><td>REST API</td><td>Low</td><td>V3</td></tr>
+</table>
+
+<hr/>
+
+<h2>16. REPORT & DOCUMENT REQUIREMENTS</h2>
+
+<table>
+<tr><th>Requirement</th></tr>
+<tr><td>All PDF reports generated using QuestPDF library (mandatory)</td></tr>
+<tr><td>Report header: company logo, name, address, report title</td></tr>
+<tr><td>Report footer: page number (X of Y), generation date/time</td></tr>
+<tr><td>Reports support A4 and Letter paper size (configurable per report)</td></tr>
+<tr><td>All report endpoints require Export permission</td></tr>
+<tr><td>Reports downloadable as binary PDF streams</td></tr>
+<tr><td>Report generation logged in audit trail</td></tr>
+<tr><td>All reports rendered server-side (no client-side PDF generation)</td></tr>
+</table>
+
+<hr/>
+
+<h2>17. PERFORMANCE REQUIREMENTS</h2>
+
+<table>
+<tr><th>Metric</th><th>Requirement</th></tr>
+<tr><td>Max concurrent users</td><td>50 (v1), scalable to 200 (future)</td></tr>
+<tr><td>API list query response</td><td>< 2 seconds (10,000+ records)</td></tr>
+<tr><td>API single record response</td><td>< 500 milliseconds</td></tr>
+<tr><td>PDF report generation</td><td>< 5 seconds</td></tr>
+<tr><td>Page initial load (Next.js)</td><td>< 3 seconds</td></tr>
+<tr><td>Database query execution</td><td>< 1 second for standard queries</td></tr>
+<tr><td>File upload size limit</td><td>10 MB per file</td></tr>
+</table>
+
+<hr/>
+
+<h2>18. DEPLOYMENT REQUIREMENTS</h2>
+
+<table>
+<tr><th>Requirement</th></tr>
+<tr><td>Backend deployable on Windows Server with IIS</td></tr>
+<tr><td>Docker containerization support (optional for future use)</td></tr>
+<tr><td>Frontend deployable as Next.js standalone build</td></tr>
+<tr><td>Environment-based configuration: Development, Staging, Production</td></tr>
+<tr><td>Database migrations run automatically on deployment</td></tr>
+<tr><td>Swagger/Scalar API docs available in Dev/Staging only (disabled in Production)</td></tr>
+<tr><td>Application must enforce SSL/HTTPS in production</td></tr>
+<tr><td>CI/CD pipeline recommended (GitHub Actions or Azure DevOps)</td></tr>
+<tr><td>Environment variables used for all secrets (no hardcoded credentials)</td></tr>
+</table>
+
+<hr/>
+
+<h2>19. GLOSSARY OF TERMS</h2>
+
+<table>
+<tr><th>Term</th><th>Definition</th></tr>
+<tr><td>AQL</td><td>Acceptance Quality Limit — standard for sampling in QC inspection</td></tr>
+<tr><td>BOM</td><td>Bill of Materials — list of materials required per style/product</td></tr>
+<tr><td>CQRS</td><td>Command Query Responsibility Segregation — architecture pattern</td></tr>
+<tr><td>GRN</td><td>Goods Received Note — document recording received materials from supplier</td></tr>
+<tr><td>JWT</td><td>JSON Web Token — stateless authentication token</td></tr>
+<tr><td>KPI</td><td>Key Performance Indicator — measurable business metric</td></tr>
+<tr><td>LC</td><td>Letter of Credit — payment instrument for export orders</td></tr>
+<tr><td>MediatR</td><td>.NET library implementing the Mediator pattern for CQRS</td></tr>
+<tr><td>PO</td><td>Purchase Order — formal order to a supplier</td></tr>
+<tr><td>QC</td><td>Quality Control — process of ensuring product meets standards</td></tr>
+<tr><td>UAT</td><td>User Acceptance Testing — final testing by business users</td></tr>
+<tr><td>WIP</td><td>Work-in-Progress — items in mid-production stage</td></tr>
+<tr><td>FIFO</td><td>First In, First Out — inventory valuation method</td></tr>
+<tr><td>COA</td><td>Chart of Accounts — structured list of all accounting accounts</td></tr>
+<tr><td>ERP</td><td>Enterprise Resource Planning — integrated business management system</td></tr>
+<tr><td>SMTP</td><td>Simple Mail Transfer Protocol — email sending protocol</td></tr>
+<tr><td>REST</td><td>Representational State Transfer — API architectural style</td></tr>
+<tr><td>ORM</td><td>Object-Relational Mapper — database abstraction layer</td></tr>
+<tr><td>CRUD</td><td>Create, Read, Update, Delete — basic data operations</td></tr>
+<tr><td>RTO</td><td>Recovery Time Objective — max acceptable downtime</td></tr>
+<tr><td>RPO</td><td>Recovery Point Objective — max acceptable data loss window</td></tr>
+</table>
+
+<hr/>
+
+<h2>20. APPROVAL & SIGN-OFF</h2>
+
+<table>
+<tr><th>Role</th><th>Name</th><th>Signature</th><th>Date</th></tr>
+<tr><td>Project Sponsor / Owner</td><td>___________</td><td>_______</td><td>__/__/____</td></tr>
+<tr><td>General Manager</td><td>___________</td><td>_______</td><td>__/__/____</td></tr>
+<tr><td>IT Manager</td><td>___________</td><td>_______</td><td>__/__/____</td></tr>
+<tr><td>Project Lead / Architect</td><td>___________</td><td>_______</td><td>__/__/____</td></tr>
+<tr><td>QA Lead</td><td>___________</td><td>_______</td><td>__/__/____</td></tr>
+<tr><td>Business Analyst</td><td>___________</td><td>_______</td><td>__/__/____</td></tr>
+</table>
+
+<hr/>
+
+<p>> <strong>Document Control:</strong></p>
+<p>> This BRD is a living document. All changes must be reviewed and re-approved by the Project Sponsor.</p>
+<p>> Version history must be maintained.</p>
+
+<hr/>
+
+<p>*GarmentsERP BRD v1.0.0 | Created: 2026-09-24 | Status: Draft for Review*</p>
+<p>*Confidential — For Internal Use Only*</p><br/><hr/><p style="text-align:center;color:#666;font-size:9pt;"><em>GarmentsERP BRD v1.0.0 | Created: 2026-09-24 | Status: Draft | Confidential</em></p></body></html>

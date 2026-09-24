@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GarmentsERP.Shared\GarmentsERP.Shared.csproj" />
+    <ProjectReference Include="..\Modules\Auth\GarmentsERP.Auth.Application\GarmentsERP.Auth.Application.csproj" />
+    <ProjectReference Include="..\Modules\Auth\GarmentsERP.Auth.Infrastructure\GarmentsERP.Auth.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Procurement\GarmentsERP.Procurement.Application\GarmentsERP.Procurement.Application.csproj" />
+    <ProjectReference Include="..\Modules\Procurement\GarmentsERP.Procurement.Infrastructure\GarmentsERP.Procurement.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Inventory\GarmentsERP.Inventory.Application\GarmentsERP.Inventory.Application.csproj" />
+    <ProjectReference Include="..\Modules\Inventory\GarmentsERP.Inventory.Infrastructure\GarmentsERP.Inventory.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Production\GarmentsERP.Production.Application\GarmentsERP.Production.Application.csproj" />
+    <ProjectReference Include="..\Modules\Production\GarmentsERP.Production.Infrastructure\GarmentsERP.Production.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

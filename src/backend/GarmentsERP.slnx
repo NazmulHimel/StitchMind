@@ -1,0 +1,48 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GarmentsERP.API/GarmentsERP.API.csproj" />
+    <Project Path="src/GarmentsERP.Shared/GarmentsERP.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Auth/">
+    <Project Path="src/Modules/Auth/GarmentsERP.Auth.Application/GarmentsERP.Auth.Application.csproj" />
+    <Project Path="src/Modules/Auth/GarmentsERP.Auth.Domain/GarmentsERP.Auth.Domain.csproj" />
+    <Project Path="src/Modules/Auth/GarmentsERP.Auth.Infrastructure/GarmentsERP.Auth.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Finance/">
+    <Project Path="src/Modules/Finance/GarmentsERP.Finance.Application/GarmentsERP.Finance.Application.csproj" />
+    <Project Path="src/Modules/Finance/GarmentsERP.Finance.Domain/GarmentsERP.Finance.Domain.csproj" />
+    <Project Path="src/Modules/Finance/GarmentsERP.Finance.Infrastructure/GarmentsERP.Finance.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/HR/">
+    <Project Path="src/Modules/HR/GarmentsERP.HR.Application/GarmentsERP.HR.Application.csproj" />
+    <Project Path="src/Modules/HR/GarmentsERP.HR.Domain/GarmentsERP.HR.Domain.csproj" />
+    <Project Path="src/Modules/HR/GarmentsERP.HR.Infrastructure/GarmentsERP.HR.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Inventory/">
+    <Project Path="src/Modules/Inventory/GarmentsERP.Inventory.Application/GarmentsERP.Inventory.Application.csproj" />
+    <Project Path="src/Modules/Inventory/GarmentsERP.Inventory.Domain/GarmentsERP.Inventory.Domain.csproj" />
+    <Project Path="src/Modules/Inventory/GarmentsERP.Inventory.Infrastructure/GarmentsERP.Inventory.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Procurement/">
+    <Project Path="src/Modules/Procurement/GarmentsERP.Procurement.Application/GarmentsERP.Procurement.Application.csproj" />
+    <Project Path="src/Modules/Procurement/GarmentsERP.Procurement.Domain/GarmentsERP.Procurement.Domain.csproj" />
+    <Project Path="src/Modules/Procurement/GarmentsERP.Procurement.Infrastructure/GarmentsERP.Procurement.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Production/">
+    <Project Path="src/Modules/Production/GarmentsERP.Production.Application/GarmentsERP.Production.Application.csproj" />
+    <Project Path="src/Modules/Production/GarmentsERP.Production.Domain/GarmentsERP.Production.Domain.csproj" />
+    <Project Path="src/Modules/Production/GarmentsERP.Production.Infrastructure/GarmentsERP.Production.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Reporting/">
+    <Project Path="src/Modules/Reporting/GarmentsERP.Reporting.Application/GarmentsERP.Reporting.Application.csproj" />
+    <Project Path="src/Modules/Reporting/GarmentsERP.Reporting.Infrastructure/GarmentsERP.Reporting.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GarmentsERP.Auth.UnitTests/GarmentsERP.Auth.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.Inventory.UnitTests/GarmentsERP.Inventory.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.Procurement.UnitTests/GarmentsERP.Procurement.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.Production.UnitTests/GarmentsERP.Production.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.Shared.UnitTests/GarmentsERP.Shared.UnitTests.csproj" />
+  </Folder>
+</Solution>
