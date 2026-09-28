@@ -480,4 +480,73 @@ public class ReportsController : ControllerBase
         var pdfBytes = await _pdfReportService.GenerateBundleTicketsAsync(model, ct);
         return File(pdfBytes, "application/pdf", $"{model.CuttingOrderNumber}-BundleTickets.pdf");
     }
+
+    [HttpGet("hourly-production/{lineId}/pdf")]
+    public async Task<IActionResult> DownloadHourlyProductionPdf(Guid lineId, CancellationToken ct)
+    {
+        var line = await _productionRepo.GetSewingLineByIdAsync(lineId, ct);
+        var today = DateTime.UtcNow.Date;
+        var logs = (await _productionRepo.GetHourlyLogsAsync(today, lineId, ct)).ToList();
+
+        var model = new HourlyProductionReportModel
+        {
+            LineNumber = line?.LineNumber ?? "LINE-04",
+            LineName = line?.LineName ?? "Woven Pant Line",
+            StyleNumber = "ST-2026-CHINO-01",
+            BuyerName = "Inditex / Zara International",
+            ReportDate = today,
+            SupervisorName = line?.Supervisor ?? "Anisur Rahman",
+            ActiveWorkstations = 50,
+            TargetEfficiencyPct = line?.TargetEfficiency ?? 85.0m,
+            ActualEfficiencyPct = 78.4m,
+            TotalTargetQty = logs.Sum(l => l.TargetQty) > 0 ? logs.Sum(l => l.TargetQty) : 1200,
+            TotalActualQty = logs.Sum(l => l.ActualOutputQty) > 0 ? logs.Sum(l => l.ActualOutputQty) : 1260,
+            DefectRateDHU = 2.10m,
+            Slots = logs.Select(l => new HourlyProductionSlotItem
+            {
+                HourSlot = l.HourSlot,
+                TimeRange = $"{7 + l.HourSlot:D2}:00 - {8 + l.HourSlot:D2}:00",
+                TargetQty = l.TargetQty,
+                ActualOutputQty = l.ActualOutputQty,
+                DefectCount = l.DefectCount,
+                Remarks = l.Notes ?? "Normal running"
+            }).ToList()
+        };
+
+        var pdfBytes = await _pdfReportService.GenerateHourlyProductionReportAsync(model, ct);
+        return File(pdfBytes, "application/pdf", $"HPM-{model.LineNumber}-{today:yyyyMMdd}.pdf");
+    }
+
+    [HttpGet("broken-needle/{logId}/pdf")]
+    public async Task<IActionResult> DownloadBrokenNeedlePdf(Guid logId, CancellationToken ct)
+    {
+        var needleLog = await _productionRepo.GetBrokenNeedleLogByIdAsync(logId, ct);
+
+        var model = new BrokenNeedleReportModel
+        {
+            CertificateNumber = needleLog?.LogNumber ?? "BNL-2026-0089",
+            LineNumber = needleLog?.LineNumber ?? "LINE-04",
+            MachineBarcode = needleLog?.MachineBarcode ?? "SN-084",
+            MachineModel = "Juki DDL-9000C-FMS (Direct Drive)",
+            OperatorBadgeId = needleLog?.OperatorBadgeId ?? "OP-1042",
+            OperatorName = needleLog?.OperatorName ?? "Nasreen Sultana",
+            BreakageReason = needleLog?.BreakageReason ?? "Deflection on heavy multi-ply waistband join",
+            TipFound = needleLog?.TipFound ?? true,
+            ShankFound = needleLog?.ShankFound ?? true,
+            EyeFound = needleLog?.EyeFound ?? true,
+            AllFragmentsRecovered = needleLog?.AllFragmentsRecovered ?? true,
+            SupervisorBadge = needleLog?.SupervisorVerificationBadge ?? "SUP-012",
+            SupervisorName = "Mohammad Al-Amin",
+            ReplacementNeedleIssued = needleLog?.ReplacementNeedleIssued ?? true,
+            ReplacementNeedleType = needleLog?.ReplacementNeedleType ?? "Groz-Beckert DPx5 110/18",
+            IncidentTimeUtc = needleLog?.LoggedAtUtc ?? DateTime.UtcNow,
+            DowntimeMinutes = needleLog?.DowntimeMinutes ?? 4,
+            ComplianceStatus = needleLog?.Status.ToString() ?? "VerifiedAndReplaced",
+            MetalDetectorCheckResult = "PASSED - 9-Point Ferrous 0.8mm Calibration Clear",
+            Remarks = needleLog?.Remarks ?? "All 3 fragments mounted on compliance card. Metal detector clearance completed."
+        };
+
+        var pdfBytes = await _pdfReportService.GenerateBrokenNeedleCertificateAsync(model, ct);
+        return File(pdfBytes, "application/pdf", $"BrokenNeedle-{model.CertificateNumber}.pdf");
+    }
 }

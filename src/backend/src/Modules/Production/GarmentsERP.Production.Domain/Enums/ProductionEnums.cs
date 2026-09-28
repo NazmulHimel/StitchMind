@@ -42,6 +42,27 @@ public enum SewingLineStatus
     Maintenance = 2
 }
 
+public enum MachineStatus
+{
+    Operational = 0,
+    UnderMaintenance = 1,
+    Breakdown = 2
+}
+
+public enum AndonAlertLevel
+{
+    Normal = 0,
+    Warning = 1,
+    CriticalStopped = 2
+}
+
+public enum NeedleComplianceStatus
+{
+    FragmentSearchActive = 0,
+    VerifiedAndReplaced = 1,
+    ComplianceViolation = 2
+}
+
 public enum BundleSection
 {
     Cutting = 0,

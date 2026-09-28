@@ -71,5 +71,27 @@ public interface IProductionRepository
     Task<SubcontractCuttingChallan> AddSubcontractChallanAsync(SubcontractCuttingChallan challan, CancellationToken cancellationToken = default);
     Task UpdateSubcontractChallanAsync(SubcontractCuttingChallan challan, CancellationToken cancellationToken = default);
 
+    // Phase 5 Sewing Floor Extensions
+    Task<IEnumerable<OperationBulletin>> GetOperationBulletinsAsync(string? styleNumber = null, CancellationToken cancellationToken = default);
+    Task<OperationBulletin?> GetOperationBulletinByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<OperationBulletin> AddOperationBulletinAsync(OperationBulletin bulletin, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<BundleScan>> GetBundleScansAsync(string? lineNumber = null, string? barcode = null, CancellationToken cancellationToken = default);
+    Task<BundleScan> AddBundleScanAsync(BundleScan scan, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<SewingMachineAsset>> GetSewingMachinesAsync(string? lineNumber = null, MachineStatus? status = null, CancellationToken cancellationToken = default);
+    Task<SewingMachineAsset?> GetSewingMachineByBarcodeAsync(string barcode, CancellationToken cancellationToken = default);
+    Task<SewingMachineAsset> AddSewingMachineAsync(SewingMachineAsset machine, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<MachineBreakdownTicket>> GetBreakdownTicketsAsync(string? lineNumber = null, bool? isResolved = null, CancellationToken cancellationToken = default);
+    Task<MachineBreakdownTicket?> GetBreakdownTicketByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<MachineBreakdownTicket> AddBreakdownTicketAsync(MachineBreakdownTicket ticket, CancellationToken cancellationToken = default);
+    Task UpdateBreakdownTicketAsync(MachineBreakdownTicket ticket, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<BrokenNeedleLog>> GetBrokenNeedleLogsAsync(string? lineNumber = null, NeedleComplianceStatus? status = null, CancellationToken cancellationToken = default);
+    Task<BrokenNeedleLog?> GetBrokenNeedleLogByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<BrokenNeedleLog> AddBrokenNeedleLogAsync(BrokenNeedleLog log, CancellationToken cancellationToken = default);
+    Task UpdateBrokenNeedleLogAsync(BrokenNeedleLog log, CancellationToken cancellationToken = default);
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
