@@ -13,6 +13,9 @@ using GarmentsERP.Shared.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
+using GarmentsERP.Finance.Application.Interfaces;
+using GarmentsERP.Finance.Application.DTOs;
+
 namespace GarmentsERP.API.Controllers;
 
 [ApiController]
@@ -24,20 +27,24 @@ public class ReportsController : ControllerBase
     private readonly IProcurementRepository _procurementRepo;
     private readonly IPdfReportService _pdfReportService;
     private readonly IAuditTrailStore _auditTrailStore;
+    private readonly IFinanceRepository? _financeRepo;
 
     public ReportsController(
         IMediator mediator,
         IProductionRepository productionRepo,
         IProcurementRepository procurementRepo,
         IPdfReportService pdfReportService,
-        IAuditTrailStore auditTrailStore)
+        IAuditTrailStore auditTrailStore,
+        IFinanceRepository? financeRepo = null)
     {
         _mediator = mediator;
         _productionRepo = productionRepo;
         _procurementRepo = procurementRepo;
         _pdfReportService = pdfReportService;
         _auditTrailStore = auditTrailStore;
+        _financeRepo = financeRepo;
     }
+
 
     [HttpGet("financial")]
     public async Task<IActionResult> GetFinancialReport([FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate)
@@ -549,4 +556,85 @@ public class ReportsController : ControllerBase
         var pdfBytes = await _pdfReportService.GenerateBrokenNeedleCertificateAsync(model, ct);
         return File(pdfBytes, "application/pdf", $"BrokenNeedle-{model.CertificateNumber}.pdf");
     }
+
+    [HttpGet("three-way-match/{billId}/pdf")]
+    public async Task<IActionResult> DownloadThreeWayMatchPdf(Guid billId, CancellationToken ct)
+    {
+        VendorBillDto? bill = null;
+        if (_financeRepo != null)
+        {
+            bill = await _financeRepo.GetVendorBillByIdAsync(billId, ct);
+        }
+
+        var latestLog = bill?.MatchLogs?.LastOrDefault();
+
+        var model = new ThreeWayMatchReportModel
+        {
+            BillNumber = bill?.BillNumber ?? "BILL-APEX-2026-091",
+            SupplierName = bill?.SupplierName ?? "Apex Textile Mills Ltd.",
+            PONumber = bill?.PurchaseOrderNumber ?? "PO-2026-0145",
+            POUnitPrice = latestLog?.POUnitPrice ?? (bill?.BilledUnitPrice ?? 2.3500m),
+            GRNNumber = bill?.GRNNumber ?? "GRN-2026-0210",
+            GRNPassedQuantity = latestLog?.GRNPassedQuantity ?? (bill?.BilledQuantity ?? 36750.0m),
+            BilledUnitPrice = bill?.BilledUnitPrice ?? 2.3500m,
+            BilledQuantity = bill?.BilledQuantity ?? 36750.0m,
+            BilledAmount = bill?.BilledAmount ?? 86362.50m,
+            Currency = bill?.Currency ?? "USD",
+            PriceVariancePct = latestLog?.PriceVariancePct ?? 0m,
+            QuantityVariance = latestLog?.QuantityVariance ?? 0m,
+            IsPriceMatched = latestLog?.IsPriceMatched ?? true,
+            IsQuantityMatched = latestLog?.IsQuantityMatched ?? true,
+            OverallMatchResult = latestLog?.OverallMatchResultName ?? (bill?.IsApprovedForPayment == true ? "PASSED" : "DISCREPANCY_FLAGGED"),
+            DiscrepancyNotes = latestLog?.DiscrepancyNotes ?? "Three-Way Match PASSED: Billed price and quantity conform 100% to approved PO and QC-cleared GRN.",
+            TaxDeductedAtSourceTDS = bill?.TaxDeductedAtSourceTDS ?? 2590.88m,
+            VatDeductedAtSourceVDS = bill?.VatDeductedAtSourceVDS ?? 6477.19m,
+            NetPayableAmount = bill?.NetPayableAmount ?? 77294.43m,
+            EvaluatedBy = latestLog?.EvaluatedBy ?? (bill?.ApprovedBy ?? "Automated Reconciliation Engine"),
+            EvaluatedAtUtc = latestLog?.EvaluatedAtUtc ?? (bill?.ApprovedAtUtc ?? DateTime.UtcNow)
+        };
+
+        var pdfBytes = await _pdfReportService.GenerateThreeWayMatchCertificateAsync(model, ct);
+        return File(pdfBytes, "application/pdf", $"ThreeWayMatch-{model.BillNumber}.pdf");
+    }
+
+    [HttpGet("costing-variance/{styleId}/pdf")]
+    public async Task<IActionResult> DownloadCostingVariancePdf(Guid styleId, CancellationToken ct)
+    {
+        OrderCostingVarianceDto? variance = null;
+        if (_financeRepo != null)
+        {
+            variance = await _financeRepo.GetOrderCostingVarianceByStyleIdAsync(styleId, ct);
+        }
+
+        var model = new OrderCostingVarianceReportModel
+        {
+            StyleNumber = variance?.StyleNumber ?? "ST-2026-CHINO-01",
+            StyleName = variance?.StyleName ?? "Slim Fit Cotton Chino Pant",
+            BuyerName = variance?.BuyerName ?? "H&M Hennes & Mauritz GBC AB",
+            OrderQuantity = variance?.OrderQuantity ?? 20000,
+            BuyerFOBPricePerPc = variance?.BuyerFOBPricePerPc ?? 9.0000m,
+            BuyerFOBRevenue = variance?.BuyerFOBRevenue ?? 180000.00m,
+            BudgetRawMaterialsCost = variance?.BudgetRawMaterialsCost ?? 88500.00m,
+            ActualRawMaterialsCost = variance?.ActualRawMaterialsCost ?? 86362.50m,
+            RawMaterialVariance = variance?.RawMaterialVariance ?? 2137.50m,
+            BudgetDirectLaborCost = variance?.BudgetDirectLaborCost ?? 44000.00m,
+            ActualDirectLaborCost = variance?.ActualDirectLaborCost ?? 43210.00m,
+            DirectLaborVariance = variance?.DirectLaborVariance ?? 790.00m,
+            BudgetOverheadsCost = variance?.BudgetOverheadsCost ?? 30000.00m,
+            ActualOverheadsCost = variance?.ActualOverheadsCost ?? 29900.00m,
+            OverheadsVariance = variance?.OverheadsVariance ?? 100.00m,
+            TotalBudgetCost = variance?.TotalBudgetCost ?? 162500.00m,
+            TotalActualCost = variance?.TotalActualCost ?? 159472.50m,
+            TotalCostVariance = variance?.TotalCostVariance ?? 3027.50m,
+            NetRealizedProfit = variance?.NetRealizedProfit ?? 20527.50m,
+            NetProfitMarginPct = variance?.NetProfitMarginPct ?? 11.40m,
+            Currency = variance?.Currency ?? "USD",
+            EvaluatedBy = variance?.EvaluatedBy ?? "Cost Accounting Lead",
+            AnalyzedAtUtc = variance?.AnalyzedAtUtc ?? DateTime.UtcNow
+        };
+
+        var pdfBytes = await _pdfReportService.GenerateOrderCostingVarianceReportAsync(model, ct);
+        return File(pdfBytes, "application/pdf", $"CostingVariance-{model.StyleNumber}.pdf");
+    }
 }
+

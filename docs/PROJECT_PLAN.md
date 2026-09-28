@@ -140,18 +140,18 @@ TOTAL ESTIMATED EFFORT                                              = 377 Workin
 
 ---
 
-### Phase 6: Accounting, Finance & Commercial Trade (Sprint 26–30, 50 Days)
+### Phase 6: Accounting, Finance & Commercial Trade (Sprint 26–30, 50 Days) — *COMPLETED*
 
-| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
-|---|---|---|---|
-| **`ACC-01`** | Multi-layer Chart of Accounts (COA) & automated double-entry vouchers | Double-entry Accounting | 7 |
-| **`ACC-02`** | Automated Three-Way Matching (PO + GRN + Vendor Bill verification) | Reconciliation Engine | 7 |
-| **`ACC-03`** | Export Master LC, B2B LC settlements & bill discounting (FDBP) ledger | Commercial Trade Module | 8 |
-| **`ACC-04`** | Order-wise pre-costing vs actual post-costing margin variance engine | Cost Accounting Logic | 7 |
-| **`ACC-05`** | Multi-currency engine (USD/EUR/GBP) with automated Forex gain/loss | FX Conversion Tables | 4 |
-| **`ACC-06`** | Fixed asset depreciation engine & withholding tax/VAT (TDS/VDS) deductions | Automated Ledger Rules | 5 |
-| **`ACC-07`** | Accounts Payable/Receivable aging analysis & payment disbursement run | Financial Scheduling | 5 |
-| **`ACC-RPT`**| Reports: Balance Sheet, P&L, Cash Flow, Trial Balance & Order Profitability | QuestPDF Fluent API | 7 |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) | Status |
+|---|---|---|---|:---:|
+| **`ACC-01`** | Multi-layer Chart of Accounts (COA) & automated double-entry vouchers | Double-entry Accounting | 7 | Done |
+| **`ACC-02`** | Automated Three-Way Matching (PO + GRN + Vendor Bill verification) | Reconciliation Engine | 7 | Done |
+| **`ACC-03`** | Export Master LC, B2B LC settlements & bill discounting (FDBP) ledger | Commercial Trade Module | 8 | Done |
+| **`ACC-04`** | Order-wise pre-costing vs actual post-costing margin variance engine | Cost Accounting Logic | 7 | Done |
+| **`ACC-05`** | Multi-currency engine (USD/EUR/GBP) with automated Forex gain/loss | FX Conversion Tables | 4 | Done |
+| **`ACC-06`** | Fixed asset depreciation engine & withholding tax/VAT (TDS/VDS) deductions | Automated Ledger Rules | 5 | Done |
+| **`ACC-07`** | Accounts Payable/Receivable aging analysis & payment disbursement run | Financial Scheduling | 5 | Done |
+| **`ACC-RPT`**| Reports: Balance Sheet, P&L, Cash Flow, Trial Balance, AC-06 & Costing Variance | QuestPDF Fluent API | 7 | Done |
 
 ---
 

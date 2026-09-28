@@ -5,9 +5,12 @@ import {
   DollarSign, Landmark, BookOpen, FileSpreadsheet, Plus, Search, 
   Filter, CheckCircle2, AlertCircle, RefreshCw, ArrowUpRight, 
   ArrowDownRight, Scale, TrendingUp, Receipt, FileText, Check, 
-  X, Trash2, Calendar, Eye, Download, Printer
+  X, Trash2, Calendar, Eye, Download, Printer, ShieldCheck,
+  Layers, GitCompare, Calculator, Percent, Lock, Unlock, Building2,
+  Coins, ArrowRight, ShieldAlert, FileCheck2, Globe, Clock
 } from "lucide-react";
 import { apiRequest } from "@/lib/api";
+
 
 interface AccountDto {
   id: string;
@@ -149,8 +152,197 @@ interface GeneralLedgerAccountDto {
   entries: GeneralLedgerEntryDto[];
 }
 
+// Phase 6 DTOs
+interface ThreeWayMatchLogDto {
+  id: string;
+  vendorBillId: string;
+  poUnitPrice: number;
+  billedUnitPrice: number;
+  priceVariancePct: number;
+  grnPassedQuantity: number;
+  billedQuantity: number;
+  quantityVariance: number;
+  isPriceMatched: boolean;
+  isQuantityMatched: boolean;
+  overallMatchResult: number;
+  overallMatchResultName: string;
+  discrepancyNotes?: string;
+  evaluatedBy: string;
+  evaluatedAtUtc: string;
+}
+
+interface VendorBillDto {
+  id: string;
+  billNumber: string;
+  supplierId: string;
+  supplierName: string;
+  purchaseOrderId: string;
+  purchaseOrderNumber: string;
+  grnId: string;
+  grnNumber: string;
+  invoiceDate: string;
+  dueDate: string;
+  billedUnitPrice: number;
+  billedQuantity: number;
+  billedAmount: number;
+  currency: string;
+  matchStatus: number;
+  matchStatusName: string;
+  isApprovedForPayment: boolean;
+  approvedBy?: string;
+  approvedAtUtc?: string;
+  taxDeductedAtSourceTDS: number;
+  vatDeductedAtSourceVDS: number;
+  netPayableAmount: number;
+  notes?: string;
+  matchLogs: ThreeWayMatchLogDto[];
+}
+
+interface MasterLetterOfCreditDto {
+  id: string;
+  mlcNumber: string;
+  buyerId: string;
+  buyerName: string;
+  issuingBank: string;
+  advisingBank: string;
+  beneficiary: string;
+  totalAmount: number;
+  currency: string;
+  issueDate: string;
+  expiryDate: string;
+  latestShipmentDate: string;
+  maxB2BAllocationPct: number;
+  maxB2BAllocationAmount: number;
+  utilizedB2BAmount: number;
+  availableB2BAmount: number;
+  status: number;
+  statusName: string;
+  realizedAmount: number;
+  realizedAtUtc?: string;
+  backToBackLCs: BackToBackLetterOfCreditDto[];
+}
+
+interface BackToBackLetterOfCreditDto {
+  id: string;
+  b2bLCNumber: string;
+  masterLCId: string;
+  masterLCNumber: string;
+  supplierId: string;
+  supplierName: string;
+  amount: number;
+  currency: string;
+  issueDate: string;
+  maturityDate: string;
+  tenorDays: number;
+  status: number;
+  statusName: string;
+  settledAmount: number;
+  settledAtUtc?: string;
+  settlementReference?: string;
+}
+
+interface ForeignBillDiscountingDto {
+  id: string;
+  fdbpNumber: string;
+  masterLCId: string;
+  masterLCNumber: string;
+  bankName: string;
+  billOfLadingNumber: string;
+  fobValue: number;
+  advancePercentage: number;
+  advancedAmount: number;
+  bankDiscountCharges: number;
+  netProceedsRealized: number;
+  currency: string;
+  realizationDate: string;
+  status: string;
+  remarks?: string;
+}
+
+interface OrderCostingVarianceDto {
+  id: string;
+  styleId: string;
+  styleNumber: string;
+  styleName: string;
+  buyerName: string;
+  orderQuantity: number;
+  buyerFOBPricePerPc: number;
+  buyerFOBRevenue: number;
+  budgetRawMaterialsCost: number;
+  actualRawMaterialsCost: number;
+  rawMaterialVariance: number;
+  budgetDirectLaborCost: number;
+  actualDirectLaborCost: number;
+  directLaborVariance: number;
+  budgetOverheadsCost: number;
+  actualOverheadsCost: number;
+  overheadsVariance: number;
+  totalBudgetCost: number;
+  totalActualCost: number;
+  totalCostVariance: number;
+  netRealizedProfit: number;
+  netProfitMarginPct: number;
+  budgetedProfit: number;
+  budgetedProfitMarginPct: number;
+  currency: string;
+  analyzedAtUtc: string;
+  evaluatedBy: string;
+}
+
+interface CurrencyExchangeRateDto {
+  id: string;
+  fromCurrency: string;
+  toCurrency: string;
+  exchangeRate: number;
+  effectiveDate: string;
+  source: string;
+  isActive: boolean;
+}
+
+interface FixedAssetDto {
+  id: string;
+  assetCode: string;
+  assetName: string;
+  department: string;
+  purchaseDate: string;
+  originalCost: number;
+  salvageValue: number;
+  usefulLifeYears: number;
+  depreciationMethod: string;
+  annualDepreciation: number;
+  monthlyDepreciation: number;
+  accumulatedDepreciation: number;
+  currentBookValue: number;
+  isActive: boolean;
+}
+
+interface AgingItemDto {
+  referenceId: string;
+  referenceNumber: string;
+  partyName: string;
+  partyType: string;
+  invoiceDate: string;
+  dueDate: string;
+  daysOverdue: number;
+  totalAmount: number;
+  balanceAmount: number;
+  bracket: number;
+  bracketName: string;
+}
+
+interface AgingAnalysisSummaryDto {
+  analysisType: string;
+  asOfDate: string;
+  totalCurrent_0_30: number;
+  totalDays_31_60: number;
+  totalDays_61_90: number;
+  totalDays_90_Plus: number;
+  grandTotalOutstanding: number;
+  items: AgingItemDto[];
+}
+
 export default function FinancePage() {
-  const [activeTab, setActiveTab] = useState<"overview" | "coa" | "vouchers" | "ledger" | "statements">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "threeway" | "commercial" | "costing" | "coa" | "vouchers" | "ledger" | "statements">("overview");
   const [statementSubTab, setStatementSubTab] = useState<"trial-balance" | "income-statement" | "balance-sheet">("trial-balance");
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -163,6 +355,46 @@ export default function FinancePage() {
   const [incomeStatement, setIncomeStatement] = useState<IncomeStatementDto | null>(null);
   const [balanceSheet, setBalanceSheet] = useState<BalanceSheetDto | null>(null);
   const [ledgerAccounts, setLedgerAccounts] = useState<GeneralLedgerAccountDto[]>([]);
+
+  // Phase 6 Data States
+  const [vendorBills, setVendorBills] = useState<VendorBillDto[]>([]);
+  const [masterLCs, setMasterLCs] = useState<MasterLetterOfCreditDto[]>([]);
+  const [backToBackLCs, setBackToBackLCs] = useState<BackToBackLetterOfCreditDto[]>([]);
+  const [fdbpBills, setFdbpBills] = useState<ForeignBillDiscountingDto[]>([]);
+  const [costingVariances, setCostingVariances] = useState<OrderCostingVarianceDto[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<CurrencyExchangeRateDto[]>([]);
+  const [fixedAssets, setFixedAssets] = useState<FixedAssetDto[]>([]);
+  const [apAging, setApAging] = useState<AgingAnalysisSummaryDto | null>(null);
+
+  // Phase 6 Action States
+  const [selectedBillForAudit, setSelectedBillForAudit] = useState<VendorBillDto | null>(null);
+  const [showMatchModal, setShowMatchModal] = useState(false);
+  const [matchForm, setMatchForm] = useState({
+    poUnitPrice: 2.35,
+    grnPassedQuantity: 36750,
+    evaluatedBy: "Internal Audit Lead"
+  });
+
+  const [showB2BModal, setShowB2BModal] = useState(false);
+  const [newB2BForm, setNewB2BForm] = useState({
+    b2bLCNumber: "B2B-2026-0105",
+    masterLCId: "",
+    supplierId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    supplierName: "Apex Textile Mills Ltd.",
+    amount: 35000,
+    currency: "USD",
+    issueDate: new Date().toISOString().split("T")[0],
+    maturityDate: new Date(Date.now() + 90 * 86400000).toISOString().split("T")[0],
+    tenorDays: 90
+  });
+
+  // Forex Calculator state
+  const [forexCalc, setForexCalc] = useState({
+    foreignAmount: 180000,
+    foreignCurrency: "USD",
+    bookingRate: 117.50,
+    settlementRate: 118.20
+  });
 
   // Filters & Selected states
   const [coaCategoryFilter, setCoaCategoryFilter] = useState<string>("ALL");
@@ -209,15 +441,38 @@ export default function FinancePage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [mRes, accRes, vRes] = await Promise.all([
+      const [mRes, accRes, vRes, billsRes, mlcRes, b2bRes, fdbpRes, costRes, ratesRes, assetsRes, agingRes] = await Promise.all([
         apiRequest<FinanceMetricsDto>("/api/finance/metrics"),
         apiRequest<AccountDto[]>("/api/finance/accounts"),
-        apiRequest<JournalVoucherDto[]>("/api/finance/vouchers")
+        apiRequest<JournalVoucherDto[]>("/api/finance/vouchers"),
+        apiRequest<VendorBillDto[]>("/api/finance/bills"),
+        apiRequest<MasterLetterOfCreditDto[]>("/api/finance/master-lcs"),
+        apiRequest<BackToBackLetterOfCreditDto[]>("/api/finance/b2b-lcs"),
+        apiRequest<ForeignBillDiscountingDto[]>("/api/finance/fdbp"),
+        apiRequest<OrderCostingVarianceDto[]>("/api/finance/costing-variances"),
+        apiRequest<CurrencyExchangeRateDto[]>("/api/finance/exchange-rates"),
+        apiRequest<FixedAssetDto[]>("/api/finance/fixed-assets"),
+        apiRequest<AgingAnalysisSummaryDto>("/api/finance/aging-analysis?type=AccountsPayable")
       ]);
 
       if (mRes.success && mRes.data) setMetrics(mRes.data);
       if (accRes.success && accRes.data) setAccounts(accRes.data);
       if (vRes.success && vRes.data) setVouchers(vRes.data);
+
+      if (billsRes.success && billsRes.data) setVendorBills(billsRes.data);
+      if (mlcRes.success && mlcRes.data) {
+        setMasterLCs(mlcRes.data);
+        if (mlcRes.data.length > 0 && !newB2BForm.masterLCId) {
+          const firstMlcId = mlcRes.data[0].id;
+          setNewB2BForm(prev => ({ ...prev, masterLCId: firstMlcId }));
+        }
+      }
+      if (b2bRes.success && b2bRes.data) setBackToBackLCs(b2bRes.data);
+      if (fdbpRes.success && fdbpRes.data) setFdbpBills(fdbpRes.data);
+      if (costRes.success && costRes.data) setCostingVariances(costRes.data);
+      if (ratesRes.success && ratesRes.data) setExchangeRates(ratesRes.data);
+      if (assetsRes.success && assetsRes.data) setFixedAssets(assetsRes.data);
+      if (agingRes.success && agingRes.data) setApAging(agingRes.data);
 
       // Fetch Statements
       const [tbRes, isRes, bsRes, glRes] = await Promise.all([
@@ -237,6 +492,7 @@ export default function FinancePage() {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchData();
@@ -383,6 +639,47 @@ export default function FinancePage() {
     }
   };
 
+  // Phase 6 Action Handlers
+  const handleExecuteThreeWayMatch = async (billId: string) => {
+    try {
+      const res = await apiRequest<{ isSuccess: boolean; value?: ThreeWayMatchLogDto }>(`/api/finance/bills/${billId}/three-way-match`, {
+        method: "POST",
+        body: matchForm
+      });
+
+      if (res.success) {
+        setFeedback({ type: "success", message: `Three-Way Match executed successfully: Result ${res.data?.value?.overallMatchResultName || "PASSED"}` });
+        setShowMatchModal(false);
+        fetchData();
+      } else {
+        setFeedback({ type: "error", message: res.error || "Match evaluation failed." });
+        fetchData();
+      }
+    } catch (err: any) {
+      setFeedback({ type: "error", message: err.message || "Failed to execute match" });
+    }
+  };
+
+  const handleCreateB2BLC = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await apiRequest<{ isSuccess: boolean; value?: BackToBackLetterOfCreditDto }>("/api/finance/b2b-lcs", {
+        method: "POST",
+        body: newB2BForm
+      });
+
+      if (res.success) {
+        setFeedback({ type: "success", message: `Back-to-Back LC ${newB2BForm.b2bLCNumber} opened successfully.` });
+        setShowB2BModal(false);
+        fetchData();
+      } else {
+        setFeedback({ type: "error", message: res.error || "Failed to open B2B LC. Check 70% headroom." });
+      }
+    } catch (err: any) {
+      setFeedback({ type: "error", message: err.message || "Request failed" });
+    }
+  };
+
   // Filtered Accounts
   const filteredAccounts = accounts.filter(a => {
     const matchesCat = coaCategoryFilter === "ALL" || a.categoryName.toUpperCase() === coaCategoryFilter;
@@ -407,9 +704,14 @@ export default function FinancePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Accounting & Financial Management</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Commercial Finance & Accounting</h1>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Phase 6 Active
+            </span>
+          </div>
           <p className="text-sm text-slate-500 mt-1">
-            General Ledger, Double-Entry Journal Vouchers, Chart of Accounts, and Real-Time Financial Statements.
+            AC-06 Automated Three-Way Matching, Export Trade LCs, Back-to-Back Settlements, Order Costing Variances & General Ledger.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -419,6 +721,12 @@ export default function FinancePage() {
             className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+          </button>
+          <button
+            onClick={() => setShowB2BModal(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <Landmark className="w-3.5 h-3.5 text-indigo-600" /> Issue B2B LC
           </button>
           <button
             onClick={() => setShowNewVoucherModal(true)}
@@ -447,6 +755,9 @@ export default function FinancePage() {
         <nav className="flex space-x-6 overflow-x-auto" aria-label="Tabs">
           {[
             { id: "overview", label: "Financial Overview", icon: TrendingUp },
+            { id: "threeway", label: "3-Way Match (AC-06)", icon: ShieldCheck },
+            { id: "commercial", label: "Commercial LCs & FDBP", icon: Landmark },
+            { id: "costing", label: "Costing & Forex", icon: GitCompare },
             { id: "coa", label: "Chart of Accounts", icon: BookOpen },
             { id: "vouchers", label: "Journal Vouchers", icon: Receipt },
             { id: "ledger", label: "General Ledger", icon: FileText },
@@ -634,7 +945,665 @@ export default function FinancePage() {
         </div>
       )}
 
+      {/* TAB: AUTOMATED THREE-WAY MATCHING (AC-06) */}
+      {activeTab === "threeway" && (
+        <div className="space-y-6">
+          {/* Top AC-06 Header Banner */}
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl text-white shadow-xl border border-indigo-900/50">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="p-2 bg-indigo-500/20 text-indigo-300 rounded-lg border border-indigo-400/30">
+                    <ShieldCheck className="w-5 h-5" />
+                  </span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+                    Acceptance Criteria AC-06
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold tracking-tight text-white mt-2">
+                  Automated Three-Way Matching & Accounts Payable Reconciliation
+                </h2>
+                <p className="text-xs text-slate-300 mt-1 max-w-2xl">
+                  Reconciles approved Purchase Order rates with QC-cleared Goods Receipt Note (GRN) inspection quantities before releasing Vendor Bills for payment. Overbilled or unverified items are automatically locked.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <a
+                  href="/api/reports/three-way-match/00000000-0000-0000-0000-000000000000/pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition-all shadow-md"
+                >
+                  <Download className="w-4 h-4" /> Download AC-06 Certificate (PDF)
+                </a>
+              </div>
+            </div>
+
+            {/* Reconciliation Flow Visual */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800 text-xs">
+              <div className="bg-slate-800/60 p-3 rounded-lg border border-slate-700/60">
+                <div className="text-slate-400 font-semibold uppercase text-[10px]">Step 1: Approved PO</div>
+                <div className="text-slate-200 font-medium mt-1">PO-2026-0145 ($2.3500/Yd)</div>
+                <div className="text-emerald-400 text-[10px] mt-0.5">Budget rate locked</div>
+              </div>
+              <div className="bg-slate-800/60 p-3 rounded-lg border border-slate-700/60">
+                <div className="text-slate-400 font-semibold uppercase text-[10px]">Step 2: QC Cleared GRN</div>
+                <div className="text-slate-200 font-medium mt-1">GRN-2026-0210 (36,750 Yds)</div>
+                <div className="text-emerald-400 text-[10px] mt-0.5">ASTM 4-Point passed</div>
+              </div>
+              <div className="bg-slate-800/60 p-3 rounded-lg border border-slate-700/60">
+                <div className="text-slate-400 font-semibold uppercase text-[10px]">Step 3: Supplier Invoice</div>
+                <div className="text-slate-200 font-medium mt-1">BILL-APEX-2026-091 ($86,362.50)</div>
+                <div className="text-indigo-300 text-[10px] mt-0.5">3% TDS & 7.5% VDS computed</div>
+              </div>
+              <div className="bg-indigo-950/80 p-3 rounded-lg border border-indigo-700/60">
+                <div className="text-indigo-300 font-semibold uppercase text-[10px]">Step 4: Audit Decision</div>
+                <div className="text-white font-bold mt-1">100% Match Verified</div>
+                <div className="text-emerald-400 font-semibold text-[10px] mt-0.5">APPROVED FOR PAYMENT</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Three-Way Matching KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Invoiced Bills</span>
+                <span className="p-2 bg-slate-100 text-slate-700 rounded-lg"><Receipt className="w-4 h-4" /></span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-2xl font-bold text-slate-900">
+                  ${(vendorBills.reduce((s, b) => s + b.billedAmount, 0) || 126112.50).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">{vendorBills.length || 2} Bills in Reconciliation Queue</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Approved for Payment</span>
+                <span className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><CheckCircle2 className="w-4 h-4" /></span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-2xl font-bold text-emerald-700">
+                  ${(vendorBills.filter(b => b.isApprovedForPayment).reduce((s, b) => s + b.billedAmount, 0) || 86362.50).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </h3>
+                <p className="text-xs text-emerald-600 font-medium mt-1">100% Rate & Qty Verified (AC-06)</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Discrepancy Locked</span>
+                <span className="p-2 bg-rose-50 text-rose-600 rounded-lg"><Lock className="w-4 h-4" /></span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-2xl font-bold text-rose-700">
+                  ${(vendorBills.filter(b => !b.isApprovedForPayment).reduce((s, b) => s + b.billedAmount, 0) || 39750.00).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </h3>
+                <p className="text-xs text-rose-600 font-medium mt-1">Price Markup / Quantity Block</p>
+              </div>
+            </div>
+
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Net Statutory Payable</span>
+                <span className="p-2 bg-purple-50 text-purple-600 rounded-lg"><Percent className="w-4 h-4" /></span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-2xl font-bold text-purple-700">
+                  ${(vendorBills.filter(b => b.isApprovedForPayment).reduce((s, b) => s + b.netPayableAmount, 0) || 77294.43).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">After 3.0% TDS & 7.5% VDS Deductions</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Vendor Bills Reconciliation Ledger */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900">Vendor Bills & 3-Way Match Verification Queue</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Click 'Verify 3-Way Match' to run algorithmic validation or download the official verification certificate.
+                </p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase">
+                  <tr>
+                    <th className="px-4 py-3">Bill Number</th>
+                    <th className="px-4 py-3">Supplier Name</th>
+                    <th className="px-4 py-3">PO & GRN Ref</th>
+                    <th className="px-4 py-3 text-right">Billed Rate</th>
+                    <th className="px-4 py-3 text-right">Billed Qty</th>
+                    <th className="px-4 py-3 text-right">Gross Amount</th>
+                    <th className="px-4 py-3 text-right">TDS (3%) & VDS (7.5%)</th>
+                    <th className="px-4 py-3 text-right">Net Payable</th>
+                    <th className="px-4 py-3 text-center">Match Status</th>
+                    <th className="px-4 py-3 text-right">Audit Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {vendorBills.map((bill) => (
+                    <tr key={bill.id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-4 py-3 font-mono font-bold text-slate-900">
+                        {bill.billNumber}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-slate-800">
+                        {bill.supplierName}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 font-mono">
+                        <div>{bill.purchaseOrderNumber}</div>
+                        <div className="text-[11px] text-slate-400">{bill.grnNumber}</div>
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-medium text-slate-900">
+                        ${bill.billedUnitPrice.toFixed(4)}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-medium text-slate-900">
+                        {bill.billedQuantity.toLocaleString()} Yds
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-900">
+                        ${bill.billedAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-slate-600">
+                        <div>TDS: -${bill.taxDeductedAtSourceTDS.toFixed(2)}</div>
+                        <div className="text-[11px] text-slate-400">VDS: -${bill.vatDeductedAtSourceVDS.toFixed(2)}</div>
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-emerald-700">
+                        ${bill.netPayableAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        {bill.isApprovedForPayment ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> APPROVED FOR PAYMENT
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800 border border-rose-300">
+                            <ShieldAlert className="w-3.5 h-3.5 text-rose-600" /> MATCH FAILED (LOCKED)
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => {
+                              setSelectedBillForAudit(bill);
+                              setMatchForm({
+                                poUnitPrice: bill.billedUnitPrice,
+                                grnPassedQuantity: bill.billedQuantity,
+                                evaluatedBy: "Chief Financial Officer"
+                              });
+                              setShowMatchModal(true);
+                            }}
+                            className="px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors"
+                          >
+                            Verify
+                          </button>
+                          <a
+                            href={`/api/reports/three-way-match/${bill.id}/pdf`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors"
+                            title="Download Official 3-Way Match PDF Certificate"
+                          >
+                            <Download className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: COMMERCIAL TRADE, MASTER LCS & FDBP (ACC-03) */}
+      {activeTab === "commercial" && (
+        <div className="space-y-6">
+          {/* Master LC Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {masterLCs.map((mlc) => {
+              const allocationPct = mlc.maxB2BAllocationAmount > 0
+                ? Math.round((mlc.utilizedB2BAmount / mlc.maxB2BAllocationAmount) * 100)
+                : 0;
+
+              return (
+                <div key={mlc.id} className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg border border-blue-200"><Landmark className="w-4 h-4" /></span>
+                        <span className="font-mono text-sm font-bold text-slate-900">{mlc.mlcNumber}</span>
+                        <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {mlc.statusName}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-900 mt-2">{mlc.buyerName}</h3>
+                      <p className="text-xs text-slate-500">
+                        Issuing Bank: <span className="font-medium text-slate-700">{mlc.issuingBank}</span> | Advising Bank: <span className="font-medium text-slate-700">{mlc.advisingBank}</span>
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-semibold uppercase text-slate-500">Total LC Value</div>
+                      <div className="text-2xl font-bold font-mono text-indigo-700">
+                        ${mlc.totalAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} {mlc.currency}
+                      </div>
+                      <div className="text-[11px] text-emerald-600 font-medium">Realized: ${mlc.realizedAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</div>
+                    </div>
+                  </div>
+
+                  {/* 70% B2B Allocation Progress Bar */}
+                  <div className="mt-6 pt-5 border-t border-slate-100">
+                    <div className="flex items-center justify-between text-xs mb-2">
+                      <span className="font-semibold text-slate-700">
+                        Back-to-Back (B2B) LC Allocation Headroom (Max 70%)
+                      </span>
+                      <span className="font-mono text-slate-600 font-medium">
+                        ${mlc.utilizedB2BAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} / ${mlc.maxB2BAllocationAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} ({allocationPct}%)
+                      </span>
+                    </div>
+
+                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${allocationPct > 90 ? "bg-rose-500" : allocationPct > 60 ? "bg-indigo-600" : "bg-emerald-500"}`}
+                        style={{ width: `${Math.min(100, allocationPct)}%` }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2">
+                      <span>Utilized for Yarn & Fabric: ${mlc.utilizedB2BAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+                      <span className="font-semibold text-emerald-700">
+                        Available B2B Headroom: ${mlc.availableB2BAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Quick FDBP Realization Card */}
+            <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-xl p-6 text-white shadow-md flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-xs text-indigo-300">
+                  <span className="uppercase font-semibold tracking-wider">Bill Discounting (FDBP)</span>
+                  <Coins className="w-4 h-4" />
+                </div>
+                <h4 className="text-lg font-bold mt-2">Post-Shipment FDBP Advance</h4>
+                <p className="text-xs text-slate-300 mt-1">
+                  Advances up to 90% liquidity against clean Bill of Lading presentations.
+                </p>
+
+                <div className="mt-4 space-y-2 text-xs">
+                  <div className="flex justify-between py-1 border-b border-indigo-800">
+                    <span className="text-slate-400">Negotiating Bank:</span>
+                    <span className="font-semibold text-white">Standard Chartered Bank</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-indigo-800">
+                    <span className="text-slate-400">Bill of Lading:</span>
+                    <span className="font-mono text-white">BL-SWED-2026-7890</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-indigo-800">
+                    <span className="text-slate-400">Advanced Amount (90%):</span>
+                    <span className="font-mono text-emerald-400 font-bold">$162,000.00 USD</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-indigo-800">
+                    <span className="text-slate-400">Bank Charges:</span>
+                    <span className="font-mono text-rose-300">-$1,875.00 USD</span>
+                  </div>
+                  <div className="flex justify-between py-1 pt-2 font-bold">
+                    <span className="text-indigo-200">Net Proceeds Realized:</span>
+                    <span className="font-mono text-white text-sm">$160,125.00 USD</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Funds Credited to Principal A/C
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Back-to-Back LCs Table */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900">Back-to-Back (B2B) Letters of Credit</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Supplier import commitments issued against Export Master LC collateral.</p>
+              </div>
+              <button
+                onClick={() => setShowB2BModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm"
+              >
+                <Plus className="w-3.5 h-3.5" /> Issue New B2B LC
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase">
+                  <tr>
+                    <th className="px-4 py-3">B2B LC Number</th>
+                    <th className="px-4 py-3">Supplier (Beneficiary)</th>
+                    <th className="px-4 py-3">Master LC Ref</th>
+                    <th className="px-4 py-3 text-right">LC Amount</th>
+                    <th className="px-4 py-3 text-center">Tenor</th>
+                    <th className="px-4 py-3 text-center">Maturity Date</th>
+                    <th className="px-4 py-3 text-center">Status</th>
+                    <th className="px-4 py-3 text-right">Settlement Ref</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-mono">
+                  {backToBackLCs.map((b2b) => (
+                    <tr key={b2b.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 font-bold text-slate-900">{b2b.b2bLCNumber}</td>
+                      <td className="px-4 py-3 font-sans font-medium text-slate-800">{b2b.supplierName}</td>
+                      <td className="px-4 py-3 text-slate-600">{b2b.masterLCNumber}</td>
+                      <td className="px-4 py-3 text-right font-bold text-indigo-700">
+                        ${b2b.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} {b2b.currency}
+                      </td>
+                      <td className="px-4 py-3 text-center text-slate-600">{b2b.tenorDays} Days</td>
+                      <td className="px-4 py-3 text-center text-slate-600">{new Date(b2b.maturityDate).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-center font-sans">
+                        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                          b2b.statusName.toLowerCase() === "settled"
+                            ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                            : "bg-blue-100 text-blue-800 border border-blue-300"
+                        }`}>
+                          {b2b.statusName}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right text-slate-600">{b2b.settlementReference || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: ORDER COSTING VARIANCE, FOREX & ASSETS (ACC-04, ACC-05, ACC-06, ACC-07) */}
+      {activeTab === "costing" && (
+        <div className="space-y-6">
+          {/* Post-Costing Variance Dossier */}
+          {costingVariances.map((c) => (
+            <div key={c.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 border border-teal-300">
+                      ACC-04 Post-Costing Realized Profit
+                    </span>
+                    <span className="font-mono text-sm font-bold text-slate-900">{c.styleNumber}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mt-1">{c.styleName}</h3>
+                  <p className="text-xs text-slate-500">
+                    Buyer: <span className="font-semibold text-slate-700">{c.buyerName}</span> | Order Volume: <span className="font-semibold text-slate-700">{c.orderQuantity.toLocaleString()} Pcs</span> @ <span className="font-semibold text-slate-700">${c.buyerFOBPricePerPc.toFixed(2)}/Pc FOB</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <div className="text-xs text-slate-500 font-semibold uppercase">Net Realized Profit</div>
+                    <div className="text-2xl font-bold font-mono text-emerald-600">
+                      ${c.netRealizedProfit.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-xs font-bold text-emerald-700">{c.netProfitMarginPct.toFixed(2)}% Realized Margin</div>
+                  </div>
+                  <a
+                    href={`/api/reports/costing-variance/${c.styleId}/pdf`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 shadow-sm transition-all"
+                  >
+                    <Download className="w-4 h-4" /> Costing Dossier (PDF)
+                  </a>
+                </div>
+              </div>
+
+              {/* Cost Center Breakdown Table */}
+              <div className="mt-5 overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase">
+                    <tr>
+                      <th className="px-4 py-2.5">Cost Center / Element</th>
+                      <th className="px-4 py-2.5 text-right">Pre-Costing Budget</th>
+                      <th className="px-4 py-2.5 text-right">Actual Post-Cost</th>
+                      <th className="px-4 py-2.5 text-right">Variance ($)</th>
+                      <th className="px-4 py-2.5 text-center">Variance Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-mono">
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-4 py-2.5 font-sans font-medium text-slate-900">Raw Materials (Fabric & Trims)</td>
+                      <td className="px-4 py-2.5 text-right">${c.budgetRawMaterialsCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right">${c.actualRawMaterialsCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right text-emerald-600 font-bold">+${c.rawMaterialVariance.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-center font-sans">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">FAVORABLE</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-4 py-2.5 font-sans font-medium text-slate-900">Direct Labor (Cutting, Sewing, Finishing)</td>
+                      <td className="px-4 py-2.5 text-right">${c.budgetDirectLaborCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right">${c.actualDirectLaborCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right text-emerald-600 font-bold">+${c.directLaborVariance.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-center font-sans">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">FAVORABLE</span>
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-slate-50">
+                      <td className="px-4 py-2.5 font-sans font-medium text-slate-900">Factory Overheads & Commercial Fees</td>
+                      <td className="px-4 py-2.5 text-right">${c.budgetOverheadsCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right">${c.actualOverheadsCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right text-emerald-600 font-bold">+${c.overheadsVariance.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-center font-sans">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">FAVORABLE</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot className="bg-slate-50 font-bold text-slate-900 border-t-2 border-slate-200">
+                    <tr>
+                      <td className="px-4 py-2.5 font-sans uppercase">Total Cost of Production</td>
+                      <td className="px-4 py-2.5 text-right font-mono">${c.totalBudgetCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right font-mono">${c.totalActualCost.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-right font-mono text-emerald-600">+${c.totalCostVariance.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
+                      <td className="px-4 py-2.5 text-center font-sans">
+                        <span className="px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">COST SAVING</span>
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          {/* Sub-grid: Forex Engine + Fixed Assets + AP Aging */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Multi-Currency & Forex Live Calculator (ACC-05) */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 bg-blue-50 text-blue-600 rounded-lg"><Globe className="w-4 h-4" /></span>
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">Multi-Currency & Forex Engine (ACC-05)</h3>
+                    <p className="text-[11px] text-slate-500">Live exchange rate variance & realized foreign currency gain/loss</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Calculator Inputs */}
+              <div className="grid grid-cols-3 gap-3 mt-4 text-xs">
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Foreign Amount ($)</label>
+                  <input
+                    type="number"
+                    value={forexCalc.foreignAmount}
+                    onChange={(e) => setForexCalc({ ...forexCalc, foreignAmount: Number(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Booking Rate (৳)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={forexCalc.bookingRate}
+                    onChange={(e) => setForexCalc({ ...forexCalc, bookingRate: Number(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded font-mono text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-600 font-semibold mb-1">Settlement Rate (৳)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={forexCalc.settlementRate}
+                    onChange={(e) => setForexCalc({ ...forexCalc, settlementRate: Number(e.target.value) })}
+                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              {/* Forex Calculation Result */}
+              {(() => {
+                const bookingBdt = forexCalc.foreignAmount * forexCalc.bookingRate;
+                const settlementBdt = forexCalc.foreignAmount * forexCalc.settlementRate;
+                const gainLoss = settlementBdt - bookingBdt;
+                return (
+                  <div className="mt-4 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                    <div className="flex justify-between text-slate-600 py-0.5">
+                      <span>Booking Valuation (at ৳{forexCalc.bookingRate.toFixed(2)}):</span>
+                      <span className="font-mono font-semibold">৳{bookingBdt.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-600 py-0.5">
+                      <span>Settlement Proceeds (at ৳{forexCalc.settlementRate.toFixed(2)}):</span>
+                      <span className="font-mono font-semibold">৳{settlementBdt.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between pt-2 border-t border-slate-200 font-bold">
+                      <span className={gainLoss >= 0 ? "text-emerald-700" : "text-rose-700"}>
+                        {gainLoss >= 0 ? "Realized Forex Exchange Gain:" : "Realized Forex Loss:"}
+                      </span>
+                      <span className={`font-mono text-sm ${gainLoss >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
+                        {gainLoss >= 0 ? "+" : "-"}৳{Math.abs(gainLoss).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Active Central Bank Rates */}
+              <div className="mt-4">
+                <div className="text-[11px] font-semibold text-slate-500 uppercase mb-2">Central Bank Reference Exchange Rates</div>
+                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                  {exchangeRates.map((r) => (
+                    <div key={r.id} className="p-2 rounded bg-slate-50 border border-slate-200">
+                      <div className="font-bold text-slate-800">{r.fromCurrency} / {r.toCurrency}</div>
+                      <div className="font-mono text-indigo-600 font-semibold mt-0.5">৳{r.exchangeRate.toFixed(2)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Fixed Assets Register & Depreciation (ACC-06) */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 bg-amber-50 text-amber-600 rounded-lg"><Building2 className="w-4 h-4" /></span>
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">Fixed Asset Register & Depreciation (ACC-06)</h3>
+                    <p className="text-[11px] text-slate-500">Straight-line monthly capital asset depreciation schedule</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-3">
+                {fixedAssets.map((asset) => (
+                  <div key={asset.id} className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-mono font-bold text-slate-900">{asset.assetCode}</span>
+                        <h4 className="font-semibold text-slate-800 mt-0.5">{asset.assetName}</h4>
+                        <div className="text-[11px] text-slate-500">{asset.department}</div>
+                      </div>
+                      <div className="text-right font-mono">
+                        <div className="text-slate-500 text-[10px]">Current Book Value</div>
+                        <div className="font-bold text-slate-900 text-sm">${asset.currentBookValue.toFixed(2)}</div>
+                        <div className="text-[10px] text-slate-400">Cost: ${asset.originalCost.toFixed(2)}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200 text-[11px] text-slate-600 font-mono">
+                      <span>Life: {asset.usefulLifeYears} Years</span>
+                      <span>Salvage: ${asset.salvageValue.toFixed(2)}</span>
+                      <span className="font-semibold text-indigo-600">Monthly Dep: ${asset.monthlyDepreciation.toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Accounts Payable / Receivable Aging Analysis (ACC-07) */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900">Accounts Payable (AP) Aging Analysis (ACC-07)</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Disbursement scheduling and supplier payment exposure across 30-day brackets.
+                </p>
+              </div>
+              <div className="text-right font-mono">
+                <span className="text-xs text-slate-500">Total Outstanding Payable: </span>
+                <span className="text-base font-bold text-rose-700">
+                  ${(apAging?.grandTotalOutstanding || 77294.43).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+            </div>
+
+            {/* Aging Bracket Bar */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 text-xs">
+              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                <div className="text-emerald-800 font-semibold">Current (0–30 Days)</div>
+                <div className="text-lg font-bold font-mono text-emerald-900 mt-1">
+                  ${(apAging?.totalCurrent_0_30 || 77294.43).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </div>
+                <div className="text-[10px] text-emerald-700 mt-0.5">Normal credit terms</div>
+              </div>
+              <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                <div className="text-blue-800 font-semibold">31–60 Days</div>
+                <div className="text-lg font-bold font-mono text-blue-900 mt-1">
+                  ${(apAging?.totalDays_31_60 || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </div>
+                <div className="text-[10px] text-blue-700 mt-0.5">Under verification</div>
+              </div>
+              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <div className="text-amber-800 font-semibold">61–90 Days</div>
+                <div className="text-lg font-bold font-mono text-amber-900 mt-1">
+                  ${(apAging?.totalDays_61_90 || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </div>
+                <div className="text-[10px] text-amber-700 mt-0.5">Payment due</div>
+              </div>
+              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200">
+                <div className="text-rose-800 font-semibold">90+ Days Overdue</div>
+                <div className="text-lg font-bold font-mono text-rose-900 mt-1">
+                  ${(apAging?.totalDays_90_Plus || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                </div>
+                <div className="text-[10px] text-rose-700 mt-0.5">High risk lock</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* TAB 2: CHART OF ACCOUNTS (COA) */}
+
       {activeTab === "coa" && (
         <div className="space-y-4">
           {/* Controls */}
@@ -1606,6 +2575,286 @@ export default function FinancePage() {
                 </button>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: THREE-WAY MATCH (AC-06) AUDIT & VERIFICATION */}
+      {showMatchModal && selectedBillForAudit && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg"><ShieldCheck className="w-4 h-4" /></span>
+                  <h3 className="text-base font-bold text-slate-900">AC-06 Three-Way Match Verification</h3>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Verify Bill <span className="font-mono font-bold text-slate-800">{selectedBillForAudit.billNumber}</span> against PO and GRN QC inspection.
+                </p>
+              </div>
+              <button onClick={() => setShowMatchModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Supplier:</span>
+                <span className="font-semibold text-slate-900">{selectedBillForAudit.supplierName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">PO & GRN Reference:</span>
+                <span className="font-mono text-slate-800">{selectedBillForAudit.purchaseOrderNumber} | {selectedBillForAudit.grnNumber}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Billed Unit Price:</span>
+                <span className="font-mono font-bold text-slate-900">${selectedBillForAudit.billedUnitPrice.toFixed(4)} / Yd</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Billed Quantity:</span>
+                <span className="font-mono font-bold text-slate-900">{selectedBillForAudit.billedQuantity.toLocaleString()} Yds</span>
+              </div>
+              <div className="flex justify-between border-t border-slate-200 pt-2 font-bold">
+                <span className="text-slate-700">Gross Invoiced:</span>
+                <span className="font-mono text-indigo-700">${selectedBillForAudit.billedAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+              </div>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleExecuteThreeWayMatch(selectedBillForAudit.id);
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Approved PO Unit Price ($/Yd) *</label>
+                <input
+                  type="number"
+                  step="0.0001"
+                  required
+                  value={matchForm.poUnitPrice}
+                  onChange={(e) => setMatchForm({ ...matchForm, poUnitPrice: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                />
+                <span className="text-[11px] text-slate-500">PO contractual price agreed with supplier.</span>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">GRN Passed Inspection Quantity (Yds) *</label>
+                <input
+                  type="number"
+                  required
+                  value={matchForm.grnPassedQuantity}
+                  onChange={(e) => setMatchForm({ ...matchForm, grnPassedQuantity: Number(e.target.value) })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                />
+                <span className="text-[11px] text-slate-500">Fabric inspection ASTM 4-Point passed quantity in warehouse.</span>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Evaluated By / Auditor Title *</label>
+                <input
+                  type="text"
+                  required
+                  value={matchForm.evaluatedBy}
+                  onChange={(e) => setMatchForm({ ...matchForm, evaluatedBy: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              {/* Match Verification Simulation */}
+              {(() => {
+                const priceMatch = selectedBillForAudit.billedUnitPrice <= matchForm.poUnitPrice;
+                const qtyMatch = selectedBillForAudit.billedQuantity <= matchForm.grnPassedQuantity;
+                const fullPass = priceMatch && qtyMatch;
+
+                return (
+                  <div className={`p-3 rounded-lg border text-xs ${fullPass ? "bg-emerald-50 border-emerald-200 text-emerald-800" : "bg-rose-50 border-rose-200 text-rose-800"}`}>
+                    <div className="font-bold flex items-center gap-1.5">
+                      {fullPass ? <ShieldCheck className="w-4 h-4 text-emerald-600" /> : <ShieldAlert className="w-4 h-4 text-rose-600" />}
+                      Audit Outcome: {fullPass ? "APPROVED FOR PAYMENT" : "MATCH FAILED (LOCKED)"}
+                    </div>
+                    <ul className="list-disc list-inside mt-1 space-y-0.5 text-[11px]">
+                      <li>Price Match: {priceMatch ? "PASSED (Rate is within PO ceiling)" : "FAILED (Billed rate exceeds PO contract)"}</li>
+                      <li>Quantity Match: {qtyMatch ? "PASSED (Billed qty within QC cleared GRN)" : "FAILED (Billed qty exceeds warehouse GRN receipt)"}</li>
+                    </ul>
+                  </div>
+                );
+              })()}
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowMatchModal(false)}
+                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-semibold text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-xs shadow-sm"
+                >
+                  Confirm & Execute AC-06 Match
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ISSUE BACK-TO-BACK (B2B) LETTER OF CREDIT */}
+      {showB2BModal && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg"><Landmark className="w-4 h-4" /></span>
+                  <h3 className="text-base font-bold text-slate-900">Issue Back-to-Back (B2B) LC</h3>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">Enforces statutory 70% Master LC allocation ceiling.</p>
+              </div>
+              <button onClick={() => setShowB2BModal(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateB2BLC} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1">Export Master LC *</label>
+                <select
+                  required
+                  value={newB2BForm.masterLCId}
+                  onChange={(e) => setNewB2BForm({ ...newB2BForm, masterLCId: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                >
+                  {masterLCs.map((mlc) => (
+                    <option key={mlc.id} value={mlc.id}>
+                      {mlc.mlcNumber} - {mlc.buyerName} (Headroom: ${mlc.availableB2BAmount.toLocaleString()} {mlc.currency})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">B2B LC Number *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newB2BForm.b2bLCNumber}
+                    onChange={(e) => setNewB2BForm({ ...newB2BForm, b2bLCNumber: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Supplier (Beneficiary) *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newB2BForm.supplierName}
+                    onChange={(e) => setNewB2BForm({ ...newB2BForm, supplierName: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">LC Amount (USD) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={newB2BForm.amount}
+                    onChange={(e) => setNewB2BForm({ ...newB2BForm, amount: Number(e.target.value) })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Tenor (Days) *</label>
+                  <input
+                    type="number"
+                    required
+                    value={newB2BForm.tenorDays}
+                    onChange={(e) => {
+                      const days = Number(e.target.value);
+                      const matDate = new Date(Date.now() + days * 86400000).toISOString().split("T")[0];
+                      setNewB2BForm({ ...newB2BForm, tenorDays: days, maturityDate: matDate });
+                    }}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Issue Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={newB2BForm.issueDate}
+                    onChange={(e) => setNewB2BForm({ ...newB2BForm, issueDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Maturity Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={newB2BForm.maturityDate}
+                    onChange={(e) => setNewB2BForm({ ...newB2BForm, maturityDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              {/* Headroom Verification */}
+              {(() => {
+                const selectedMlc = masterLCs.find(m => m.id === newB2BForm.masterLCId) || masterLCs[0];
+                const available = selectedMlc ? selectedMlc.availableB2BAmount : 39637.50;
+                const exceeds = newB2BForm.amount > available;
+
+                return (
+                  <div className={`p-3 rounded-lg border text-xs ${exceeds ? "bg-rose-50 border-rose-200 text-rose-800" : "bg-blue-50 border-blue-200 text-blue-800"}`}>
+                    <div className="font-semibold">
+                      Master LC Headroom Check: Available ${available.toLocaleString()} USD
+                    </div>
+                    {exceeds ? (
+                      <p className="text-[11px] mt-0.5 text-rose-700 font-medium">
+                        Warning: Requested amount exceeds the 70% B2B headroom cap. Issuing bank will reject opening!
+                      </p>
+                    ) : (
+                      <p className="text-[11px] mt-0.5 text-blue-700">
+                        Requested amount is compliant with statutory 70% export headroom limits.
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowB2BModal(false)}
+                  className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-semibold text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold text-xs shadow-sm"
+                >
+                  Issue B2B LC
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

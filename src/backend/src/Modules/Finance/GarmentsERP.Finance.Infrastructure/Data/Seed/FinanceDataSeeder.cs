@@ -139,6 +139,200 @@ public static class FinanceDataSeeder
         await context.JournalVouchers.AddRangeAsync(jv1, jv2, jv3);
         await context.SaveChangesAsync();
 
-        logger.LogInformation("Finance data seeded successfully with {Count} accounts and 3 vouchers.", accounts.Count);
+        // ACC-03: Seed Trade Finance Master LC & B2B LC
+        if (!await context.MasterLetterOfCredits.AnyAsync())
+        {
+            var mlc = new MasterLetterOfCredit
+            {
+                MLCNumber = "MLC-2026-0891",
+                BuyerId = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                BuyerName = "H&M Hennes & Mauritz GBC AB",
+                IssuingBank = "Swedbank Sweden",
+                AdvisingBank = "Standard Chartered Bank Dhaka",
+                Beneficiary = "StitchMind Garments Industries Ltd.",
+                TotalAmount = 180000.00m,
+                Currency = "USD",
+                IssueDate = DateTime.UtcNow.AddDays(-35),
+                ExpiryDate = DateTime.UtcNow.AddDays(85),
+                LatestShipmentDate = DateTime.UtcNow.AddDays(40),
+                MaxB2BAllocationPct = 70.0m,
+                UtilizedB2BAmount = 86362.50m,
+                Status = LetterOfCreditStatus.PartiallyUtilized,
+                RealizedAmount = 180000.00m,
+                RealizedAtUtc = DateTime.UtcNow.AddDays(-5)
+            };
+            await context.MasterLetterOfCredits.AddAsync(mlc);
+            await context.SaveChangesAsync();
+
+            var b2b = new BackToBackLetterOfCredit
+            {
+                B2BLCNumber = "B2B-2026-0098",
+                MasterLCId = mlc.Id,
+                MasterLCNumber = mlc.MLCNumber,
+                SupplierId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                SupplierName = "Apex Textile Mills Ltd.",
+                Amount = 86362.50m,
+                Currency = "USD",
+                IssueDate = DateTime.UtcNow.AddDays(-25),
+                MaturityDate = DateTime.UtcNow.AddDays(65),
+                TenorDays = 90,
+                Status = BackToBackLCStatus.Settled,
+                SettledAmount = 86362.50m,
+                SettledAtUtc = DateTime.UtcNow.AddDays(-3),
+                SettlementReference = "SCB-DEBIT-TXN-9981"
+            };
+            await context.BackToBackLetterOfCredits.AddAsync(b2b);
+
+            var fdbp = new ForeignBillDiscounting
+            {
+                FDBPNumber = "FDBP-2026-0034",
+                MasterLCId = mlc.Id,
+                MasterLCNumber = mlc.MLCNumber,
+                BankName = "Standard Chartered Bank Dhaka",
+                BillOfLadingNumber = "BL-SWED-2026-7890",
+                FOBValue = 180000.00m,
+                AdvancePercentage = 90.0m,
+                AdvancedAmount = 162000.00m,
+                BankDiscountCharges = 1875.00m,
+                NetProceedsRealized = 160125.00m,
+                Currency = "USD",
+                RealizationDate = DateTime.UtcNow.AddDays(-5),
+                Status = "Realized",
+                Remarks = "Clean Bill of Lading accepted; 90% advance credited to SCB Principal A/C"
+            };
+            await context.ForeignBillDiscountings.AddAsync(fdbp);
+            await context.SaveChangesAsync();
+        }
+
+        // ACC-02: Seed Vendor Bills & Automated Three-Way Matching
+        if (!await context.VendorBills.AnyAsync())
+        {
+            var bill1 = new VendorBill
+            {
+                BillNumber = "BILL-APEX-2026-091",
+                SupplierId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                SupplierName = "Apex Textile Mills Ltd.",
+                PurchaseOrderId = Guid.Parse("99999999-8888-7777-6666-555555555555"),
+                PurchaseOrderNumber = "PO-2026-0145",
+                GRNId = Guid.Parse("12121212-3434-5656-7878-909090909090"),
+                GRNNumber = "GRN-2026-0210",
+                InvoiceDate = DateTime.UtcNow.AddDays(-10),
+                DueDate = DateTime.UtcNow.AddDays(20),
+                BilledUnitPrice = 2.3500m,
+                BilledQuantity = 36750.0m,
+                BilledAmount = 86362.50m,
+                Currency = "USD",
+                TaxDeductedAtSourceTDS = 2590.88m, // 3% TDS
+                VatDeductedAtSourceVDS = 6477.19m, // 7.5% VDS
+                NetPayableAmount = 77294.43m,
+                Notes = "100% Cotton Twill 240 GSM for H&M Chino Pant (AC-06 compliant)"
+            };
+
+            // Execute 3-Way Match (Pass)
+            bill1.ExecuteThreeWayMatch(poUnitPrice: 2.3500m, grnPassedQuantity: 36750.0m, evaluatedBy: "Automated Reconciliation Engine");
+
+            var bill2 = new VendorBill
+            {
+                BillNumber = "BILL-TEX-2026-042",
+                SupplierId = Guid.Parse("bbbbbbbb-cccc-dddd-eeee-ffffffffffff"),
+                SupplierName = "Square Fashion Yarns Ltd.",
+                PurchaseOrderId = Guid.Parse("88888888-7777-6666-5555-444444444444"),
+                PurchaseOrderNumber = "PO-2026-0150",
+                GRNId = Guid.Parse("23232323-4545-6767-8989-010101010101"),
+                GRNNumber = "GRN-2026-0215",
+                InvoiceDate = DateTime.UtcNow.AddDays(-5),
+                DueDate = DateTime.UtcNow.AddDays(25),
+                BilledUnitPrice = 2.6500m, // PO was 2.4000 -> Markup!
+                BilledQuantity = 15000.0m,
+                BilledAmount = 39750.00m,
+                Currency = "USD",
+                TaxDeductedAtSourceTDS = 1192.50m,
+                VatDeductedAtSourceVDS = 2981.25m,
+                NetPayableAmount = 35576.25m,
+                Notes = "Price discrepancy flag test bill"
+            };
+
+            // Execute 3-Way Match (Fail -> Lock)
+            bill2.ExecuteThreeWayMatch(poUnitPrice: 2.4000m, grnPassedQuantity: 15000.0m, evaluatedBy: "Automated Reconciliation Engine");
+
+            await context.VendorBills.AddRangeAsync(bill1, bill2);
+            await context.SaveChangesAsync();
+        }
+
+        // ACC-04: Seed Order Costing Variance (Style ST-2026-CHINO-01)
+        if (!await context.OrderCostingVariances.AnyAsync())
+        {
+            var costingVariance = new OrderCostingVariance
+            {
+                StyleId = Guid.Parse("44444444-4444-4444-4444-444444444444"),
+                StyleNumber = "ST-2026-CHINO-01",
+                StyleName = "Slim Fit Cotton Chino Pant",
+                BuyerName = "H&M Hennes & Mauritz GBC AB",
+                OrderQuantity = 20000,
+                BuyerFOBPricePerPc = 9.0000m, // Revenue = $180,000.00
+                BudgetRawMaterialsCost = 88500.00m,
+                ActualRawMaterialsCost = 86362.50m, // Favorable +$2,137.50
+                BudgetDirectLaborCost = 44000.00m,
+                ActualDirectLaborCost = 43210.00m, // Favorable +$790.00
+                BudgetOverheadsCost = 30000.00m,
+                ActualOverheadsCost = 29900.00m, // Favorable +$100.00
+                Currency = "USD",
+                AnalyzedAtUtc = DateTime.UtcNow,
+                EvaluatedBy = "Cost Accounting Lead"
+            };
+            await context.OrderCostingVariances.AddAsync(costingVariance);
+            await context.SaveChangesAsync();
+        }
+
+        // ACC-05: Seed Currency Exchange Rates
+        if (!await context.CurrencyExchangeRates.AnyAsync())
+        {
+            var rates = new List<CurrencyExchangeRate>
+            {
+                new() { FromCurrency = "USD", ToCurrency = "BDT", ExchangeRate = 117.50m, EffectiveDate = DateTime.UtcNow.Date, Source = "Bangladesh Bank Reference Rate", IsActive = true },
+                new() { FromCurrency = "EUR", ToCurrency = "BDT", ExchangeRate = 127.80m, EffectiveDate = DateTime.UtcNow.Date, Source = "Bangladesh Bank Reference Rate", IsActive = true },
+                new() { FromCurrency = "GBP", ToCurrency = "BDT", ExchangeRate = 150.25m, EffectiveDate = DateTime.UtcNow.Date, Source = "Bangladesh Bank Reference Rate", IsActive = true }
+            };
+            await context.CurrencyExchangeRates.AddRangeAsync(rates);
+            await context.SaveChangesAsync();
+        }
+
+        // ACC-06: Seed Fixed Assets Register
+        if (!await context.FixedAssets.AnyAsync())
+        {
+            var assets = new List<FixedAsset>
+            {
+                new()
+                {
+                    AssetCode = "FA-SEW-001",
+                    AssetName = "Juki DDL-9000C Direct Drive High Speed Lockstitch Machine",
+                    Department = "Sewing Floor Line 04",
+                    PurchaseDate = DateTime.UtcNow.AddYears(-1),
+                    OriginalCost = 1450.00m,
+                    SalvageValue = 150.00m,
+                    UsefulLifeYears = 5,
+                    DepreciationMethod = "StraightLine",
+                    AccumulatedDepreciation = 260.00m,
+                    IsActive = true
+                },
+                new()
+                {
+                    AssetCode = "FA-CUT-002",
+                    AssetName = "Eastman Straight Knife Automatic Cloth Cutting Machine 10-Inch",
+                    Department = "Cutting Section Table 02",
+                    PurchaseDate = DateTime.UtcNow.AddYears(-1),
+                    OriginalCost = 2800.00m,
+                    SalvageValue = 300.00m,
+                    UsefulLifeYears = 5,
+                    DepreciationMethod = "StraightLine",
+                    AccumulatedDepreciation = 500.00m,
+                    IsActive = true
+                }
+            };
+            await context.FixedAssets.AddRangeAsync(assets);
+            await context.SaveChangesAsync();
+        }
+
+        logger.LogInformation("Finance data seeded successfully with accounts, vouchers, trade LCs, vendor bills, costing variance, and fixed assets.");
     }
 }

@@ -83,4 +83,19 @@ public class QuestPdfReportService : IPdfReportService
         var pdfBytes = document.GeneratePdf();
         return Task.FromResult(pdfBytes);
     }
+
+    public Task<byte[]> GenerateThreeWayMatchCertificateAsync(ThreeWayMatchReportModel model, CancellationToken ct = default)
+    {
+        var document = new ThreeWayMatchPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateOrderCostingVarianceReportAsync(OrderCostingVarianceReportModel model, CancellationToken ct = default)
+    {
+        var document = new OrderCostingVariancePdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
 }
+
