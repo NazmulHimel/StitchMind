@@ -83,4 +83,40 @@ public class QuestPdfReportService : IPdfReportService
         var pdfBytes = document.GeneratePdf();
         return Task.FromResult(pdfBytes);
     }
+
+    public Task<byte[]> GenerateThreeWayMatchCertificateAsync(ThreeWayMatchReportModel model, CancellationToken ct = default)
+    {
+        var document = new ThreeWayMatchPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateOrderCostingVarianceReportAsync(OrderCostingVarianceReportModel model, CancellationToken ct = default)
+    {
+        var document = new OrderCostingVariancePdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateBilingualPaySlipReportAsync(BilingualPaySlipReportModel model, CancellationToken ct = default)
+    {
+        var document = new BilingualPaySlipPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateMasterSalarySheetReportAsync(MasterSalarySheetReportModel model, CancellationToken ct = default)
+    {
+        var document = new MasterSalarySheetPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateSocialComplianceOtAuditReportAsync(SocialComplianceOtAuditReportModel model, CancellationToken ct = default)
+    {
+        var document = new SocialComplianceOtAuditPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
 }
+

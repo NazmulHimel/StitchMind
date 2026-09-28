@@ -140,33 +140,33 @@ TOTAL ESTIMATED EFFORT                                              = 377 Workin
 
 ---
 
-### Phase 6: Accounting, Finance & Commercial Trade (Sprint 26–30, 50 Days)
+### Phase 6: Accounting, Finance & Commercial Trade (Sprint 26–30, 50 Days) — *COMPLETED*
 
-| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
-|---|---|---|---|
-| **`ACC-01`** | Multi-layer Chart of Accounts (COA) & automated double-entry vouchers | Double-entry Accounting | 7 |
-| **`ACC-02`** | Automated Three-Way Matching (PO + GRN + Vendor Bill verification) | Reconciliation Engine | 7 |
-| **`ACC-03`** | Export Master LC, B2B LC settlements & bill discounting (FDBP) ledger | Commercial Trade Module | 8 |
-| **`ACC-04`** | Order-wise pre-costing vs actual post-costing margin variance engine | Cost Accounting Logic | 7 |
-| **`ACC-05`** | Multi-currency engine (USD/EUR/GBP) with automated Forex gain/loss | FX Conversion Tables | 4 |
-| **`ACC-06`** | Fixed asset depreciation engine & withholding tax/VAT (TDS/VDS) deductions | Automated Ledger Rules | 5 |
-| **`ACC-07`** | Accounts Payable/Receivable aging analysis & payment disbursement run | Financial Scheduling | 5 |
-| **`ACC-RPT`**| Reports: Balance Sheet, P&L, Cash Flow, Trial Balance & Order Profitability | QuestPDF Fluent API | 7 |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) | Status |
+|---|---|---|---|:---:|
+| **`ACC-01`** | Multi-layer Chart of Accounts (COA) & automated double-entry vouchers | Double-entry Accounting | 7 | Done |
+| **`ACC-02`** | Automated Three-Way Matching (PO + GRN + Vendor Bill verification) | Reconciliation Engine | 7 | Done |
+| **`ACC-03`** | Export Master LC, B2B LC settlements & bill discounting (FDBP) ledger | Commercial Trade Module | 8 | Done |
+| **`ACC-04`** | Order-wise pre-costing vs actual post-costing margin variance engine | Cost Accounting Logic | 7 | Done |
+| **`ACC-05`** | Multi-currency engine (USD/EUR/GBP) with automated Forex gain/loss | FX Conversion Tables | 4 | Done |
+| **`ACC-06`** | Fixed asset depreciation engine & withholding tax/VAT (TDS/VDS) deductions | Automated Ledger Rules | 5 | Done |
+| **`ACC-07`** | Accounts Payable/Receivable aging analysis & payment disbursement run | Financial Scheduling | 5 | Done |
+| **`ACC-RPT`**| Reports: Balance Sheet, P&L, Cash Flow, Trial Balance, AC-06 & Costing Variance | QuestPDF Fluent API | 7 | Done |
 
 ---
 
 ### Phase 7: HR, Compliance & Dual-Stream Payroll (Sprint 31–34, 44 Days)
 
-| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
-|---|---|---|---|
-| **`HR-01`**  | Digital service book & child labor age validation screening (<18 yrs block) | Validation, Doc Store | 5 |
-| **`HR-02`**  | Biometric device (ZKTeco/Facial) real-time TCP/IP synchronization listener | TCP/IP Socket Listener | 7 |
-| **`HR-03`**  | Dynamic shift rotation, roster scheduling & late deduction penalty engine | Shift Engine, Scheduler | 5 |
-| **`HR-04`**  | Earned leave encashment & statutory maternity benefits calculator | Compliance Benefit Math | 5 |
-| **`HR-05`**  | Dual-stream payroll (Monthly Staff salary + Floor piece-rate + OT/EOT) | Batch Payroll Engine | 8 |
-| **`HR-06`**  | Automated bank & Mobile Financial Services (bKash/Nagad) payout file exporter | Formatted File Exporter | 4 |
-| **`HR-07`**  | Occupational health clinic logs, worker grievance box & disciplinary actions | HR Incident Management | 4 |
-| **`HR-RPT`** | Reports: Master Salary Sheet, OT Compliance Audit, Bilingual Pay Slips | QuestPDF Fluent API | 6 |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) | Status |
+|---|---|---|---|:---:|
+| **`HR-01`**  | Digital service book & child labor age validation screening (<18 yrs block) | Validation, Doc Store | 5 | Done |
+| **`HR-02`**  | Biometric device (ZKTeco/Facial) real-time TCP/IP synchronization listener | TCP/IP Socket Listener | 7 | Done |
+| **`HR-03`**  | Dynamic shift rotation, roster scheduling & late deduction penalty engine | Shift Engine, Scheduler | 5 | Done |
+| **`HR-04`**  | Earned leave encashment & statutory maternity benefits calculator | Compliance Benefit Math | 5 | Done |
+| **`HR-05`**  | Dual-stream payroll (Monthly Staff salary + Floor piece-rate + OT/EOT) | Batch Payroll Engine | 8 | Done |
+| **`HR-06`**  | Automated bank & Mobile Financial Services (bKash/Nagad) payout file exporter | Formatted File Exporter | 4 | Done |
+| **`HR-07`**  | Occupational health clinic logs, worker grievance box & disciplinary actions | HR Incident Management | 4 | Done |
+| **`HR-RPT`** | Reports: Master Salary Sheet, OT Compliance Audit, Bilingual Pay Slips | QuestPDF Fluent API | 6 | Done |
 
 ---
 

@@ -117,4 +117,145 @@ public class FinanceController : ControllerBase
         var result = await _mediator.Send(new GetFinanceMetricsQuery());
         return Ok(result);
     }
+
+    // ACC-02: Three-Way Matching & Vendor Bills (AC-06)
+    [HttpGet("bills")]
+    public async Task<IActionResult> GetVendorBills()
+    {
+        var result = await _mediator.Send(new GetVendorBillsQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("bills/{id:guid}")]
+    public async Task<IActionResult> GetVendorBillById(Guid id)
+    {
+        var result = await _mediator.Send(new GetVendorBillByIdQuery(id));
+        if (!result.IsSuccess) return NotFound(result);
+        return Ok(result);
+    }
+
+    [HttpPost("bills")]
+    public async Task<IActionResult> CreateVendorBill([FromBody] CreateVendorBillDto dto)
+    {
+        var result = await _mediator.Send(new CreateVendorBillCommand(dto));
+        if (!result.IsSuccess) return BadRequest(result);
+        return Created($"/api/finance/bills/{result.Value?.Id}", result);
+    }
+
+    [HttpPost("bills/{id:guid}/three-way-match")]
+    public async Task<IActionResult> ExecuteThreeWayMatch(Guid id, [FromBody] ExecuteThreeWayMatchRequest request)
+    {
+        var result = await _mediator.Send(new ExecuteThreeWayMatchCommand(id, request.POUnitPrice, request.GRNPassedQuantity, request.EvaluatedBy));
+        if (!result.IsSuccess) return BadRequest(result);
+        return Ok(result);
+    }
+
+    // ACC-03: Commercial Trade & LCs
+    [HttpGet("master-lcs")]
+    public async Task<IActionResult> GetMasterLCs()
+    {
+        var result = await _mediator.Send(new GetMasterLCsQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("master-lcs/{id:guid}")]
+    public async Task<IActionResult> GetMasterLCById(Guid id)
+    {
+        var result = await _mediator.Send(new GetMasterLCByIdQuery(id));
+        if (!result.IsSuccess) return NotFound(result);
+        return Ok(result);
+    }
+
+    [HttpPost("master-lcs")]
+    public async Task<IActionResult> CreateMasterLC([FromBody] CreateMasterLCDto dto)
+    {
+        var result = await _mediator.Send(new CreateMasterLCCommand(dto));
+        if (!result.IsSuccess) return BadRequest(result);
+        return Created($"/api/finance/master-lcs/{result.Value?.Id}", result);
+    }
+
+    [HttpGet("b2b-lcs")]
+    public async Task<IActionResult> GetBackToBackLCs([FromQuery] Guid? masterLCId)
+    {
+        var result = await _mediator.Send(new GetBackToBackLCsQuery(masterLCId));
+        return Ok(result);
+    }
+
+    [HttpPost("b2b-lcs")]
+    public async Task<IActionResult> CreateBackToBackLC([FromBody] CreateBackToBackLCDto dto)
+    {
+        var result = await _mediator.Send(new CreateBackToBackLCCommand(dto));
+        if (!result.IsSuccess) return BadRequest(result);
+        return Created($"/api/finance/b2b-lcs/{result.Value?.Id}", result);
+    }
+
+    [HttpGet("fdbp")]
+    public async Task<IActionResult> GetForeignBillDiscountings([FromQuery] Guid? masterLCId)
+    {
+        var result = await _mediator.Send(new GetForeignBillDiscountingsQuery(masterLCId));
+        return Ok(result);
+    }
+
+    [HttpPost("fdbp")]
+    public async Task<IActionResult> CreateForeignBillDiscounting([FromBody] CreateForeignBillDiscountingDto dto)
+    {
+        var result = await _mediator.Send(new CreateForeignBillDiscountingCommand(dto));
+        if (!result.IsSuccess) return BadRequest(result);
+        return Created($"/api/finance/fdbp/{result.Value?.Id}", result);
+    }
+
+    // ACC-04: Order Costing Variances
+    [HttpGet("costing-variances")]
+    public async Task<IActionResult> GetOrderCostingVariances()
+    {
+        var result = await _mediator.Send(new GetOrderCostingVariancesQuery());
+        return Ok(result);
+    }
+
+    [HttpGet("costing-variances/{styleId:guid}")]
+    public async Task<IActionResult> GetOrderCostingVarianceByStyleId(Guid styleId)
+    {
+        var result = await _mediator.Send(new GetOrderCostingVarianceByStyleIdQuery(styleId));
+        if (!result.IsSuccess) return NotFound(result);
+        return Ok(result);
+    }
+
+    // ACC-05: Multi-Currency & Forex
+    [HttpGet("exchange-rates")]
+    public async Task<IActionResult> GetExchangeRates()
+    {
+        var result = await _mediator.Send(new GetExchangeRatesQuery());
+        return Ok(result);
+    }
+
+    [HttpPost("calculate-forex")]
+    public async Task<IActionResult> CalculateForexGainLoss([FromBody] CalculateForexRequest req)
+    {
+        var result = await _mediator.Send(new CalculateForexGainLossQuery(req.Amount, req.Currency, req.BookingRate, req.SettlementRate));
+        return Ok(result);
+    }
+
+    // ACC-06: Fixed Assets Register
+    [HttpGet("fixed-assets")]
+    public async Task<IActionResult> GetFixedAssets()
+    {
+        var result = await _mediator.Send(new GetFixedAssetsQuery());
+        return Ok(result);
+    }
+
+    // ACC-07: AP/AR Aging Analysis
+    [HttpGet("aging-analysis")]
+    public async Task<IActionResult> GetAgingAnalysis([FromQuery] string? type)
+    {
+        var result = await _mediator.Send(new GetAgingAnalysisQuery(type ?? "AccountsPayable"));
+        return Ok(result);
+    }
 }
+
+public record CalculateForexRequest(
+    decimal Amount,
+    string Currency,
+    decimal BookingRate,
+    decimal SettlementRate
+);
+

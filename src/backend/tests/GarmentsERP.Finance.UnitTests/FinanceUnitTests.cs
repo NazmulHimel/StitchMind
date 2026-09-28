@@ -207,4 +207,190 @@ public class FinanceUnitTests
 
         Assert.Equal(totalAssets, totalLiabilitiesAndEquity);
     }
+
+
+    [Fact]
+    public void ThreeWayMatch_PriceAndQuantityMatch_ShouldPassAndApproveForPayment()
+    {
+        // ACC-02 & AC-06: PO $2.3500, GRN 36,750 Yds, Bill $2.3500 for 36,750 Yds
+        var bill = new VendorBill
+        {
+            BillNumber = "BILL-APEX-2026-091",
+            SupplierName = "Apex Textile Mills Ltd.",
+            BilledUnitPrice = 2.3500m,
+            BilledQuantity = 36750.0m,
+            BilledAmount = 86362.50m
+        };
+
+        var log = bill.ExecuteThreeWayMatch(poUnitPrice: 2.3500m, grnPassedQuantity: 36750.0m, evaluatedBy: "Audit Engine");
+
+        Assert.Equal(BillMatchStatus.ApprovedForPayment, bill.MatchStatus);
+        Assert.True(bill.IsApprovedForPayment);
+        Assert.Equal(ThreeWayMatchResult.Passed, log.OverallMatchResult);
+        Assert.True(log.IsPriceMatched);
+        Assert.True(log.IsQuantityMatched);
+        Assert.Equal(0m, log.PriceVariancePct);
+        Assert.Equal(0m, log.QuantityVariance);
+    }
+
+    [Fact]
+    public void ThreeWayMatch_PriceMarkupDetected_ShouldFailAndLockBill()
+    {
+        // ACC-02: PO $2.4000, Bill $2.6500 -> Price markup
+        var bill = new VendorBill
+        {
+            BillNumber = "BILL-TEX-2026-042",
+            BilledUnitPrice = 2.6500m,
+            BilledQuantity = 15000.0m,
+            BilledAmount = 39750.00m
+        };
+
+        var log = bill.ExecuteThreeWayMatch(poUnitPrice: 2.4000m, grnPassedQuantity: 15000.0m, evaluatedBy: "Audit Engine");
+
+        Assert.Equal(BillMatchStatus.MatchFailedLocked, bill.MatchStatus);
+        Assert.False(bill.IsApprovedForPayment);
+        Assert.Equal(ThreeWayMatchResult.DiscrepancyFlagged, log.OverallMatchResult);
+        Assert.False(log.IsPriceMatched);
+        Assert.True(log.IsQuantityMatched);
+        Assert.True(log.PriceVariancePct > 0m);
+        Assert.Contains("Price markup detected", log.DiscrepancyNotes);
+    }
+
+    [Fact]
+    public void ThreeWayMatch_QuantityInflationDetected_ShouldFailAndLockBill()
+    {
+        // ACC-02: GRN passed 30,000 Yds, Bill claims 35,000 Yds
+        var bill = new VendorBill
+        {
+            BillNumber = "BILL-EXCESS-001",
+            BilledUnitPrice = 2.0000m,
+            BilledQuantity = 35000.0m,
+            BilledAmount = 70000.00m
+        };
+
+        var log = bill.ExecuteThreeWayMatch(poUnitPrice: 2.0000m, grnPassedQuantity: 30000.0m, evaluatedBy: "Audit Engine");
+
+        Assert.Equal(BillMatchStatus.MatchFailedLocked, bill.MatchStatus);
+        Assert.False(bill.IsApprovedForPayment);
+        Assert.Equal(ThreeWayMatchResult.DiscrepancyFlagged, log.OverallMatchResult);
+        Assert.True(log.IsPriceMatched);
+        Assert.False(log.IsQuantityMatched);
+        Assert.Equal(5000.0m, log.QuantityVariance);
+    }
+
+    [Fact]
+    public void StatutoryDeductions_TdsAndVds_ShouldBeAccurate()
+    {
+        // ACC-06: Apex bill $86,362.50 USD -> TDS 3% ($2,590.88), VDS 7.5% ($6,477.19), Net ($77,294.43)
+        decimal grossAmount = 86362.50m;
+        decimal tds = Math.Round(grossAmount * 0.03m, 2);
+        decimal vds = Math.Round(grossAmount * 0.075m, 2);
+        decimal netPayable = grossAmount - tds - vds;
+
+        Assert.Equal(2590.88m, tds);
+        Assert.Equal(6477.19m, vds);
+        Assert.Equal(77294.43m, netPayable);
+    }
+
+    [Fact]
+    public void MasterLC_AllocationHeadroom_ShouldEnforceSeventyPercentLimit()
+    {
+        // ACC-03: Export Master LC $180,000.00 USD, 70% max = $126,000.00
+        var mlc = new MasterLetterOfCredit
+        {
+            MLCNumber = "MLC-2026-0891",
+            TotalAmount = 180000.00m,
+            MaxB2BAllocationPct = 70.0m,
+            UtilizedB2BAmount = 0m
+        };
+
+        Assert.Equal(126000.00m, mlc.MaxB2BAllocationAmount);
+        Assert.Equal(126000.00m, mlc.AvailableB2BAmount);
+
+        // Allocate $86,362.50 for Apex B2B LC
+        Assert.True(mlc.CanAllocateB2B(86362.50m));
+        mlc.RecordB2BAllocation(86362.50m);
+        Assert.Equal(39637.50m, mlc.AvailableB2BAmount);
+
+        // Try allocating $50,000 (exceeds $39,637.50 available)
+        Assert.False(mlc.CanAllocateB2B(50000.00m));
+        Assert.Throws<InvalidOperationException>(() => mlc.RecordB2BAllocation(50000.00m));
+    }
+
+    [Fact]
+    public void ForeignBillDiscounting_ShouldAdvanceNinetyPercentMinusCharges()
+    {
+        // ACC-03: FDBP $180,000 FOB, 90% advance ($162,000), charges $1,875 -> Net $160,125
+        decimal fobValue = 180000.00m;
+        decimal advancePct = 90.0m;
+        decimal advancedAmount = Math.Round(fobValue * (advancePct / 100m), 2);
+        decimal bankCharges = 1875.00m;
+        decimal netProceeds = advancedAmount - bankCharges;
+
+        Assert.Equal(162000.00m, advancedAmount);
+        Assert.Equal(160125.00m, netProceeds);
+    }
+
+    [Fact]
+    public void OrderCostingVariance_StyleChino_ShouldCalculateAccurateRealizedMargin()
+    {
+        // ACC-04: Style ST-2026-CHINO-01 (20,000 pcs @ $9.00 = $180,000 FOB)
+        // Materials: $86,362.50 | Labor: $43,210.00 | Overheads: $29,900.00 | Total Cost: $159,472.50
+        // Net Profit: $20,527.50 (11.40% margin)
+        var costing = new OrderCostingVariance
+        {
+            StyleNumber = "ST-2026-CHINO-01",
+            OrderQuantity = 20000,
+            BuyerFOBPricePerPc = 9.0000m,
+            BudgetRawMaterialsCost = 88500.00m,
+            ActualRawMaterialsCost = 86362.50m,
+            BudgetDirectLaborCost = 44000.00m,
+            ActualDirectLaborCost = 43210.00m,
+            BudgetOverheadsCost = 30000.00m,
+            ActualOverheadsCost = 29900.00m
+        };
+
+        Assert.Equal(180000.00m, costing.BuyerFOBRevenue);
+        Assert.Equal(162500.00m, costing.TotalBudgetCost);
+        Assert.Equal(159472.50m, costing.TotalActualCost);
+        Assert.Equal(3027.50m, costing.TotalCostVariance); // Favorable cost savings
+        Assert.Equal(20527.50m, costing.NetRealizedProfit);
+        Assert.Equal(11.40m, costing.NetProfitMarginPct);
+    }
+
+    [Fact]
+    public void ForexGainLoss_ShouldComputeGainOnFavorableSettlementRate()
+    {
+        // ACC-05: Booked $180,000 at 117.50 BDT, Settled at 118.20 BDT
+        decimal foreignAmount = 180000.00m;
+        decimal bookingRate = 117.50m;
+        decimal settlementRate = 118.20m;
+
+        decimal forexGain = CurrencyExchangeRate.CalculateForexGainLoss(foreignAmount, bookingRate, settlementRate);
+
+        Assert.Equal(126000.00m, forexGain); // +126,000 BDT Gain
+    }
+
+    [Fact]
+    public void FixedAsset_StraightLineDepreciation_ShouldBeAccurate()
+    {
+        // ACC-06: Juki Machine cost $1,450, Salvage $150, 5 Years life
+        var asset = new FixedAsset
+        {
+            AssetCode = "FA-SEW-001",
+            OriginalCost = 1450.00m,
+            SalvageValue = 150.00m,
+            UsefulLifeYears = 5,
+            AccumulatedDepreciation = 0m
+        };
+
+        Assert.Equal(1300.00m, asset.DepreciableBase);
+        Assert.Equal(260.00m, asset.AnnualDepreciation);
+        Assert.Equal(21.67m, asset.MonthlyDepreciation);
+
+        asset.ApplyMonthlyDepreciation();
+        Assert.Equal(21.67m, asset.AccumulatedDepreciation);
+        Assert.Equal(1428.33m, asset.CurrentBookValue);
+    }
 }
+
