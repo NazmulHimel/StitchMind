@@ -20,4 +20,8 @@ public interface IPdfReportService
     Task<byte[]> GenerateBilingualPaySlipReportAsync(BilingualPaySlipReportModel model, CancellationToken ct = default);
     Task<byte[]> GenerateMasterSalarySheetReportAsync(MasterSalarySheetReportModel model, CancellationToken ct = default);
     Task<byte[]> GenerateSocialComplianceOtAuditReportAsync(SocialComplianceOtAuditReportModel model, CancellationToken ct = default);
+
+    // Background Scheduler Executive Digest (SCH-02 & SCH-04)
+    Task<byte[]> GenerateDailyExecutiveDigestReportAsync(DailyExecutiveDigestModel model, CancellationToken ct = default);
+    Task<MemoryStream> RenderDailyExecutiveDigestToStreamAsync(DailyExecutiveDigestModel model, CancellationToken ct = default);
 }

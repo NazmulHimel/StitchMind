@@ -39,12 +39,13 @@
     <Project Path="src/Modules/Reporting/GarmentsERP.Reporting.Infrastructure/GarmentsERP.Reporting.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
-  <Project Path="tests/GarmentsERP.Finance.UnitTests/GarmentsERP.Finance.UnitTests.csproj" />
-
+    <Project Path="tests/GarmentsERP.Finance.UnitTests/GarmentsERP.Finance.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Auth.UnitTests/GarmentsERP.Auth.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Inventory.UnitTests/GarmentsERP.Inventory.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Procurement.UnitTests/GarmentsERP.Procurement.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Production.UnitTests/GarmentsERP.Production.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.HR.UnitTests/GarmentsERP.HR.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.Reporting.UnitTests/GarmentsERP.Reporting.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Shared.UnitTests/GarmentsERP.Shared.UnitTests.csproj" />
   </Folder>
 </Solution>

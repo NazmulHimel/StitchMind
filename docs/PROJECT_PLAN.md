@@ -172,12 +172,12 @@ TOTAL ESTIMATED EFFORT                                              = 377 Workin
 
 ### Phase 8: Background Scheduler & Automated Email System (Sprint 35, 13 Days)
 
-| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
-|---|---|---|---|
-| **`SCH-01`** | Quartz.NET cron-trigger manager & database execution schedule tables | Quartz.NET, C# Worker | 4 |
-| **`SCH-02`** | In-memory QuestPDF rendering pipeline optimization (`MemoryStream` buffers) | C# Memory Profiling | 3 |
-| **`SCH-03`** | Secure SMTP / SES email dispatcher service with automated retry policies | MailKit, Error Handlers | 3 |
-| **`SCH-04`** | End-to-End scheduled email test (8:00 PM automated management digest delivery) | Integration Testing | 3 |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) | Status |
+|---|---|---|---|---|
+| **`SCH-01`** | Quartz.NET cron-trigger manager & database execution schedule tables | Quartz.NET, C# Worker | 4 | Done |
+| **`SCH-02`** | In-memory QuestPDF rendering pipeline optimization (`MemoryStream` buffers) | C# Memory Profiling | 3 | Done |
+| **`SCH-03`** | Secure SMTP / SES email dispatcher service with automated retry policies | MailKit, Error Handlers | 3 | Done |
+| **`SCH-04`** | End-to-End scheduled email test (8:00 PM automated management digest delivery) | Integration Testing | 3 | Done |
 
 ---
 
