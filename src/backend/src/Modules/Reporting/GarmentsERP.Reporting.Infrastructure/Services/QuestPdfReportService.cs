@@ -118,5 +118,22 @@ public class QuestPdfReportService : IPdfReportService
         var pdfBytes = document.GeneratePdf();
         return Task.FromResult(pdfBytes);
     }
+
+    public Task<byte[]> GenerateDailyExecutiveDigestReportAsync(DailyExecutiveDigestModel model, CancellationToken ct = default)
+    {
+        var document = new DailyExecutiveDigestPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<MemoryStream> RenderDailyExecutiveDigestToStreamAsync(DailyExecutiveDigestModel model, CancellationToken ct = default)
+    {
+        var document = new DailyExecutiveDigestPdfDocument(model);
+        var pool = new OptimizedPdfStreamPool();
+        var stream = pool.GetRecyclableStream("DailyExecutiveDigestPdf");
+        document.GeneratePdf(stream);
+        stream.Position = 0;
+        return Task.FromResult(stream);
+    }
 }
 
