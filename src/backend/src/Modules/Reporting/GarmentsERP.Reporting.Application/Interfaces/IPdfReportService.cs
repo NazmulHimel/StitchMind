@@ -15,5 +15,9 @@ public interface IPdfReportService
     Task<byte[]> GenerateBrokenNeedleCertificateAsync(BrokenNeedleReportModel model, CancellationToken ct = default);
     Task<byte[]> GenerateThreeWayMatchCertificateAsync(ThreeWayMatchReportModel model, CancellationToken ct = default);
     Task<byte[]> GenerateOrderCostingVarianceReportAsync(OrderCostingVarianceReportModel model, CancellationToken ct = default);
-}
 
+    // HR, Compliance & Dual-Stream Payroll Reports (HR-RPT)
+    Task<byte[]> GenerateBilingualPaySlipReportAsync(BilingualPaySlipReportModel model, CancellationToken ct = default);
+    Task<byte[]> GenerateMasterSalarySheetReportAsync(MasterSalarySheetReportModel model, CancellationToken ct = default);
+    Task<byte[]> GenerateSocialComplianceOtAuditReportAsync(SocialComplianceOtAuditReportModel model, CancellationToken ct = default);
+}

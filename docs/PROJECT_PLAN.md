@@ -157,16 +157,16 @@ TOTAL ESTIMATED EFFORT                                              = 377 Workin
 
 ### Phase 7: HR, Compliance & Dual-Stream Payroll (Sprint 31–34, 44 Days)
 
-| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
-|---|---|---|---|
-| **`HR-01`**  | Digital service book & child labor age validation screening (<18 yrs block) | Validation, Doc Store | 5 |
-| **`HR-02`**  | Biometric device (ZKTeco/Facial) real-time TCP/IP synchronization listener | TCP/IP Socket Listener | 7 |
-| **`HR-03`**  | Dynamic shift rotation, roster scheduling & late deduction penalty engine | Shift Engine, Scheduler | 5 |
-| **`HR-04`**  | Earned leave encashment & statutory maternity benefits calculator | Compliance Benefit Math | 5 |
-| **`HR-05`**  | Dual-stream payroll (Monthly Staff salary + Floor piece-rate + OT/EOT) | Batch Payroll Engine | 8 |
-| **`HR-06`**  | Automated bank & Mobile Financial Services (bKash/Nagad) payout file exporter | Formatted File Exporter | 4 |
-| **`HR-07`**  | Occupational health clinic logs, worker grievance box & disciplinary actions | HR Incident Management | 4 |
-| **`HR-RPT`** | Reports: Master Salary Sheet, OT Compliance Audit, Bilingual Pay Slips | QuestPDF Fluent API | 6 |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) | Status |
+|---|---|---|---|:---:|
+| **`HR-01`**  | Digital service book & child labor age validation screening (<18 yrs block) | Validation, Doc Store | 5 | Done |
+| **`HR-02`**  | Biometric device (ZKTeco/Facial) real-time TCP/IP synchronization listener | TCP/IP Socket Listener | 7 | Done |
+| **`HR-03`**  | Dynamic shift rotation, roster scheduling & late deduction penalty engine | Shift Engine, Scheduler | 5 | Done |
+| **`HR-04`**  | Earned leave encashment & statutory maternity benefits calculator | Compliance Benefit Math | 5 | Done |
+| **`HR-05`**  | Dual-stream payroll (Monthly Staff salary + Floor piece-rate + OT/EOT) | Batch Payroll Engine | 8 | Done |
+| **`HR-06`**  | Automated bank & Mobile Financial Services (bKash/Nagad) payout file exporter | Formatted File Exporter | 4 | Done |
+| **`HR-07`**  | Occupational health clinic logs, worker grievance box & disciplinary actions | HR Incident Management | 4 | Done |
+| **`HR-RPT`** | Reports: Master Salary Sheet, OT Compliance Audit, Bilingual Pay Slips | QuestPDF Fluent API | 6 | Done |
 
 ---
 
