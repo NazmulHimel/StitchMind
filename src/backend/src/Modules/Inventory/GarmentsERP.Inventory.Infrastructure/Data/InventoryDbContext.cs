@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Inventory.Domain.Entities;
+using GarmentsERP.Inventory.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GarmentsERP.Inventory.Infrastructure.Data;
@@ -16,6 +16,11 @@ public class InventoryDbContext : DbContext
     public DbSet<StockTransaction> StockTransactions => Set<StockTransaction>();
     public DbSet<ThreadBatch> ThreadBatches => Set<ThreadBatch>();
     public DbSet<ThreadStageLog> ThreadStageLogs => Set<ThreadStageLog>();
+    public DbSet<StockLot> StockLots => Set<StockLot>();
+    public DbSet<FabricInspection> FabricInspections => Set<FabricInspection>();
+    public DbSet<ThreadDyeingRecipe> ThreadDyeingRecipes => Set<ThreadDyeingRecipe>();
+    public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
+    public DbSet<ThreadTensileTest> ThreadTensileTests => Set<ThreadTensileTest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

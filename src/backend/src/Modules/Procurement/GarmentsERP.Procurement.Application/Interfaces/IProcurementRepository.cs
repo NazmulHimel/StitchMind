@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Procurement.Domain.Entities;
+using GarmentsERP.Procurement.Domain.Entities;
 using GarmentsERP.Procurement.Domain.Enums;
 
 namespace GarmentsERP.Procurement.Application.Interfaces;
@@ -26,6 +26,21 @@ public interface IProcurementRepository
     Task<IReadOnlyList<GoodsReceiptNote>> GetGRNsAsync(Guid companyId, Guid? poId = null, Guid? supplierId = null, GRNStatus? status = null, CancellationToken ct = default);
     Task AddGRNAsync(GoodsReceiptNote grn, CancellationToken ct = default);
     Task UpdateGRNAsync(GoodsReceiptNote grn, CancellationToken ct = default);
+
+    // Material Requisitions (PRO-01)
+    Task<IReadOnlyList<MaterialRequisition>> GetMaterialRequisitionsAsync(Guid companyId, CancellationToken ct = default);
+    Task<MaterialRequisition?> GetMaterialRequisitionByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddMaterialRequisitionAsync(MaterialRequisition requisition, CancellationToken ct = default);
+
+    // Comparative Statements (PRO-02)
+    Task<IReadOnlyList<ComparativeStatement>> GetComparativeStatementsAsync(Guid companyId, CancellationToken ct = default);
+    Task<ComparativeStatement?> GetComparativeStatementByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddComparativeStatementAsync(ComparativeStatement cs, CancellationToken ct = default);
+
+    // Commercial LCs (PRO-05)
+    Task<IReadOnlyList<CommercialLC>> GetCommercialLCsAsync(Guid companyId, CancellationToken ct = default);
+    Task<CommercialLC?> GetCommercialLCByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddCommercialLCAsync(CommercialLC lc, CancellationToken ct = default);
 
     // Metrics
     Task<(int TotalPOs, decimal TotalSpend, int PendingDeliveries, int CompletedPOs)> GetProcurementMetricsAsync(Guid companyId, CancellationToken ct = default);

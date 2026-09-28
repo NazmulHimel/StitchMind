@@ -12,6 +12,7 @@ public class PurchaseOrderReportModel
     public DateTime ExpectedDeliveryDate { get; set; }
     public string Currency { get; set; } = "USD";
     public string? Notes { get; set; }
+    public string? B2BLCNumber { get; set; }
     public bool IsBudgetLocked { get; set; }
     public List<PurchaseOrderReportItem> Items { get; set; } = [];
     public decimal TotalAmount => Items.Sum(i => i.TotalPrice);

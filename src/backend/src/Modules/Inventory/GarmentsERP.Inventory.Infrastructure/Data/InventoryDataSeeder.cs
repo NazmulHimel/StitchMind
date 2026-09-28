@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Inventory.Domain.Entities;
+using GarmentsERP.Inventory.Domain.Entities;
 using GarmentsERP.Inventory.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,6 +58,93 @@ public static class InventoryDataSeeder
         b3.AdvanceStage(ThreadStage.Spinning, 485m, 15m, "SPIN-01", "Kabir Hossain", "Fine carded combing complete");
 
         await db.ThreadBatches.AddRangeAsync(b1, b2, b3);
+
+        // 5. Seed Stock Lots for GRN-2026-0210 & Quarantine Gate (AC-04 / PRO-06)
+        var lotPassed = new StockLot
+        {
+            LotBatchNumber = "LOT-TW-2026-01",
+            ItemCode = "FAB-TW-01",
+            ItemDescription = "98/2 Cotton Spandex Twill 260 GSM (Navy Blue)",
+            WarehouseLocationCode = "WH1-Aisle-03-Bay-02",
+            Quantity = 36750,
+            UnitOfMeasure = "Yds",
+            StockState = StockLot.StateReleased,
+            QCInspectionStatus = StockLot.QcStatusPassed,
+            QCInspectorId = "Mahmud Hasan (QC Lead)",
+            QCPassedAtUtc = DateTime.UtcNow.AddDays(-1),
+            CompanyId = defaultCompanyId
+        };
+
+        var lotQuarantined = new StockLot
+        {
+            LotBatchNumber = "LOT-TW-2026-02",
+            ItemCode = "FAB-TW-01",
+            ItemDescription = "98/2 Cotton Spandex Twill 260 GSM (Desert Khaki)",
+            WarehouseLocationCode = "WH1-Aisle-03-Bay-05",
+            Quantity = 5000,
+            UnitOfMeasure = "Yds",
+            StockState = StockLot.StateQuarantine, // Active Quarantine Lock!
+            QCInspectionStatus = StockLot.QcStatusPending,
+            CompanyId = defaultCompanyId
+        };
+
+        await db.StockLots.AddRangeAsync(lotPassed, lotQuarantined);
+        await db.SaveChangesAsync();
+
+        // 6. Seed ASTM D5430-07 Fabric 4-Point Inspection (QC-4PT-2026-0045)
+        var inspection = new FabricInspection
+        {
+            InspectionNumber = "QC-4PT-2026-0045",
+            StockLotId = lotPassed.Id,
+            InspectorName = "Mahmud Hasan (QC Lead)",
+            InspectionDate = DateTime.UtcNow.AddDays(-1),
+            TotalRollsInLot = 368,
+            RollsInspected = 4,
+            TotalYardsInspected = 375,
+            CuttableWidthInches = 58.00m,
+            TotalPenaltyPoints = 110, // Score: (110 * 3600) / (375 * 58) = 18.21 pts/100 sq.yd <= 28.0 => PASSED!
+            AveragePointsPer100SqYds = 18.21m,
+            OverallResult = "PASSED",
+            Remarks = "ASTM D5430-07 PASSED: 18.21 pts/100 sq.yd. Zero major holes detected. Shade grouping A approved. Released to production.",
+            CompanyId = defaultCompanyId
+        };
+        await db.FabricInspections.AddAsync(inspection);
+
+        // 7. Seed Thread Dyeing Recipe & Cost Breakdown (THP-02)
+        var recipe = new ThreadDyeingRecipe
+        {
+            RecipeCode = "RCP-POLY-NAVY-40",
+            ColorName = "Deep Navy Blue",
+            ColorCode = "TCX 19-4010",
+            LiquorRatio = 10.0m,
+            BatchWeightKg = 1000m,
+            DyeStuffCostPerKg = 1.45m,
+            ChemicalAuxiliaryCostPerKg = 0.55m,
+            UtilityEnergyCostPerKg = 0.40m
+        };
+        recipe.AddIngredient("Disperse Navy Blue C-2G", "Disperse Dye", 2.40m, 14.50m);
+        recipe.AddIngredient("Acetic Acid 98%", "pH Buffer (4.5 - 5.0)", 0.50m, 1.80m);
+        recipe.AddIngredient("Leveling Agent LF-10", "Leveling & Penetration", 1.00m, 3.20m);
+        recipe.AddIngredient("Dispersing Agent DA-100", "Dispersing & Suspension", 1.20m, 2.60m);
+        recipe.AddIngredient("Silicon Softener SE-80", "Lubrication for sewing", 2.00m, 2.80m);
+        await db.ThreadDyeingRecipes.AddAsync(recipe);
+
+        // 8. Seed Thread Tensile & Quality Test Certificate (THP-03 / ASTM D2256)
+        var tensileTest = new ThreadTensileTest
+        {
+            TestCertificateNumber = "CERT-TEN-2026-0089",
+            ThreadBatchId = b1.Id,
+            BatchNumber = b1.BatchNumber,
+            YarnCount = "40/2 Ne Spun Polyester",
+            TenacityCentiNewtonsPerTex = 39.4m, // >= 35.0 (Passed)
+            ElongationPercentage = 16.2m, // 14% - 18% (Optimal)
+            SingleYarnBreakingForceGrams = 410m,
+            UnevennessCVPercentage = 9.8m,
+            TestedBy = "Senior Textile Lab Technologist",
+            PackagingBarcode = "BAR-THD-2026-9901"
+        };
+        await db.ThreadTensileTests.AddAsync(tensileTest);
+
         await db.SaveChangesAsync();
     }
 }
