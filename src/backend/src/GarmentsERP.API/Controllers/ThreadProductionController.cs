@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Inventory.Application.Commands;
+using GarmentsERP.Inventory.Application.Commands;
 using GarmentsERP.Inventory.Application.DTOs;
 using GarmentsERP.Inventory.Application.Queries;
 using GarmentsERP.Inventory.Domain.Enums;
@@ -8,17 +8,41 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using GarmentsERP.Inventory.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace GarmentsERP.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class ThreadProductionController(ISender sender, ICurrentUserService currentUserService) : ControllerBase
+public class ThreadProductionController(ISender sender, ICurrentUserService currentUserService, InventoryDbContext db) : ControllerBase
 {
     private Guid GetEffectiveCompanyId()
     {
         return currentUserService.CompanyId != Guid.Empty
             ? currentUserService.CompanyId
             : Guid.Parse("11111111-1111-1111-1111-111111111111");
+    }
+
+    [HttpGet("recipes")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetRecipes(CancellationToken ct)
+    {
+        var recipes = await db.ThreadDyeingRecipes
+            .Include(r => r.Ingredients)
+            .OrderBy(r => r.RecipeCode)
+            .ToListAsync(ct);
+        return Ok(ApiResponse<IReadOnlyList<GarmentsERP.Inventory.Domain.Entities.ThreadDyeingRecipe>>.Ok(recipes));
+    }
+
+    [HttpGet("tensile-tests")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTensileTests(CancellationToken ct)
+    {
+        var tests = await db.ThreadTensileTests
+            .OrderByDescending(t => t.TestDate)
+            .ToListAsync(ct);
+        return Ok(ApiResponse<IReadOnlyList<GarmentsERP.Inventory.Domain.Entities.ThreadTensileTest>>.Ok(tests));
     }
 
     [HttpGet("batches")]

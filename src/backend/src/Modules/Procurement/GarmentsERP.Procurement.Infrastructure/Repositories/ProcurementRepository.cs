@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Procurement.Application.Interfaces;
+using GarmentsERP.Procurement.Application.Interfaces;
 using GarmentsERP.Procurement.Domain.Entities;
 using GarmentsERP.Procurement.Domain.Enums;
 using GarmentsERP.Procurement.Infrastructure.Data;
@@ -173,6 +173,72 @@ public class ProcurementRepository(ProcurementDbContext db) : IProcurementReposi
     {
         db.GoodsReceiptNotes.Update(grn);
         return Task.CompletedTask;
+    }
+
+    // Material Requisitions (PRO-01)
+    public async Task<IReadOnlyList<MaterialRequisition>> GetMaterialRequisitionsAsync(Guid companyId, CancellationToken ct = default)
+    {
+        return await db.MaterialRequisitions
+            .Include(r => r.Items)
+            .Where(r => r.CompanyId == companyId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task<MaterialRequisition?> GetMaterialRequisitionByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        return await db.MaterialRequisitions
+            .Include(r => r.Items)
+            .FirstOrDefaultAsync(r => r.Id == id, ct);
+    }
+
+    public async Task AddMaterialRequisitionAsync(MaterialRequisition requisition, CancellationToken ct = default)
+    {
+        await db.MaterialRequisitions.AddAsync(requisition, ct);
+    }
+
+    // Comparative Statements (PRO-02)
+    public async Task<IReadOnlyList<ComparativeStatement>> GetComparativeStatementsAsync(Guid companyId, CancellationToken ct = default)
+    {
+        return await db.ComparativeStatements
+            .Include(cs => cs.Lines)
+            .Where(cs => cs.CompanyId == companyId)
+            .OrderByDescending(cs => cs.CreatedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task<ComparativeStatement?> GetComparativeStatementByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        return await db.ComparativeStatements
+            .Include(cs => cs.Lines)
+            .FirstOrDefaultAsync(cs => cs.Id == id, ct);
+    }
+
+    public async Task AddComparativeStatementAsync(ComparativeStatement cs, CancellationToken ct = default)
+    {
+        await db.ComparativeStatements.AddAsync(cs, ct);
+    }
+
+    // Commercial LCs (PRO-05)
+    public async Task<IReadOnlyList<CommercialLC>> GetCommercialLCsAsync(Guid companyId, CancellationToken ct = default)
+    {
+        return await db.CommercialLCs
+            .Include(lc => lc.ChildBackToBackLCs)
+            .Where(lc => lc.CompanyId == companyId)
+            .OrderByDescending(lc => lc.CreatedAt)
+            .ToListAsync(ct);
+    }
+
+    public async Task<CommercialLC?> GetCommercialLCByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        return await db.CommercialLCs
+            .Include(lc => lc.ChildBackToBackLCs)
+            .FirstOrDefaultAsync(lc => lc.Id == id, ct);
+    }
+
+    public async Task AddCommercialLCAsync(CommercialLC lc, CancellationToken ct = default)
+    {
+        await db.CommercialLCs.AddAsync(lc, ct);
     }
 
     // Metrics

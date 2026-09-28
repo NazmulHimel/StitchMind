@@ -39,3 +39,35 @@ public enum GRNStatus
     Accepted = 2,
     Rejected = 3
 }
+
+public enum RequisitionStatus
+{
+    Draft = 0,
+    Submitted = 1,
+    Approved = 2,
+    Cancelled = 3
+}
+
+public enum LCType
+{
+    MasterLC = 1,
+    BackToBackLC = 2
+}
+
+public enum LCStatus
+{
+    Draft = 0,
+    Opened = 1,
+    Transmitted = 2,
+    DocumentsReceived = 3,
+    Paid = 4,
+    Closed = 5
+}
+
+public enum CSStatus
+{
+    Draft = 0,
+    Evaluated = 1,
+    Awarded = 2,
+    Cancelled = 3
+}

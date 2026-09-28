@@ -73,6 +73,10 @@ public class PurchaseOrderPdfDocument : IDocument
                     c.Item().Text($"Style Ref: {_model.StyleNumber}").Bold().FontSize(10);
                     c.Item().Text($"Buyer: {_model.BuyerName}").FontSize(8);
                     c.Item().Text($"Currency: {_model.Currency}").FontSize(8);
+                    if (!string.IsNullOrEmpty(_model.B2BLCNumber))
+                    {
+                        c.Item().Text($"B2B LC Ref: {_model.B2BLCNumber}").Bold().FontSize(8).FontColor(Colors.Blue.Darken2);
+                    }
                 });
             });
 

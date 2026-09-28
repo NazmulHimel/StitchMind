@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Procurement.Domain.Entities;
+using GarmentsERP.Procurement.Domain.Entities;
 using GarmentsERP.Procurement.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,6 +77,132 @@ public static class ProcurementDataSeeder
         po1.UpdateReceivingStatus();
 
         await db.GoodsReceiptNotes.AddAsync(grn1);
+
+        // 4. Seed Phase 2 Production Demo Data (Style ST-2026-CHINO-01)
+        var sApex = Supplier.Create("SUP-TEX-004", "Apex Textile Mills Ltd.", "commercial@apextextiles.com", "+880 2 841 8890", "Plot 12-14, DEPZ, Savar, Dhaka, Bangladesh", MaterialCategory.Fabric, defaultCompanyId, 90, "TR-BD-889102");
+        sApex.SetRating(4.85m);
+        var sSquare = Supplier.Create("SUP-FAB-007", "Square Fashions Ltd.", "marketing@squarefashions.com", "+880 2 883 3048", "Valuka, Mymensingh, Bangladesh", MaterialCategory.Fabric, defaultCompanyId, 60, "TR-BD-771234");
+        sSquare.SetRating(4.90m);
+        var sEnvoy = Supplier.Create("SUP-FAB-008", "Envoy Textiles Ltd.", "sales@envoytextiles.com", "+880 2 988 5678", "Bhaluka, Mymensingh, Bangladesh", MaterialCategory.Fabric, defaultCompanyId, 30, "TR-BD-551982");
+        sEnvoy.SetRating(4.70m);
+
+        await db.Suppliers.AddRangeAsync(sApex, sSquare, sEnvoy);
+        await db.SaveChangesAsync();
+
+        // 4.1 Material Requisition MR-2026-0089 (PRO-01)
+        var mr = new MaterialRequisition
+        {
+            RequisitionNumber = "MR-2026-0089",
+            StyleNumber = "ST-2026-CHINO-01",
+            BuyerName = "H&M Global Sourcing (Stockholm)",
+            Department = "Merchandising",
+            RequisitionDate = DateTime.UtcNow.AddDays(-15),
+            RequiredDate = DateTime.UtcNow.AddDays(25),
+            Status = RequisitionStatus.Approved,
+            Remarks = "Fabric and trims requisition for 24,000 pcs Slim-Fit Chino trouser",
+            CompanyId = defaultCompanyId
+        };
+        mr.Items.Add(new MaterialRequisitionItem
+        {
+            MaterialRequisitionId = mr.Id,
+            ItemCode = "FAB-TW-01",
+            ItemDescription = "98/2 Cotton Spandex Twill 260 GSM (Navy, Olive, Khaki)",
+            Category = MaterialCategory.Fabric,
+            UnitOfMeasure = UOM.Yards,
+            RequiredQuantity = 36750,
+            EstimatedUnitPrice = 2.40m
+        });
+        mr.Items.Add(new MaterialRequisitionItem
+        {
+            MaterialRequisitionId = mr.Id,
+            ItemCode = "PKT-TC-110",
+            ItemDescription = "65/35 TC Pocketing Fabric 110 GSM",
+            Category = MaterialCategory.Fabric,
+            UnitOfMeasure = UOM.Yards,
+            RequiredQuantity = 5200,
+            EstimatedUnitPrice = 0.85m
+        });
+        await db.MaterialRequisitions.AddAsync(mr);
+
+        // 4.2 Comparative Statement CS-2026-0042 (PRO-02 / AC-03)
+        var cs = new ComparativeStatement
+        {
+            CSNumber = "CS-2026-0042",
+            MaterialRequisitionId = mr.Id,
+            ItemCode = "FAB-TW-01",
+            ItemDescription = "98/2 Cotton Spandex Twill 260 GSM (Export Quality)",
+            TotalQuantityRequired = 36750,
+            PreCostingBudgetRate = 2.40m,
+            CompanyId = defaultCompanyId
+        };
+        cs.AddSupplierBid(sApex.Id, sApex.Name, 2.3500m, 21, "90 Days Deferred B2B LC", 4.85m);
+        cs.AddSupplierBid(sSquare.Id, sSquare.Name, 2.4500m, 14, "60 Days Deferred B2B LC", 4.90m);
+        cs.AddSupplierBid(sEnvoy.Id, sEnvoy.Name, 2.3800m, 25, "At Sight Letter of Credit", 4.70m);
+        cs.AwardContract(sApex.Id, "Awarded based on optimal pricing (-$0.05 budget savings) and favorable 90-day B2B LC terms.");
+        await db.ComparativeStatements.AddAsync(cs);
+
+        // 4.3 Purchase Order PO-2026-0145 (PRO-04 / Approved)
+        var poChino = PurchaseOrder.Create("PO-2026-0145", sApex.Id, defaultCompanyId, DateTime.UtcNow.AddDays(14), "Fabric for Buyer Order ORD-2026-CHINO-001");
+        poChino.AddItem("FAB-TW-01", "98/2 Cotton Spandex Twill 260 GSM", MaterialCategory.Fabric, UOM.Yards, 36750, 2.35m, 2.40m);
+        poChino.Submit();
+        poChino.Approve(adminUserId);
+
+        // 4.4 Budget-Locked PO Demonstration (AC-03)
+        var poLocked = PurchaseOrder.Create("PO-2026-0146", sSquare.Id, defaultCompanyId, DateTime.UtcNow.AddDays(10), "Surge replenishment attempt exceeding Pre-Costing cap");
+        poLocked.AddItem("FAB-TW-01", "98/2 Cotton Spandex Twill 260 GSM", MaterialCategory.Fabric, UOM.Yards, 5000, 2.45m, 2.40m); // Exceeds $2.40!
+        // poLocked will have IsBudgetLocked = true and Status = LockedBudgetExceeded automatically!
+
+        await db.PurchaseOrders.AddRangeAsync(poChino, poLocked);
+
+        // 4.5 Commercial Trade & Back-to-Back LC (PRO-05)
+        var masterLc = new CommercialLC
+        {
+            LCNumber = "MLC-NORDIC-2026-4412",
+            LCType = LCType.MasterLC,
+            IssuingBank = "Swedbank Stockholm, Sweden",
+            AdvisingBank = "Standard Chartered Bank, Dhaka",
+            ApplicantName = "Nordic Fashion Retail AB",
+            BeneficiaryName = "StitchMind Apparel Group Ltd.",
+            LCAmount = 180000.00m,
+            Currency = "USD",
+            IssueDate = DateTime.UtcNow.AddDays(-30),
+            ExpiryDate = DateTime.UtcNow.AddDays(90),
+            ShipmentDeadline = DateTime.UtcNow.AddDays(60),
+            Status = LCStatus.Opened,
+            TenorTerms = "Sight LC",
+            CompanyId = defaultCompanyId
+        };
+        await db.CommercialLCs.AddAsync(masterLc);
+        await db.SaveChangesAsync();
+
+        var b2bLc = new CommercialLC
+        {
+            LCNumber = "B2B-2026-0098",
+            LCType = LCType.BackToBackLC,
+            ParentMasterLCId = masterLc.Id,
+            IssuingBank = "Standard Chartered Bank, Dhaka",
+            AdvisingBank = "Eastern Bank PLC, Dhaka",
+            ApplicantName = "StitchMind Apparel Group Ltd.",
+            BeneficiaryName = "Apex Textile Mills Ltd.",
+            LCAmount = 86362.50m, // 47.98% of $180,000 (compliant with 70% statutory limit)
+            Currency = "USD",
+            IssueDate = DateTime.UtcNow.AddDays(-20),
+            ExpiryDate = DateTime.UtcNow.AddDays(70),
+            ShipmentDeadline = DateTime.UtcNow.AddDays(40),
+            Status = LCStatus.Opened,
+            LinkedPurchaseOrderId = poChino.Id,
+            TenorTerms = "90 Days Deferred Maturity B2B LC",
+            CompanyId = defaultCompanyId
+        };
+        await db.CommercialLCs.AddAsync(b2bLc);
+
+        // 4.6 Goods Receipt Note GRN-2026-0210 (PRO-06)
+        var grnChino = GoodsReceiptNote.Create("GRN-2026-0210", poChino.Id, sApex.Id, defaultCompanyId, "CH-99412", "Dhaka Metro-U 11-4589", "Received 368 fabric rolls into WH1 Quarantine area");
+        var poItem = poChino.Items.First();
+        grnChino.AddItem(poItem.Id, poItem.ItemCode, poItem.Description, 36750, 36750, 0);
+        grnChino.MarkUnderInspection(adminUserId);
+        await db.GoodsReceiptNotes.AddAsync(grnChino);
+
         await db.SaveChangesAsync();
     }
 }
