@@ -47,5 +47,6 @@
     <Project Path="tests/GarmentsERP.HR.UnitTests/GarmentsERP.HR.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Reporting.UnitTests/GarmentsERP.Reporting.UnitTests.csproj" />
     <Project Path="tests/GarmentsERP.Shared.UnitTests/GarmentsERP.Shared.UnitTests.csproj" />
+    <Project Path="tests/GarmentsERP.IntegrationTests/GarmentsERP.IntegrationTests.csproj" />
   </Folder>
 </Solution>

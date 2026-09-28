@@ -183,11 +183,11 @@ TOTAL ESTIMATED EFFORT                                              = 377 Workin
 
 ### Phase 9: System Integration, Stress Testing & Go-Live (Sprint 36, 13 Days)
 
-| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
-|---|---|---|---|
-| **`UAT-01`** | End-to-End cross-module lifecycle testing (MR -> PO -> Cut -> Sew -> Ship -> Pay) | Full Team QA | 5 |
-| **`UAT-02`** | 2,000+ concurrent floor barcode scans & tablet stress testing | k6 / JMeter Stress Test | 4 |
-| **`UAT-03`** | Production Docker deployment setup, reverse proxy & automated DB backups | CI/CD, Production Nginx | 4 |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) | Status |
+|---|---|---|---|---|
+| **`UAT-01`** | End-to-End cross-module lifecycle testing (MR -> PO -> Cut -> Sew -> Ship -> Pay) | Full Team QA | 5 | Done |
+| **`UAT-02`** | 2,000+ concurrent floor barcode scans & tablet stress testing | k6 / JMeter Stress Test | 4 | Done |
+| **`UAT-03`** | Production Docker deployment setup, reverse proxy & automated DB backups | CI/CD, Production Nginx | 4 | Done |
 
 ---
 
