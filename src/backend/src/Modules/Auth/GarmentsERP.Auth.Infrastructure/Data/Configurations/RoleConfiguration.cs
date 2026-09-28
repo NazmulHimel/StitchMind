@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Auth.Domain.Entities;
+using GarmentsERP.Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,6 +13,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.Property(r => r.Name).HasMaxLength(100).IsRequired();
         builder.Property(r => r.Description).HasMaxLength(500);
+        builder.Property(r => r.CanViewFinancialCosts).HasDefaultValue(true);
 
         builder.HasIndex(r => new { r.Name, r.CompanyId }).IsUnique();
 

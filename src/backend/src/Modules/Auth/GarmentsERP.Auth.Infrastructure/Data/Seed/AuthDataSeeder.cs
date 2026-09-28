@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Auth.Application.Interfaces;
+using GarmentsERP.Auth.Application.Interfaces;
 using GarmentsERP.Auth.Domain.Entities;
 using GarmentsERP.Auth.Infrastructure.Data;
 using GarmentsERP.Shared.Constants;
@@ -47,31 +47,35 @@ public static class AuthDataSeeder
             var allPermissions = await context.Permissions.ToListAsync();
 
             // 2. Seed System Roles
-            var rolesToSeed = new (string Name, string Description)[]
+            var rolesToSeed = new (string Name, string Description, bool CanViewCosts)[]
             {
-                (AppConstants.Roles.SuperAdmin, "Complete system administrative access"),
-                (AppConstants.Roles.Admin, "Factory and operational management access"),
-                (AppConstants.Roles.StoreManager, "Warehouse, stock, and inventory management"),
-                (AppConstants.Roles.ProductionManager, "Full production and plant floor oversight"),
-                (AppConstants.Roles.CuttingSupervisor, "Fabric laying, marker, and cutting supervision"),
-                (AppConstants.Roles.SewingSupervisor, "Sewing lines and floor operation supervision"),
-                (AppConstants.Roles.QCSupervisor, "Quality control, fabric inspection, and AQL"),
-                (AppConstants.Roles.AccountsManager, "General ledger, AP, AR, and financial reporting"),
-                (AppConstants.Roles.HRManager, "Employee directory, attendance, and payroll"),
-                (AppConstants.Roles.Viewer, "Read-only access across the ERP modules")
+                (AppConstants.Roles.SuperAdmin, "Complete system administrative access", true),
+                (AppConstants.Roles.Admin, "Factory and operational management access", true),
+                (AppConstants.Roles.StoreManager, "Warehouse, stock, and inventory management", true),
+                (AppConstants.Roles.ProductionManager, "Full production and plant floor oversight", false),
+                (AppConstants.Roles.CuttingSupervisor, "Fabric laying, marker, and cutting supervision", false),
+                (AppConstants.Roles.SewingSupervisor, "Sewing lines and floor operation supervision", false),
+                (AppConstants.Roles.QCSupervisor, "Quality control, fabric inspection, and AQL", false),
+                (AppConstants.Roles.AccountsManager, "General ledger, AP, AR, and financial reporting", true),
+                (AppConstants.Roles.HRManager, "Employee directory, attendance, and payroll", true),
+                (AppConstants.Roles.Viewer, "Read-only access across the ERP modules", false)
             };
 
             var existingRoles = await context.Roles.Where(r => r.CompanyId == DefaultCompanyId).ToListAsync();
             var seededRoles = new List<Role>();
 
-            foreach (var (name, desc) in rolesToSeed)
+            foreach (var (name, desc, canViewCosts) in rolesToSeed)
             {
                 var role = existingRoles.FirstOrDefault(r => r.Name == name);
                 if (role is null)
                 {
-                    role = Role.Create(name, DefaultCompanyId, desc, isSystem: true);
+                    role = Role.Create(name, DefaultCompanyId, desc, isSystem: true, canViewFinancialCosts: canViewCosts);
                     await context.Roles.AddAsync(role);
                     seededRoles.Add(role);
+                }
+                else if (role.CanViewFinancialCosts != canViewCosts)
+                {
+                    role.SetFinancialCostsVisibility(canViewCosts);
                 }
             }
 
@@ -168,6 +172,7 @@ public static class AuthDataSeeder
             (AppConstants.Actions.Read, "View and browse records"),
             (AppConstants.Actions.Update, "Modify and update records"),
             (AppConstants.Actions.Delete, "Delete or archive records"),
+            (AppConstants.Actions.Approve, "Approve or sign-off operational workflows"),
             (AppConstants.Actions.Export, "Export data to Excel or PDF")
         };
 
@@ -179,6 +184,11 @@ public static class AuthDataSeeder
                 list.Add(Permission.Create(mod, act, $"{act} {mod} ({actDesc})"));
             }
         }
+
+        // Shop-floor Financial Price Masking Permission (AC-02)
+        list.Add(Permission.Create("Finance", "ViewFinancialCosts", "View Unmasked Material & Unit Costs"));
+        list.Add(Permission.Create("Procurement", "ViewFinancialCosts", "View Unmasked Purchase Order Prices"));
+        list.Add(Permission.Create("BuyerOrders", "ViewFinancialCosts", "View Unmasked FOB & Costing Budgets"));
 
         return list;
     }

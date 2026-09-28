@@ -32,12 +32,91 @@ public class BuyerOrderConfiguration : IEntityTypeConfiguration<BuyerOrder>
         builder.Property(o => o.StyleName).HasMaxLength(150).IsRequired();
         builder.Property(o => o.Season).HasMaxLength(50);
         builder.Property(o => o.UnitPrice).HasPrecision(18, 2);
+        builder.Property(o => o.ProductCategory).HasMaxLength(100);
+        builder.Property(o => o.FabricComposition).HasMaxLength(200);
+        builder.Property(o => o.Currency).HasMaxLength(10);
         builder.HasIndex(o => o.OrderNumber).IsUnique();
 
         builder.HasOne(o => o.Buyer)
                .WithMany(b => b.Orders)
                .HasForeignKey(o => o.BuyerId)
                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(o => o.ColorSizes)
+               .WithOne(cs => cs.BuyerOrder)
+               .HasForeignKey(cs => cs.BuyerOrderId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(o => o.BOMItems)
+               .WithOne(b => b.BuyerOrder)
+               .HasForeignKey(b => b.BuyerOrderId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(o => o.PreCosting)
+               .WithOne(pc => pc.BuyerOrder)
+               .HasForeignKey<PreCosting>(pc => pc.BuyerOrderId)
+               .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class StyleColorSizeConfiguration : IEntityTypeConfiguration<StyleColorSize>
+{
+    public void Configure(EntityTypeBuilder<StyleColorSize> builder)
+    {
+        builder.ToTable("StyleColorSizes");
+        builder.HasKey(cs => cs.Id);
+        builder.Property(cs => cs.ColorName).HasMaxLength(100).IsRequired();
+        builder.Property(cs => cs.PantoneCode).HasMaxLength(50);
+        builder.Property(cs => cs.SizeLabel).HasMaxLength(50).IsRequired();
+    }
+}
+
+public class BOMItemConfiguration : IEntityTypeConfiguration<BOMItem>
+{
+    public void Configure(EntityTypeBuilder<BOMItem> builder)
+    {
+        builder.ToTable("BOMItems");
+        builder.HasKey(b => b.Id);
+        builder.Property(b => b.ItemCategory).HasMaxLength(100).IsRequired();
+        builder.Property(b => b.ItemCode).HasMaxLength(50).IsRequired();
+        builder.Property(b => b.ItemDescription).HasMaxLength(250).IsRequired();
+        builder.Property(b => b.UnitOfMeasure).HasMaxLength(50).IsRequired();
+        builder.Property(b => b.NetConsumptionPerDzn).HasPrecision(18, 4);
+        builder.Property(b => b.WastagePercentage).HasPrecision(5, 2);
+        builder.Property(b => b.TotalRequiredQty).HasPrecision(18, 4);
+    }
+}
+
+public class PreCostingConfiguration : IEntityTypeConfiguration<PreCosting>
+{
+    public void Configure(EntityTypeBuilder<PreCosting> builder)
+    {
+        builder.ToTable("PreCostings");
+        builder.HasKey(p => p.Id);
+        builder.Property(p => p.CostingBasis).HasMaxLength(50);
+        builder.Property(p => p.FOBPricePerDzn).HasPrecision(18, 4);
+        builder.Property(p => p.TotalMaterialsBudget).HasPrecision(18, 4);
+        builder.Property(p => p.TotalLaborCostPerDzn).HasPrecision(18, 4);
+        builder.Property(p => p.TotalOverheadPerDzn).HasPrecision(18, 4);
+        builder.Property(p => p.NetMarginPerDzn).HasPrecision(18, 4);
+
+        builder.HasMany(p => p.Lines)
+               .WithOne(l => l.PreCosting)
+               .HasForeignKey(l => l.PreCostingId)
+               .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class CostingLineConfiguration : IEntityTypeConfiguration<CostingLine>
+{
+    public void Configure(EntityTypeBuilder<CostingLine> builder)
+    {
+        builder.ToTable("CostingLines");
+        builder.HasKey(l => l.Id);
+        builder.Property(l => l.Category).HasMaxLength(100).IsRequired();
+        builder.Property(l => l.ItemDescription).HasMaxLength(250).IsRequired();
+        builder.Property(l => l.ConsumptionPerDzn).HasPrecision(18, 4);
+        builder.Property(l => l.UnitRate).HasPrecision(18, 4);
     }
 }
 

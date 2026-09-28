@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using GarmentsERP.Shared.Constants;
 using GarmentsERP.Shared.Interfaces;
 
@@ -36,6 +36,14 @@ public class CurrentUserService : ICurrentUserService
     }
 
     public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
+
+    public string? IpAddress => _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+
+    public bool CanViewFinancialCosts =>
+        HasPermission(AppConstants.CustomClaims.ViewFinancialCosts) ||
+        HasPermission("ViewFinancialCosts") ||
+        HasPermission("*") ||
+        HasPermission($"{AppConstants.Modules.Auth}.SuperAdmin");
 
     public IReadOnlyList<string> Permissions
     {

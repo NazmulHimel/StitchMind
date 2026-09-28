@@ -20,9 +20,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
-      <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Domain\GarmentsERP.Finance.Domain.csproj" />
-    <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Application\GarmentsERP.Finance.Application.csproj" />
-    <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Infrastructure\GarmentsERP.Finance.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,9 +39,11 @@
     <ProjectReference Include="..\Modules\HR\GarmentsERP.HR.Domain\GarmentsERP.HR.Domain.csproj" />
     <ProjectReference Include="..\Modules\HR\GarmentsERP.HR.Application\GarmentsERP.HR.Application.csproj" />
     <ProjectReference Include="..\Modules\HR\GarmentsERP.HR.Infrastructure\GarmentsERP.HR.Infrastructure.csproj" />
-      <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Domain\GarmentsERP.Finance.Domain.csproj" />
+    <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Domain\GarmentsERP.Finance.Domain.csproj" />
     <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Application\GarmentsERP.Finance.Application.csproj" />
     <ProjectReference Include="..\Modules\Finance\GarmentsERP.Finance.Infrastructure\GarmentsERP.Finance.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Reporting\GarmentsERP.Reporting.Application\GarmentsERP.Reporting.Application.csproj" />
+    <ProjectReference Include="..\Modules\Reporting\GarmentsERP.Reporting.Infrastructure\GarmentsERP.Reporting.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,6 +11,10 @@ public class ProductionDbContext : DbContext
 
     public DbSet<Buyer> Buyers => Set<Buyer>();
     public DbSet<BuyerOrder> BuyerOrders => Set<BuyerOrder>();
+    public DbSet<StyleColorSize> StyleColorSizes => Set<StyleColorSize>();
+    public DbSet<BOMItem> BOMItems => Set<BOMItem>();
+    public DbSet<PreCosting> PreCostings => Set<PreCosting>();
+    public DbSet<CostingLine> CostingLines => Set<CostingLine>();
     public DbSet<CuttingOrder> CuttingOrders => Set<CuttingOrder>();
     public DbSet<CutBundle> CutBundles => Set<CutBundle>();
     public DbSet<SewingLine> SewingLines => Set<SewingLine>();
