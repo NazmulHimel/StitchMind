@@ -65,6 +65,8 @@ public static class ProductionDataSeeder
                     await context.SaveChangesAsync();
                 }
             }
+
+            await SeedPhase5SewingFloorAsync(context);
             return;
         }
 
@@ -489,6 +491,143 @@ public static class ProductionDataSeeder
         };
 
         await context.CartonPacks.AddRangeAsync(c1_initial, c2_initial);
+        await context.SaveChangesAsync();
+
+        await SeedPhase5SewingFloorAsync(context);
+    }
+
+    private static async Task SeedPhase5SewingFloorAsync(ProductionDbContext context)
+    {
+        if (await context.OperationBulletins.AnyAsync())
+        {
+            return;
+        }
+
+        // 1. IE Operation Bulletins for ST-2026-CHINO-01 (IE-01 & SEW-01)
+        var bulletins = new List<OperationBulletin>
+        {
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 1, OperationName = "Front Pocket Attach & Bagging", SectionCategory = "Front", MachineType = "Single Needle Lockstitch (SNLS)", StandardMinuteValueSMV = 0.950m, RequiredSkillGrade = "B", PieceRatePerDzn = 0.65m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 2, OperationName = "Fly Piece Topstitch & J-Stitch", SectionCategory = "Front", MachineType = "Double Needle Lockstitch (DNLS)", StandardMinuteValueSMV = 0.820m, RequiredSkillGrade = "B", PieceRatePerDzn = 0.58m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 3, OperationName = "Back Dart Stitching", SectionCategory = "Back", MachineType = "Single Needle Lockstitch (SNLS)", StandardMinuteValueSMV = 0.450m, RequiredSkillGrade = "C", PieceRatePerDzn = 0.32m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 4, OperationName = "Back Double Jet Pocket Welting", SectionCategory = "Back", MachineType = "Automatic Pocket Welter", StandardMinuteValueSMV = 1.250m, RequiredSkillGrade = "A", PieceRatePerDzn = 0.90m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 5, OperationName = "Side Seam Join & Serging", SectionCategory = "Assembly", MachineType = "4-Thread Overlock (4T)", StandardMinuteValueSMV = 1.150m, RequiredSkillGrade = "B", PieceRatePerDzn = 0.78m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 6, OperationName = "Inseam Lap Seam Join", SectionCategory = "Assembly", MachineType = "Feed-off-the-arm 3-Needle", StandardMinuteValueSMV = 0.880m, RequiredSkillGrade = "A", PieceRatePerDzn = 0.62m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 7, OperationName = "Waistband Pre-forming & Attachment", SectionCategory = "Assembly", MachineType = "Multi-Needle Chainstitch (Kansai)", StandardMinuteValueSMV = 1.650m, RequiredSkillGrade = "A+", PieceRatePerDzn = 1.15m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 8, OperationName = "Belt Loop Attachment (5 loops)", SectionCategory = "Assembly", MachineType = "Automatic Bartack Attacher", StandardMinuteValueSMV = 0.920m, RequiredSkillGrade = "B", PieceRatePerDzn = 0.65m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 9, OperationName = "Bottom Hemming & Folding", SectionCategory = "Finishing", MachineType = "Lockstitch Hemmer", StandardMinuteValueSMV = 0.650m, RequiredSkillGrade = "C", PieceRatePerDzn = 0.45m },
+            new() { StyleNumber = "ST-2026-CHINO-01", OperationSequence = 10, OperationName = "Button Holing & Button Sewing", SectionCategory = "Finishing", MachineType = "Electronic Button Holer & Sewer", StandardMinuteValueSMV = 0.780m, RequiredSkillGrade = "A", PieceRatePerDzn = 0.55m }
+        };
+
+        foreach (var b in bulletins)
+        {
+            b.RecalculateTarget();
+        }
+        await context.OperationBulletins.AddRangeAsync(bulletins);
+
+        // 2. Sewing Machine Assets (SEW-05) on LINE-04
+        var machines = new List<SewingMachineAsset>
+        {
+            new() { MachineBarcode = "SN-084", Brand = "Juki", MachineModel = "DDL-9000C-FMS", MachineType = "Single Needle Lockstitch (Direct Drive)", LineNumber = "LINE-04", StationNumber = "Station 12", Status = MachineStatus.Operational, MTBFHours = 240.5m, MTTRMinutes = 14.2m, LastServicedAtUtc = DateTime.UtcNow.AddDays(-12) },
+            new() { MachineBarcode = "SN-092", Brand = "Brother", MachineModel = "S-7300A-403", MachineType = "Single Needle Direct Drive Lockstitch", LineNumber = "LINE-04", StationNumber = "Station 04", Status = MachineStatus.Operational, MTBFHours = 260.0m, MTTRMinutes = 12.0m, LastServicedAtUtc = DateTime.UtcNow.AddDays(-8) },
+            new() { MachineBarcode = "MO-105", Brand = "Pegasus", MachineModel = "EX5214-83", MachineType = "4-Thread High Speed Overlock", LineNumber = "LINE-04", StationNumber = "Station 06", Status = MachineStatus.Operational, MTBFHours = 210.0m, MTTRMinutes = 16.5m, LastServicedAtUtc = DateTime.UtcNow.AddDays(-15) },
+            new() { MachineBarcode = "FB-032", Brand = "Union Special", MachineModel = "35800-DN", MachineType = "Feed-off-the-arm 3-Needle Lap Seamer", LineNumber = "LINE-04", StationNumber = "Station 08", Status = MachineStatus.Operational, MTBFHours = 185.0m, MTTRMinutes = 22.0m, LastServicedAtUtc = DateTime.UtcNow.AddDays(-5) },
+            new() { MachineBarcode = "KB-018", Brand = "Kansai Special", MachineModel = "DLR-1508PR", MachineType = "Multi-needle Waistband Attacher", LineNumber = "LINE-04", StationNumber = "Station 12", Status = MachineStatus.Operational, MTBFHours = 195.0m, MTTRMinutes = 18.0m, LastServicedAtUtc = DateTime.UtcNow.AddDays(-3) },
+            new() { MachineBarcode = "LK-044", Brand = "Juki", MachineModel = "LK-1900BN", MachineType = "Electronic Computerized Bartack", LineNumber = "LINE-04", StationNumber = "Station 14", Status = MachineStatus.Operational, MTBFHours = 310.0m, MTTRMinutes = 10.5m, LastServicedAtUtc = DateTime.UtcNow.AddDays(-20) }
+        };
+        await context.SewingMachineAssets.AddRangeAsync(machines);
+
+        // 3. Machine Breakdown Tickets (SEW-05)
+        var tickets = new List<MachineBreakdownTicket>
+        {
+            new()
+            {
+                TicketNumber = "TKT-2026-0045",
+                MachineBarcode = "SN-084",
+                LineNumber = "LINE-04",
+                ReportedIssue = "Thread trimmer solenoid jammed / needle thread tension loose",
+                ReportedAtUtc = DateTime.UtcNow.AddDays(-2),
+                ResolvedAtUtc = DateTime.UtcNow.AddDays(-2).AddMinutes(15),
+                DowntimeMinutes = 15,
+                MechanicName = "Kamal Hossain",
+                RootCause = "Lint accumulation in bobbin case hook assembly. Cleaned & lubricated.",
+                IsResolved = true
+            },
+            new()
+            {
+                TicketNumber = "TKT-2026-0046",
+                MachineBarcode = "KB-018",
+                LineNumber = "LINE-04",
+                ReportedIssue = "Puller roller slippage on heavy 12oz twill waistband join",
+                ReportedAtUtc = DateTime.UtcNow.AddDays(-1),
+                ResolvedAtUtc = DateTime.UtcNow.AddDays(-1).AddMinutes(8),
+                DowntimeMinutes = 8,
+                MechanicName = "Tariqul Alam",
+                RootCause = "Pressure adjustment knob calibrated, roller spring replaced.",
+                IsResolved = true
+            }
+        };
+        await context.MachineBreakdownTickets.AddRangeAsync(tickets);
+
+        // 4. Broken Needle Logs (SEW-06)
+        var needleLogs = new List<BrokenNeedleLog>
+        {
+            new()
+            {
+                LogNumber = "BNL-2026-0089",
+                LineNumber = "LINE-04",
+                MachineBarcode = "SN-084",
+                OperatorBadgeId = "OP-1042",
+                OperatorName = "Nasreen Sultana",
+                BreakageReason = "Deflection on heavy multi-ply waistband join",
+                TipFound = true,
+                ShankFound = true,
+                EyeFound = true,
+                AllFragmentsRecovered = true,
+                SupervisorVerificationBadge = "SUP-012",
+                ReplacementNeedleIssued = true,
+                ReplacementNeedleType = "Groz-Beckert DPx5 110/18",
+                LoggedAtUtc = DateTime.UtcNow.AddDays(-1).AddHours(-4),
+                DowntimeMinutes = 4,
+                Status = NeedleComplianceStatus.VerifiedAndReplaced,
+                Remarks = "All 3 fragments mounted on compliance card. Metal detector clearance completed."
+            },
+            new()
+            {
+                LogNumber = "BNL-2026-0090",
+                LineNumber = "LINE-04",
+                MachineBarcode = "MO-105",
+                OperatorBadgeId = "OP-1088",
+                OperatorName = "Morium Khatun",
+                BreakageReason = "Needle collision with zipper metal stop",
+                TipFound = false,
+                ShankFound = true,
+                EyeFound = true,
+                AllFragmentsRecovered = false,
+                SupervisorVerificationBadge = "SUP-012",
+                ReplacementNeedleIssued = false,
+                ReplacementNeedleType = "Schmetz B27 90/14",
+                LoggedAtUtc = DateTime.UtcNow.AddHours(-1),
+                DowntimeMinutes = 18,
+                Status = NeedleComplianceStatus.FragmentSearchActive,
+                Remarks = "Tip missing. Garment bundle quarantined for 9-point conveyor metal detector audit. Machine halted."
+            }
+        };
+        await context.BrokenNeedleLogs.AddRangeAsync(needleLogs);
+
+        // 5. Fast Bundle Scans (SEW-02)
+        var line4 = await context.SewingLines.FirstOrDefaultAsync(l => l.LineNumber == "Line-04");
+        var lineId = line4?.Id ?? Guid.NewGuid();
+
+        var scans = new List<BundleScan>
+        {
+            new() { BundleBarcode = "BND-2026-CHINO-001", LineId = lineId, LineNumber = "LINE-04", OperatorBadgeId = "OP-1042", OperatorName = "Nasreen Sultana", OperationName = "Waistband Attachment", PiecesCount = 24, FloorStation = "STATION-12", ScanTimestampUtc = DateTime.UtcNow.AddMinutes(-45), ProcessingTimeMs = 42 },
+            new() { BundleBarcode = "BND-2026-CHINO-002", LineId = lineId, LineNumber = "LINE-04", OperatorBadgeId = "OP-1055", OperatorName = "Fatema Begum", OperationName = "Side Seam Join", PiecesCount = 24, FloorStation = "STATION-05", ScanTimestampUtc = DateTime.UtcNow.AddMinutes(-38), ProcessingTimeMs = 38 },
+            new() { BundleBarcode = "BND-2026-CHINO-003", LineId = lineId, LineNumber = "LINE-04", OperatorBadgeId = "OP-1088", OperatorName = "Morium Khatun", OperationName = "Inseam Join", PiecesCount = 24, FloorStation = "STATION-08", ScanTimestampUtc = DateTime.UtcNow.AddMinutes(-25), ProcessingTimeMs = 45 },
+            new() { BundleBarcode = "BND-2026-CHINO-004", LineId = lineId, LineNumber = "LINE-04", OperatorBadgeId = "OP-1031", OperatorName = "Rasheda Akter", OperationName = "Front Pocket Attach", PiecesCount = 24, FloorStation = "STATION-01", ScanTimestampUtc = DateTime.UtcNow.AddMinutes(-12), ProcessingTimeMs = 35 },
+            new() { BundleBarcode = "BND-2026-CHINO-005", LineId = lineId, LineNumber = "LINE-04", OperatorBadgeId = "OP-1090", OperatorName = "Salma Banu", OperationName = "Bottom Hemming", PiecesCount = 24, FloorStation = "STATION-10", ScanTimestampUtc = DateTime.UtcNow.AddMinutes(-4), ProcessingTimeMs = 40 }
+        };
+        await context.BundleScans.AddRangeAsync(scans);
+
         await context.SaveChangesAsync();
     }
 }

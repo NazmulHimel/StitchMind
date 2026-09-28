@@ -27,6 +27,11 @@ public class ProductionDbContext : DbContext
     public DbSet<RelaxationSession> RelaxationSessions => Set<RelaxationSession>();
     public DbSet<FusingMachineLog> FusingMachineLogs => Set<FusingMachineLog>();
     public DbSet<SubcontractCuttingChallan> SubcontractCuttingChallans => Set<SubcontractCuttingChallan>();
+    public DbSet<OperationBulletin> OperationBulletins => Set<OperationBulletin>();
+    public DbSet<BundleScan> BundleScans => Set<BundleScan>();
+    public DbSet<SewingMachineAsset> SewingMachineAssets => Set<SewingMachineAsset>();
+    public DbSet<MachineBreakdownTicket> MachineBreakdownTickets => Set<MachineBreakdownTicket>();
+    public DbSet<BrokenNeedleLog> BrokenNeedleLogs => Set<BrokenNeedleLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

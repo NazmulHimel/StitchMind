@@ -11,4 +11,6 @@ public interface IPdfReportService
     Task<byte[]> GenerateCustomsBondReportAsync(CustomsBondReportModel model, CancellationToken ct = default);
     Task<byte[]> GenerateCuttingLaySheetAsync(CuttingLaySheetReportModel model, CancellationToken ct = default);
     Task<byte[]> GenerateBundleTicketsAsync(BundleTicketReportModel model, CancellationToken ct = default);
+    Task<byte[]> GenerateHourlyProductionReportAsync(HourlyProductionReportModel model, CancellationToken ct = default);
+    Task<byte[]> GenerateBrokenNeedleCertificateAsync(BrokenNeedleReportModel model, CancellationToken ct = default);
 }

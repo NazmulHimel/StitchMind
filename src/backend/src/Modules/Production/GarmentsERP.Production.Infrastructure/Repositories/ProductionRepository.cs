@@ -412,4 +412,133 @@ public class ProductionRepository : IProductionRepository
         _context.SubcontractCuttingChallans.Update(challan);
         return Task.CompletedTask;
     }
+
+    // Phase 5 Sewing Floor Extensions
+    public async Task<IEnumerable<OperationBulletin>> GetOperationBulletinsAsync(string? styleNumber = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.OperationBulletins.AsNoTracking();
+        if (!string.IsNullOrEmpty(styleNumber))
+        {
+            query = query.Where(o => o.StyleNumber == styleNumber);
+        }
+        return await query.OrderBy(o => o.OperationSequence).ToListAsync(cancellationToken);
+    }
+
+    public async Task<OperationBulletin?> GetOperationBulletinByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.OperationBulletins.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+    }
+
+    public async Task<OperationBulletin> AddOperationBulletinAsync(OperationBulletin bulletin, CancellationToken cancellationToken = default)
+    {
+        await _context.OperationBulletins.AddAsync(bulletin, cancellationToken);
+        return bulletin;
+    }
+
+    public async Task<IEnumerable<BundleScan>> GetBundleScansAsync(string? lineNumber = null, string? barcode = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.BundleScans.AsNoTracking();
+        if (!string.IsNullOrEmpty(lineNumber))
+        {
+            query = query.Where(b => b.LineNumber == lineNumber);
+        }
+        if (!string.IsNullOrEmpty(barcode))
+        {
+            query = query.Where(b => b.BundleBarcode == barcode);
+        }
+        return await query.OrderByDescending(b => b.ScanTimestampUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<BundleScan> AddBundleScanAsync(BundleScan scan, CancellationToken cancellationToken = default)
+    {
+        await _context.BundleScans.AddAsync(scan, cancellationToken);
+        return scan;
+    }
+
+    public async Task<IEnumerable<SewingMachineAsset>> GetSewingMachinesAsync(string? lineNumber = null, MachineStatus? status = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.SewingMachineAssets.AsNoTracking();
+        if (!string.IsNullOrEmpty(lineNumber))
+        {
+            query = query.Where(m => m.LineNumber == lineNumber);
+        }
+        if (status.HasValue)
+        {
+            query = query.Where(m => m.Status == status.Value);
+        }
+        return await query.OrderBy(m => m.StationNumber).ToListAsync(cancellationToken);
+    }
+
+    public async Task<SewingMachineAsset?> GetSewingMachineByBarcodeAsync(string barcode, CancellationToken cancellationToken = default)
+    {
+        return await _context.SewingMachineAssets.FirstOrDefaultAsync(m => m.MachineBarcode == barcode, cancellationToken);
+    }
+
+    public async Task<SewingMachineAsset> AddSewingMachineAsync(SewingMachineAsset machine, CancellationToken cancellationToken = default)
+    {
+        await _context.SewingMachineAssets.AddAsync(machine, cancellationToken);
+        return machine;
+    }
+
+    public async Task<IEnumerable<MachineBreakdownTicket>> GetBreakdownTicketsAsync(string? lineNumber = null, bool? isResolved = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.MachineBreakdownTickets.AsNoTracking();
+        if (!string.IsNullOrEmpty(lineNumber))
+        {
+            query = query.Where(t => t.LineNumber == lineNumber);
+        }
+        if (isResolved.HasValue)
+        {
+            query = query.Where(t => t.IsResolved == isResolved.Value);
+        }
+        return await query.OrderByDescending(t => t.ReportedAtUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<MachineBreakdownTicket?> GetBreakdownTicketByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.MachineBreakdownTickets.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+    }
+
+    public async Task<MachineBreakdownTicket> AddBreakdownTicketAsync(MachineBreakdownTicket ticket, CancellationToken cancellationToken = default)
+    {
+        await _context.MachineBreakdownTickets.AddAsync(ticket, cancellationToken);
+        return ticket;
+    }
+
+    public Task UpdateBreakdownTicketAsync(MachineBreakdownTicket ticket, CancellationToken cancellationToken = default)
+    {
+        _context.MachineBreakdownTickets.Update(ticket);
+        return Task.CompletedTask;
+    }
+
+    public async Task<IEnumerable<BrokenNeedleLog>> GetBrokenNeedleLogsAsync(string? lineNumber = null, NeedleComplianceStatus? status = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.BrokenNeedleLogs.AsNoTracking();
+        if (!string.IsNullOrEmpty(lineNumber))
+        {
+            query = query.Where(l => l.LineNumber == lineNumber);
+        }
+        if (status.HasValue)
+        {
+            query = query.Where(l => l.Status == status.Value);
+        }
+        return await query.OrderByDescending(l => l.LoggedAtUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<BrokenNeedleLog?> GetBrokenNeedleLogByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.BrokenNeedleLogs.FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
+    }
+
+    public async Task<BrokenNeedleLog> AddBrokenNeedleLogAsync(BrokenNeedleLog log, CancellationToken cancellationToken = default)
+    {
+        await _context.BrokenNeedleLogs.AddAsync(log, cancellationToken);
+        return log;
+    }
+
+    public Task UpdateBrokenNeedleLogAsync(BrokenNeedleLog log, CancellationToken cancellationToken = default)
+    {
+        _context.BrokenNeedleLogs.Update(log);
+        return Task.CompletedTask;
+    }
 }

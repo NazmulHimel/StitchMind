@@ -368,3 +368,188 @@ public record ReconcileSubcontractDto(
     string ReconciledBy,
     string? Remarks
 );
+
+// Phase 5 Sewing Floor DTOs
+public record OperationBulletinDto(
+    Guid Id,
+    Guid? StyleId,
+    string StyleNumber,
+    int OperationSequence,
+    string OperationName,
+    string SectionCategory,
+    string MachineType,
+    decimal StandardMinuteValueSMV,
+    int TargetPerHour,
+    string RequiredSkillGrade,
+    decimal PieceRatePerDzn
+);
+
+public record CreateOperationBulletinDto(
+    string StyleNumber,
+    int OperationSequence,
+    string OperationName,
+    string SectionCategory,
+    string MachineType,
+    decimal StandardMinuteValueSMV,
+    string RequiredSkillGrade,
+    decimal PieceRatePerDzn
+);
+
+public record PitchDiagramOperationDto(
+    int Sequence,
+    string OperationName,
+    string SectionCategory,
+    string MachineType,
+    decimal SMV,
+    int TargetPerHour,
+    bool IsBottleneck,
+    decimal BottleneckVariancePct
+);
+
+public record PitchDiagramDto(
+    string StyleNumber,
+    int TotalWorkstations,
+    decimal TotalSMV,
+    decimal PitchTimeMinutes,
+    decimal PitchTimeSeconds,
+    decimal TargetOutputPerHour,
+    decimal LineEfficiencyPct,
+    List<PitchDiagramOperationDto> Operations
+);
+
+public record BundleScanDto(
+    Guid Id,
+    string BundleBarcode,
+    Guid LineId,
+    string LineNumber,
+    string OperatorBadgeId,
+    string OperatorName,
+    string OperationName,
+    int PiecesCount,
+    string FloorStation,
+    DateTime ScanTimestampUtc,
+    int ProcessingTimeMs,
+    decimal OperatorPieceRateEarning
+);
+
+public record RecordBundleScanDto(
+    string BundleBarcode,
+    string LineNumber,
+    string OperatorBadgeId,
+    string OperatorName,
+    string OperationName,
+    int PiecesCount,
+    string FloorStation
+);
+
+public record AndonBoardFeedDto(
+    string LineNumber,
+    string StyleNumber,
+    int HourlyTarget,
+    int HourlyActual,
+    decimal EfficiencyPct,
+    decimal DefectRateDHU,
+    AndonAlertLevel AlertLevel,
+    string AlertMessage,
+    int ActiveWorkstations,
+    int BottleneckStationCount,
+    DateTime LastUpdatedUtc
+);
+
+public record SewingMachineAssetDto(
+    Guid Id,
+    string MachineBarcode,
+    string Brand,
+    string MachineModel,
+    string MachineType,
+    string LineNumber,
+    string StationNumber,
+    MachineStatus Status,
+    decimal MTBFHours,
+    decimal MTTRMinutes,
+    DateTime? LastServicedAtUtc
+);
+
+public record CreateSewingMachineAssetDto(
+    string MachineBarcode,
+    string Brand,
+    string MachineModel,
+    string MachineType,
+    string LineNumber,
+    string StationNumber,
+    decimal MTBFHours,
+    decimal MTTRMinutes
+);
+
+public record MachineBreakdownTicketDto(
+    Guid Id,
+    string TicketNumber,
+    string MachineBarcode,
+    string LineNumber,
+    string ReportedIssue,
+    DateTime ReportedAtUtc,
+    DateTime? ResolvedAtUtc,
+    int DowntimeMinutes,
+    string MechanicName,
+    string RootCause,
+    bool IsResolved
+);
+
+public record CreateMachineBreakdownTicketDto(
+    string MachineBarcode,
+    string LineNumber,
+    string ReportedIssue,
+    string MechanicName
+);
+
+public record ResolveBreakdownTicketDto(
+    int DowntimeMinutes,
+    string RootCause,
+    string MechanicName
+);
+
+public record BrokenNeedleLogDto(
+    Guid Id,
+    string LogNumber,
+    string LineNumber,
+    string MachineBarcode,
+    string OperatorBadgeId,
+    string OperatorName,
+    string BreakageReason,
+    bool TipFound,
+    bool ShankFound,
+    bool EyeFound,
+    bool AllFragmentsRecovered,
+    string SupervisorVerificationBadge,
+    bool ReplacementNeedleIssued,
+    string ReplacementNeedleType,
+    DateTime LoggedAtUtc,
+    int DowntimeMinutes,
+    NeedleComplianceStatus Status,
+    string Remarks
+);
+
+public record CreateBrokenNeedleLogDto(
+    string LineNumber,
+    string MachineBarcode,
+    string OperatorBadgeId,
+    string OperatorName,
+    string BreakageReason,
+    string ReplacementNeedleType
+);
+
+public record VerifyNeedleFragmentsDto(
+    string SupervisorBadge,
+    bool TipFound,
+    bool ShankFound,
+    bool EyeFound,
+    string NeedleType
+);
+
+public record VerifyNeedleFragmentsResultDto(
+    bool Success,
+    string Message,
+    NeedleComplianceStatus Status,
+    bool ReplacementNeedleIssued
+);
+
