@@ -1,4 +1,4 @@
-﻿namespace GarmentsERP.Shared.Constants;
+namespace GarmentsERP.Shared.Constants;
 
 public static class AppConstants
 {
@@ -54,10 +54,20 @@ public static class AppConstants
 
     public static class Actions
     {
-        public const string Create = "Create";
-        public const string Read   = "Read";
-        public const string Update = "Update";
-        public const string Delete = "Delete";
-        public const string Export = "Export";
+        public const string Create  = "Create";
+        public const string Read    = "Read";
+        public const string Update  = "Update";
+        public const string Delete  = "Delete";
+        public const string Approve = "Approve";
+        public const string Export  = "Export";
+
+        public static readonly string[] All = [Create, Read, Update, Delete, Approve, Export];
+    }
+
+    public static class CustomClaims
+    {
+        public const string ViewFinancialCosts = "Permission:ViewFinancialCosts";
+        public const string Department         = "Department";
+        public const string CompanyId          = "CompanyId";
     }
 }

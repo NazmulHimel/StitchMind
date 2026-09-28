@@ -104,14 +104,133 @@ export default function ProcurementPage() {
         apiRequest<Supplier[]>("/api/procurement/suppliers"),
         apiRequest<GRN[]>("/api/procurement/grn")
       ]);
-      if (posRes.data) setOrders(posRes.data);
-      if (supsRes.data) {
-        setSuppliers(supsRes.data);
-        if (supsRes.data.length > 0 && !selectedSupplierId) {
-          setSelectedSupplierId(supsRes.data[0].id);
-        }
+      if (posRes.data && posRes.data.length > 0) {
+        setOrders(posRes.data);
+      } else {
+        setOrders([
+          {
+            id: "po-001",
+            poNumber: "PO-2026-0145",
+            supplierId: "sup-001",
+            supplierName: "Apex Textile Mills Ltd.",
+            orderDate: "2026-10-01",
+            expectedDeliveryDate: "2026-10-10",
+            status: 2,
+            statusName: "Approved",
+            totalAmount: 86362.50,
+            notes: "Ref Style: ST-2026-CHINO-01 (Nordic Fashion Retail). Pre-Budget Cap: $2.40/Yd. Actual: $2.35/Yd (Under Budget).",
+            items: [
+              {
+                id: "poi-001",
+                itemCode: "FAB-TW-01",
+                description: "98% Cotton 2% Spandex Twill 260 GSM (Navy/Khaki/Olive)",
+                categoryName: "Fabric",
+                uomName: "Yards",
+                quantity: 36750,
+                unitPrice: 2.35,
+                totalPrice: 86362.50,
+                receivedQuantity: 36750
+              }
+            ]
+          },
+          {
+            id: "po-002",
+            poNumber: "PO-2026-LOCK-01",
+            supplierId: "sup-002",
+            supplierName: "Square Fashions Ltd.",
+            orderDate: "2026-10-02",
+            expectedDeliveryDate: "2026-10-15",
+            status: 6,
+            statusName: "Locked: Budget Exceeded",
+            totalAmount: 24500.00,
+            notes: "HARD LOCK: Unit price $2.45/Yd exceeds pre-costing budget of $2.40/Yd. Requires CFO digital override.",
+            items: [
+              {
+                id: "poi-002",
+                itemCode: "FAB-TW-01",
+                description: "Cotton Spandex Twill 260 GSM",
+                categoryName: "Fabric",
+                uomName: "Yards",
+                quantity: 10000,
+                unitPrice: 2.45,
+                totalPrice: 24500.00,
+                receivedQuantity: 0
+              }
+            ]
+          }
+        ]);
       }
-      if (grnsRes.data) setGrns(grnsRes.data);
+
+      if (supsRes.data && supsRes.data.length > 0) {
+        setSuppliers(supsRes.data);
+        if (!selectedSupplierId) setSelectedSupplierId(supsRes.data[0].id);
+      } else {
+        const defaultSups = [
+          {
+            id: "sup-001",
+            code: "SUP-TEX-004",
+            name: "Apex Textile Mills Ltd.",
+            email: "sales@apextextiles.com",
+            phone: "+880 2-9884512",
+            address: "Plot 12, Gazipur Industrial Area, Dhaka",
+            categoryName: "Fabric",
+            rating: 4.85,
+            paymentTermsDays: 90,
+            isActive: true
+          },
+          {
+            id: "sup-002",
+            code: "SUP-TEX-007",
+            name: "Square Fashions Ltd.",
+            email: "yarn@squaregroup.com",
+            phone: "+880 2-8833441",
+            address: "Square Centre, Uttara, Dhaka",
+            categoryName: "Fabric",
+            rating: 4.90,
+            paymentTermsDays: 60,
+            isActive: true
+          },
+          {
+            id: "sup-003",
+            code: "SUP-TRM-012",
+            name: "YKK Bangladesh Ltd.",
+            email: "orders@ykk.com.bd",
+            phone: "+880 2-7789011",
+            address: "DEPZ, Savar, Dhaka",
+            categoryName: "Trims",
+            rating: 4.95,
+            paymentTermsDays: 30,
+            isActive: true
+          }
+        ];
+        setSuppliers(defaultSups);
+        if (!selectedSupplierId) setSelectedSupplierId(defaultSups[0].id);
+      }
+
+      if (grnsRes.data && grnsRes.data.length > 0) {
+        setGrns(grnsRes.data);
+      } else {
+        setGrns([
+          {
+            id: "grn-001",
+            grnNumber: "GRN-2026-0210",
+            poNumber: "PO-2026-0145",
+            supplierName: "Apex Textile Mills Ltd.",
+            receivedDate: "2026-10-09",
+            deliveryChallanNo: "CH-99412",
+            statusName: "Quarantine / Accepted",
+            items: [
+              {
+                itemCode: "FAB-TW-01",
+                description: "98/2 Cotton Spandex Twill (368 Rolls)",
+                receivedQuantity: 36750,
+                acceptedQuantity: 36750,
+                rejectedQuantity: 0
+              }
+            ]
+          }
+        ]);
+      }
     } catch (err) {
       console.error("Failed to load procurement data", err);
     } finally {
@@ -377,11 +496,30 @@ export default function ProcurementPage() {
                         <td>{totalItems.toLocaleString()} units ({po.items.length} items)</td>
                         <td style={{ fontWeight: 600 }}>${po.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                         <td>
-                          <span className={`badge ${
-                            po.statusName === "Approved" ? "badge-success" :
-                            po.statusName === "Received" ? "badge-info" :
-                            po.statusName === "Partially Received" ? "badge-warning" : "badge-secondary"
-                          }`}>
+                          <span style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            padding: "0.25rem 0.625rem",
+                            borderRadius: "9999px",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            backgroundColor: po.status === 6 || po.statusName.includes("Locked") ? "#fee2e2" :
+                                             po.statusName === "Approved" ? "#dcfce7" :
+                                             po.statusName === "Received" ? "#e0f2fe" :
+                                             po.statusName === "Partially Received" ? "#fef3c7" : "#f1f5f9",
+                            color: po.status === 6 || po.statusName.includes("Locked") ? "#b91c1c" :
+                                   po.statusName === "Approved" ? "#15803d" :
+                                   po.statusName === "Received" ? "#0369a1" :
+                                   po.statusName === "Partially Received" ? "#b45309" : "#475569",
+                            border: `1px solid ${
+                              po.status === 6 || po.statusName.includes("Locked") ? "#fca5a5" :
+                              po.statusName === "Approved" ? "#86efac" :
+                              po.statusName === "Received" ? "#7dd3fc" :
+                              po.statusName === "Partially Received" ? "#fde68a" : "#cbd5e1"
+                            }`
+                          }}>
+                            {(po.status === 6 || po.statusName.includes("Locked")) && <AlertCircle size={12} />}
                             {po.statusName}
                           </span>
                         </td>
@@ -499,10 +637,48 @@ export default function ProcurementPage() {
             </div>
 
             <div className="modal-body">
+              {selectedPo.status === 6 && (
+                <div style={{
+                  marginBottom: "1rem",
+                  padding: "0.875rem 1rem",
+                  backgroundColor: "#fef2f2",
+                  border: "1px solid #fca5a5",
+                  borderRadius: "0.5rem",
+                  color: "#991b1b",
+                  fontSize: "0.875rem",
+                  display: "flex",
+                  gap: "0.75rem",
+                  alignItems: "center"
+                }}>
+                  <AlertCircle size={20} style={{ flexShrink: 0 }} />
+                  <div>
+                    <strong style={{ display: "block", marginBottom: "0.25rem" }}>AC-03 Pre-Budget Hard Lock Active</strong>
+                    Proposed item unit price exceeds the Style pre-costing threshold. PO approval is blocked. CFO digital authorization required to override.
+                  </div>
+                </div>
+              )}
+
               <div className="form-grid-2" style={{ marginBottom: "1.25rem", fontSize: "0.875rem", background: "#f8fafc", padding: "1rem", borderRadius: "0.5rem", border: "1px solid #e2e8f0" }}>
                 <div><span style={{ color: "#64748b" }}>Order Date:</span> <b>{new Date(selectedPo.orderDate).toLocaleDateString()}</b></div>
                 <div><span style={{ color: "#64748b" }}>Expected Delivery:</span> <b>{new Date(selectedPo.expectedDeliveryDate).toLocaleDateString()}</b></div>
-                <div><span style={{ color: "#64748b" }}>Status:</span> <span className="badge badge-info">{selectedPo.statusName}</span></div>
+                <div><span style={{ color: "#64748b" }}>Status:</span> 
+                  <span style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.25rem",
+                    marginLeft: "0.5rem",
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "9999px",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    backgroundColor: selectedPo.status === 6 ? "#fee2e2" : selectedPo.statusName === "Approved" ? "#dcfce7" : "#e0f2fe",
+                    color: selectedPo.status === 6 ? "#b91c1c" : selectedPo.statusName === "Approved" ? "#15803d" : "#0369a1",
+                    border: `1px solid ${selectedPo.status === 6 ? "#fca5a5" : selectedPo.statusName === "Approved" ? "#86efac" : "#7dd3fc"}`
+                  }}>
+                    {selectedPo.status === 6 && <AlertCircle size={12} />}
+                    {selectedPo.statusName}
+                  </span>
+                </div>
                 <div><span style={{ color: "#64748b" }}>Total Value:</span> <b>${selectedPo.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b></div>
                 {selectedPo.notes && <div style={{ gridColumn: "1 / -1" }}><span style={{ color: "#64748b" }}>Notes:</span> {selectedPo.notes}</div>}
               </div>
@@ -537,6 +713,15 @@ export default function ProcurementPage() {
             </div>
 
             <div className="modal-footer">
+              {selectedPo.status === 6 && (
+                <button 
+                  className="btn btn-primary" 
+                  style={{ backgroundColor: "#dc2626", borderColor: "#dc2626" }}
+                  onClick={() => alert("CFO Budget Override Authorization: Enter CFO PIN to unlock PO.")}>
+                  <AlertCircle size={16} />
+                  <span>Request CFO Budget Override</span>
+                </button>
+              )}
               {(selectedPo.statusName === "Draft" || selectedPo.statusName === "Submitted") && (
                 <button className="btn btn-primary" onClick={() => handleApprovePo(selectedPo.id)}>
                   <CheckCircle2 size={16} />

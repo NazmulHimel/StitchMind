@@ -1,0 +1,44 @@
+namespace GarmentsERP.Reporting.Infrastructure.Services;
+
+using GarmentsERP.Reporting.Application.Interfaces;
+using GarmentsERP.Reporting.Application.Models;
+using GarmentsERP.Reporting.Infrastructure.Documents;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+
+public class QuestPdfReportService : IPdfReportService
+{
+    public QuestPdfReportService()
+    {
+        // Configure QuestPDF Community license
+        QuestPDF.Settings.License = LicenseType.Community;
+        QuestPDF.Settings.UseSystemFonts = true;
+        QuestPDF.Settings.ThrowOnMissingFontFamilies = false;
+    }
+
+    public Task<byte[]> GeneratePurchaseOrderReportAsync(PurchaseOrderReportModel model, CancellationToken ct = default)
+    {
+        var document = new PurchaseOrderPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateDailyKpiReportAsync(DailyKpiReportModel model, CancellationToken ct = default)
+    {
+        // Placeholder for Daily KPI QuestPDF compilation
+        var document = new PurchaseOrderPdfDocument(new PurchaseOrderReportModel
+        {
+            PONumber = $"KPI-{model.ReportDate:yyyyMMdd}",
+            SupplierName = "StitchMind Executive Digest",
+            Notes = $"Daily Output: {model.ActualGarmentOutput}/{model.PlannedGarmentOutput} Pcs | Efficiency: {model.OverallFactoryEfficiencyPct:F1}%"
+        });
+        return Task.FromResult(document.GeneratePdf());
+    }
+
+    public Task<byte[]> GenerateAuditTrailReportAsync(AuditTrailReportModel model, CancellationToken ct = default)
+    {
+        var document = new AuditTrailPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+}

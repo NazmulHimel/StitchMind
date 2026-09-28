@@ -1,4 +1,4 @@
-﻿namespace GarmentsERP.Procurement.Domain.Enums;
+namespace GarmentsERP.Procurement.Domain.Enums;
 
 public enum POStatus
 {
@@ -7,7 +7,8 @@ public enum POStatus
     Approved = 2,
     PartiallyReceived = 3,
     Completed = 4,
-    Cancelled = 5
+    Cancelled = 5,
+    LockedBudgetExceeded = 6
 }
 
 public enum MaterialCategory

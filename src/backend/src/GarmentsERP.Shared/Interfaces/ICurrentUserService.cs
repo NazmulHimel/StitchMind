@@ -1,4 +1,4 @@
-﻿namespace GarmentsERP.Shared.Interfaces;
+namespace GarmentsERP.Shared.Interfaces;
 
 public interface ICurrentUserService
 {
@@ -6,6 +6,8 @@ public interface ICurrentUserService
     string UserName { get; }
     Guid CompanyId { get; }
     bool IsAuthenticated { get; }
+    string? IpAddress { get; }
+    bool CanViewFinancialCosts { get; }
     IReadOnlyList<string> Permissions { get; }
     bool HasPermission(string permission);
 }

@@ -21,12 +21,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Standard default menu tree for immediate offline/development preview
 const DEFAULT_MENU_TREE: MenuItem[] = [
   { module: "Dashboard", label: "Dashboard", icon: "LayoutDashboard", route: "/dashboard", sortOrder: 1, permissions: [], children: [] },
+  { module: "BuyerOrders", label: "Merchandising & Styles", icon: "Tag", route: "/merchandising", sortOrder: 2, permissions: ["BuyerOrders.Read"], children: [] },
   {
     module: "Procurement",
     label: "Material Procurement",
     icon: "ShoppingCart",
     route: "/procurement",
-    sortOrder: 2,
+    sortOrder: 3,
     permissions: ["Procurement.Read"],
     children: [
       { module: "Procurement", label: "Purchase Orders", icon: "FileText", route: "/procurement", sortOrder: 1, permissions: ["Procurement.Read"], children: [] },
@@ -153,32 +154,37 @@ export const DEMO_ROLES: Record<string, { fullName: string; permissions: string[
   SuperAdmin: {
     fullName: "Chief Executive (Super Admin)",
     roles: ["SuperAdmin"],
-    permissions: ["Auth.SuperAdmin", "*"]
-  },
-  CuttingSupervisor: {
-    fullName: "Rashidul Islam (Cutting Head)",
-    roles: ["CuttingSupervisor"],
-    permissions: ["Cutting.Read", "Cutting.Create", "Cutting.Update", "Inventory.Read"]
-  },
-  SewingSupervisor: {
-    fullName: "Farhana Akter (Line 4 Master)",
-    roles: ["SewingSupervisor"],
-    permissions: ["Sewing.Read", "Sewing.Create", "Sewing.Update", "Cutting.Read"]
-  },
-  QCSupervisor: {
-    fullName: "Mahmud Hasan (Quality Lead)",
-    roles: ["QCSupervisor"],
-    permissions: ["QC.Read", "QC.Create", "QC.Update", "Sewing.Read", "Cutting.Read"]
-  },
-  StoreManager: {
-    fullName: "Anwar Hossain (Store Keeper)",
-    roles: ["StoreManager"],
-    permissions: ["Inventory.Read", "Inventory.Create", "Inventory.Update", "Procurement.Read"]
+    permissions: ["Auth.SuperAdmin", "Permission:ViewFinancialCosts", "*"]
   },
   AccountsManager: {
     fullName: "Tariqul Islam (Chief Accountant)",
     roles: ["AccountsManager"],
-    permissions: ["Finance.Read", "Finance.Create", "Finance.Update", "Reports.Read", "Procurement.Read"]
+    permissions: ["Finance.Read", "Finance.Create", "Finance.Update", "Reports.Read", "Procurement.Read", "Permission:ViewFinancialCosts", "BuyerOrders.Read"]
+  },
+  ProductionManager: {
+    fullName: "Kamal Hossain (Production Head)",
+    roles: ["ProductionManager"],
+    permissions: ["Cutting.Read", "Sewing.Read", "QC.Read", "Inventory.Read", "BuyerOrders.Read"]
+  },
+  CuttingSupervisor: {
+    fullName: "Rashidul Islam (Cutting Head)",
+    roles: ["CuttingSupervisor"],
+    permissions: ["Cutting.Read", "Cutting.Create", "Cutting.Update", "Inventory.Read", "BuyerOrders.Read"]
+  },
+  SewingSupervisor: {
+    fullName: "Farhana Akter (Line 4 Master)",
+    roles: ["SewingSupervisor"],
+    permissions: ["Sewing.Read", "Sewing.Create", "Sewing.Update", "Cutting.Read", "BuyerOrders.Read"]
+  },
+  QCSupervisor: {
+    fullName: "Mahmud Hasan (Quality Lead)",
+    roles: ["QCSupervisor"],
+    permissions: ["QC.Read", "QC.Create", "QC.Update", "Sewing.Read", "Cutting.Read", "BuyerOrders.Read"]
+  },
+  StoreManager: {
+    fullName: "Anwar Hossain (Store Keeper)",
+    roles: ["StoreManager"],
+    permissions: ["Inventory.Read", "Inventory.Create", "Inventory.Update", "Procurement.Read", "Permission:ViewFinancialCosts"]
   },
   HRManager: {
     fullName: "Nusrat Jahan (HR & Compliance)",

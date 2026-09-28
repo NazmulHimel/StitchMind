@@ -68,16 +68,16 @@ export default function DashboardPage() {
     { line: "Line 01", style: "ST-882 Polo Shirt (Pique)", target: 1200, actual: 1280, efficiency: "106%", status: "Exceeded" },
     { line: "Line 02", style: "ST-904 Basic Crew Tee", target: 1500, actual: 1470, efficiency: "98%", status: "On Track" },
     { line: "Line 03", style: "HD-112 Fleece Hoodie", target: 800, actual: 820, efficiency: "102%", status: "Exceeded" },
-    { line: "Line 04", style: "DK-502 Denim Cargo Pant", target: 950, actual: 890, efficiency: "93%", status: "Bottleneck" },
+    { line: "Line 04", style: "ST-2026-CHINO-01 (Slim Fit Chino)", target: 960, actual: 1008, efficiency: "105%", status: "Balanced" },
     { line: "Line 05", style: "SW-301 Ladies V-Neck", target: 1400, actual: 1420, efficiency: "101%", status: "Exceeded" },
     { line: "Line 06", style: "JK-701 Windbreaker Jacket", target: 600, actual: 590, efficiency: "98%", status: "On Track" }
   ];
 
   const activities = [
-    { time: "10 mins ago", title: "GRN-2026-0891 Approved", desc: "4,500 meters Cotton Single Jersey received from Pioneer Denim.", type: "procurement" },
-    { time: "25 mins ago", title: "Cutting Lay Plan #44 Completed", desc: "Bundle tickets #B101-B180 printed for Sewing Line 02.", type: "cutting" },
-    { time: "42 mins ago", title: "AQL 2.5 Audit Passed", desc: "Lot 804 (1,200 pcs) inspected with zero major defects.", type: "qc" },
-    { time: "1 hour ago", title: "Batch Spinning #Y-92 Ready", desc: "850 kg Poly-Core Thread forwarded to dyeing section.", type: "thread" }
+    { time: "8 mins ago", title: "3-Way Match Verified", desc: "Apex Textile invoice matched with PO-2026-0145 ($86,362.50 USD).", type: "finance" },
+    { time: "25 mins ago", title: "Cutting Lay Plan #01 Complete", desc: "Bundles #BND-001 to BND-010 printed for Line 04 (ST-2026-CHINO-01).", type: "cutting" },
+    { time: "40 mins ago", title: "Fabric 4-Point Audit Passed", desc: "Lot LOT-TW-2026-01 (368 rolls) passed at 3.85 pts/100 sq.yds. Quarantine released.", type: "qc" },
+    { time: "1 hour ago", title: "GRN-2026-0210 Intake", desc: "36,750 yds 98/2 Cotton Spandex Twill placed in Quarantine.", type: "procurement" }
   ];
 
   return (

@@ -24,7 +24,11 @@ using GarmentsERP.Production.Application;
 using GarmentsERP.Production.Infrastructure;
 using GarmentsERP.Production.Infrastructure.Data;
 using GarmentsERP.Production.Infrastructure.Data.Seed;
+using GarmentsERP.Reporting.Application;
+using GarmentsERP.Reporting.Infrastructure;
 using GarmentsERP.Shared.Common;
+using GarmentsERP.Shared.Extensions;
+using GarmentsERP.Shared.Interceptors;
 using GarmentsERP.Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -69,6 +73,11 @@ builder.Services.AddSwaggerGen(c =>
 // 3. Register Core & Module Services
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddSingleton<IFileStorageService, LocalFileStorageService>();
+builder.Services.AddSingleton<IAuditTrailStore, InMemoryAuditTrailStore>();
+builder.Services.AddScoped<AuditAndSoftDeleteInterceptor>();
+
+// RabbitMQ / MassTransit Enterprise Event-Bus (FND-03)
+builder.Services.AddEnterpriseEventBus(builder.Configuration);
 
 // Auth Module
 builder.Services.AddAuthApplication();
@@ -82,11 +91,9 @@ builder.Services.AddProcurementInfrastructure(builder.Configuration);
 builder.Services.AddInventoryApplication();
 builder.Services.AddInventoryInfrastructure(builder.Configuration);
 
-
 // HR Module (Phase 4)
 builder.Services.AddHrApplication();
 builder.Services.AddHrInfrastructure(builder.Configuration);
-
 
 // Finance Module (Phase 5)
 builder.Services.AddFinanceApplication();
@@ -95,6 +102,10 @@ builder.Services.AddFinanceInfrastructure(builder.Configuration);
 // Production Floor Module (Phase 3)
 builder.Services.AddProductionApplication();
 builder.Services.AddProductionInfrastructure(builder.Configuration);
+
+// Reporting & QuestPDF Background Engine (Phase 0 / FND-05)
+builder.Services.AddReportingApplication();
+builder.Services.AddReportingInfrastructure(builder.Configuration);
 
 // 4. JWT Authentication
 var jwtSecret = builder.Configuration["Jwt:Secret"] 

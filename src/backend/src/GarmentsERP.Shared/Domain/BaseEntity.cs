@@ -1,4 +1,6 @@
-﻿namespace GarmentsERP.Shared.Domain;
+using GarmentsERP.Shared.Interfaces;
+
+namespace GarmentsERP.Shared.Domain;
 
 /// <summary>Base entity for all domain entities. Contains audit + soft-delete columns.</summary>
 public abstract class BaseEntity
@@ -11,6 +13,24 @@ public abstract class BaseEntity
     public bool IsDeleted { get; private set; } = false;
     public DateTime? DeletedAt { get; private set; }
     public Guid? DeletedBy { get; private set; }
+
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    public void AddDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void RemoveDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Remove(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
 
     public void SoftDelete(Guid deletedByUserId)
     {

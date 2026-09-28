@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Procurement.Domain.Entities;
+using GarmentsERP.Procurement.Domain.Entities;
 using GarmentsERP.Procurement.Domain.Enums;
 using Xunit;
 
@@ -65,6 +65,46 @@ public class PurchaseOrderTests
         item.RecordReceived(600);
         po.UpdateReceivingStatus();
         Assert.Equal(POStatus.Completed, po.Status);
+    }
+
+    [Fact]
+    public void AddItem_WithPriceExceedingBudget_ShouldActivateHardBudgetLock()
+    {
+        var styleId = Guid.NewGuid();
+        var po = PurchaseOrder.Create("PO-2026-LOCK-01", Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(14), styleId: styleId);
+
+        // Budget is $2.40/Yd, but proposed price is $2.45/Yd
+        po.AddItem("FAB-TW-01", "Cotton Spandex Twill", MaterialCategory.Fabric, UOM.Yards, 10000, 2.45m, budgetUnitPrice: 2.40m);
+
+        Assert.True(po.IsBudgetLocked);
+        Assert.Equal(POStatus.LockedBudgetExceeded, po.Status);
+
+        // Submitting while locked must throw InvalidOperationException
+        var ex = Assert.Throws<InvalidOperationException>(() => po.Submit());
+        Assert.Contains("Hard Budget Lock", ex.Message);
+    }
+
+    [Fact]
+    public void AuthorizeBudgetOverride_ByCFO_ShouldUnlockPOAndAllowApproval()
+    {
+        var po = PurchaseOrder.Create("PO-2026-LOCK-02", Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(14));
+        po.AddItem("FAB-TW-01", "Cotton Spandex Twill", MaterialCategory.Fabric, UOM.Yards, 10000, 2.45m, budgetUnitPrice: 2.40m);
+
+        Assert.True(po.IsBudgetLocked);
+
+        var cfoId = Guid.NewGuid();
+        po.AuthorizeBudgetOverride(cfoId, "Authorized by CFO due to cotton market spike.");
+
+        Assert.False(po.IsBudgetLocked);
+        Assert.Equal(POStatus.Submitted, po.Status);
+        Assert.Equal(cfoId, po.BudgetOverrideBy);
+        Assert.Equal("Authorized by CFO due to cotton market spike.", po.BudgetOverrideReason);
+        Assert.NotNull(po.BudgetOverrideAt);
+
+        // Now approval must succeed
+        var approverId = Guid.NewGuid();
+        po.Approve(approverId);
+        Assert.Equal(POStatus.Approved, po.Status);
     }
 }
 

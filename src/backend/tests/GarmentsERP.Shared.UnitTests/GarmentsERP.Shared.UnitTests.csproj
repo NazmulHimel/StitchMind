@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -9,6 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
@@ -20,6 +23,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\GarmentsERP.Shared\GarmentsERP.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Reporting\GarmentsERP.Reporting.Application\GarmentsERP.Reporting.Application.csproj" />
+    <ProjectReference Include="..\..\src\Modules\Reporting\GarmentsERP.Reporting.Infrastructure\GarmentsERP.Reporting.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

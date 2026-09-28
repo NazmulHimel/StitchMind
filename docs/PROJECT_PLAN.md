@@ -1,348 +1,204 @@
 # StitchMind — Enterprise Garments Management System
-## Master Project Plan
+## Master Implementation Plan & Work Breakdown Structure (WBS)
 
-**Version:** 1.0.0
-**Date:** 2026-09-24
-**Status:** Planning Phase
-**Architecture:** Modular Monolithic + CQRS
-**Project Directory:** E:\Garments Project\StitchMind
-
----
-
-## 1. Project Overview
-
-StitchMind is a full-stack, enterprise-grade garments industry management system covering the entire manufacturing lifecycle from raw material procurement to finished goods delivery, with complete financial control, role-based access, and rich PDF reporting.
-
-| Attribute    | Value                                              |
-|--------------|----------------------------------------------------|
-| Backend      | ASP.NET Core 10 (Modular Monolithic + CQRS)        |
-| Frontend     | Next.js 14 (App Router, TypeScript)               |
-| Database     | Microsoft SQL Server 2022                         |
-| ORM          | Entity Framework Core 10                           |
-| Auth         | ASP.NET Core 10 Identity + JWT Bearer                |
-| Reports      | QuestPDF                                          |
-| Responsive   | Desktop, Tablet, Mobile                           |
-| Pattern      | Modular Monolithic + CQRS + Repository Pattern    |
+**Document Version:** 1.0.0 (Official Baseline)  
+**Status:** Approved & Active  
+**Total Development & QA Effort:** 377 Working Days across 36 Sprints (10 Phases)  
+**Primary References:** `StitchMind_BRD_v1.0.docx`, `StitchMind_ERP_Task_List_WBS.xlsx`
 
 ---
 
-## 2. Architecture Overview
+## 1. Executive Summary & Stack Architecture
+
+StitchMind is an enterprise-grade garments manufacturing execution and resource planning system designed to eliminate operational silos across yarn spinning, trims procurement, CAD cutting, IoT sewing line balancing, in-line QA inspection, bonded warehouse tracking, commercial finance, and biometric compliance payroll.
+
+| Attribute | Specification |
+|---|---|
+| **Backend Core** | ASP.NET Core 10 (Clean Architecture / DDD, CQRS with MediatR) |
+| **High-Throughput Reads** | Dapper for floor scanning (<300ms) and Andon queries |
+| **Frontend Client** | Next.js 14 (App Router, SSR, TypeScript, Tailwind CSS, Shadcn/UI) |
+| **Database Engine** | Microsoft SQL Server 2022+ with EF Core 10 & Change Interceptors |
+| **Asynchronous Broker** | RabbitMQ (AMQP) with MassTransit (Exchanges, Queues, DLQ) |
+| **Report Generation** | QuestPDF (C# Fluent API, in-memory zero-disk vector generation) |
+| **Background Scheduler** | .NET Hosted BackgroundWorker / Quartz.NET + MailKit |
+| **Containerization** | Docker & Docker Compose multi-stage services |
+
+---
+
+## 2. 10-Phase Sprint Roadmap & Effort Distribution
 
 ```
-[Next.js 14 Frontend]
-        |  REST API / JWT
-[ASP.NET Core 10 API Gateway]
-        |
-[Modular Monolithic Core]
-  +-----------+----------+----------+
-  | Auth Mod  | Proc Mod | Prod Mod | ...
-  +-----------+----------+----------+
-        |
-  [CQRS via MediatR]
-   Commands -> CommandHandlers -> Write DB
-   Queries  -> QueryHandlers  -> Read DB
-        |
-  [EF Core / Repositories]
-        |
-  [MSSQL Database]
+Phase 0: Architecture, Docker & Core Foundation (Sprint 1-2)       -->  19 Days
+Phase 1: Settings, RBAC Security & Master Data (Sprint 3-5)         -->  34 Days
+Phase 2: Procurement, Thread Production & Merchandising (Sprint 6-10) --> 55 Days
+Phase 3: Stock, Warehouse & Cutting Department (Sprint 11-16)       -->  63 Days
+Phase 4: Sewing Floor, IoT/Tablet QC & Line Balancing (Sprint 17-22) --> 64 Days
+Phase 5: Finished Goods & Ex-Factory Shipment (Sprint 23-25)        -->  22 Days
+Phase 6: Accounting, Finance & Commercial Trade (Sprint 26-30)       -->  50 Days
+Phase 7: HR, Compliance & Dual-Stream Payroll (Sprint 31-34)        -->  44 Days
+Phase 8: Background Scheduler & Automated Email System (Sprint 35)   -->  13 Days
+Phase 9: System Integration, Stress Testing & Go-Live (Sprint 36)    -->  13 Days
+---------------------------------------------------------------------------------
+TOTAL ESTIMATED EFFORT                                              = 377 Working Days
 ```
 
 ---
 
-## 3. Technology Stack
+## 3. Work Breakdown Structure (All 63 Tasks)
 
-### Backend
-- ASP.NET Core 10 Web API
-- MediatR 12 (CQRS Mediator)
-- Entity Framework Core 10
-- FluentValidation
-- ASP.NET Core 10 Identity + JWT
-- AutoMapper / Mapster
-- Serilog + Seq (Logging)
-- QuestPDF (Report Generation)
-- xUnit + Moq (Testing)
+### Phase 0: Architecture, Docker & Core Foundation (Sprint 1–2, 19 Days)
 
-### Frontend
-- Next.js 14 (App Router)
-- TypeScript
-- shadcn/ui + Radix UI
-- Tailwind CSS
-- Zustand (State Management)
-- TanStack Query (Data Fetching)
-- React Hook Form + Zod
-- Recharts / Chart.js
-
-### Database
-- Microsoft SQL Server 2022
-- Schema-per-module design
-- EF Core Code-First Migrations
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`FND-01`** | Docker environment setup (`mssql`, `rabbitmq`, `api`, `nextjs`) | Docker, Docker Compose | 3 |
+| **`FND-02`** | ASP.NET Core 10 Clean Architecture scaffolding & EF Core base repositories | C#, .NET 10 | 5 |
+| **`FND-03`** | RabbitMQ Event-Bus configuration (Exchanges, Queues, DLQ, MassTransit) | RabbitMQ, C# | 4 |
+| **`FND-04`** | Next.js core scaffolding (App Router, Tailwind, Shadcn/UI layout) | Next.js, TypeScript | 4 |
+| **`FND-05`** | QuestPDF base engine setup & background worker service architecture | C#, QuestPDF | 3 |
 
 ---
 
-## 4. All Application Modules
+### Phase 1: Settings, RBAC Security & Master Data (Sprint 3–5, 34 Days)
 
-| #  | Module                         | Priority | Phase |
-|----|--------------------------------|----------|-------|
-| 01 | Auth & User Management         | Critical | 1     |
-| 02 | Role & Permission Management   | Critical | 1     |
-| 03 | Organization / Company Setup   | Critical | 1     |
-| 04 | Supplier Management            | High     | 2     |
-| 05 | Material Procurement (PO/GRN)  | High     | 2     |
-| 06 | Thread & Yarn Management       | High     | 2     |
-| 07 | Inventory / Stock Management   | High     | 2     |
-| 08 | Buyer / Order Management       | High     | 3     |
-| 09 | Production Planning            | High     | 3     |
-| 10 | Cutting Department             | High     | 3     |
-| 11 | Sewing / Stitching Department  | High     | 3     |
-| 12 | Washing & Finishing Department | Medium   | 3     |
-| 13 | Quality Control (QC)           | High     | 3     |
-| 14 | Packing & Dispatch             | Medium   | 4     |
-| 15 | HR & Employee Management       | High     | 4     |
-| 16 | Attendance & Leave             | Medium   | 4     |
-| 17 | Payroll Processing             | High     | 4     |
-| 18 | Accounting & Finance           | Critical | 5     |
-| 19 | Report Module (QuestPDF)       | High     | 5     |
-| 20 | Dashboard & KPIs               | High     | 5     |
-| 21 | Audit Log & Activity Tracking  | Medium   | 5     |
-| 22 | Notifications & Alerts         | Low      | 6     |
-| 23 | Settings & Configuration       | Medium   | 6     |
-
-### Suggested Additional Modules
-| Module                 | Business Value                                     |
-|------------------------|----------------------------------------------------|
-| Sample Management      | Track product samples sent to buyers               |
-| Costing / BOM          | Bill of Materials + cost per unit calculation      |
-| Shipment / Export      | LC management, export documentation                |
-| Machine Maintenance    | Maintenance schedule & breakdown log               |
-| Energy Tracking        | Electricity/water/gas usage per department         |
-| Compliance & Audit     | Social compliance tracking for buyer audits        |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`SEC-01`** | User management, password policies & JWT/MFA authentication | Identity, JWT, NextAuth | 5 |
+| **`SEC-02`** | Granular RBAC matrix engine (View, Create, Edit, Delete, Approve, Export) | Custom Claims, Middleware | 6 |
+| **`SEC-03`** | Data-level price masking engine for production floor users | DTO Projections, SQL Policy | 4 |
+| **`SEC-04`** | Configurable multi-level approval workflow engine | State Machine, Workflow Tables | 7 |
+| **`SEC-05`** | Immutable system audit trail (EF Core change interceptor) | EF Core Interceptors, SQL | 4 |
+| **`SEC-06`** | Master data directory (Buyer, Style, Color, Size, Fabric, Currency) | Next.js CRUD, Web API | 5 |
+| **`SEC-07`** | Reports: Immutable Audit Trail Log & Role-Permission Matrix PDF | QuestPDF Fluent API | 3 |
 
 ---
 
-## 5. Development Phases
+### Phase 2: Procurement, Thread Production & Merchandising (Sprint 6–10, 55 Days)
 
-### Phase 1 — Foundation (Weeks 1-3)
-- Backend: Solution scaffold (Modular Monolithic structure)
-- Frontend: Next.js setup with auth layout
-- Auth module: Login, JWT, Refresh Token, Logout
-- Role & Permission module with granular CRUD per module
-- Permission-based dynamic sidebar menu (frontend)
-- Organization / Company setup
-
-### Phase 2 — Procurement & Inventory (Weeks 4-6)
-- Supplier management
-- Material Procurement: PO → Approval → GRN → Invoice
-- Thread / Yarn production management
-- Stock / Inventory module with alerts and re-order logic
-
-### Phase 3 — Production Floor (Weeks 7-10)
-- Buyer & Order management
-- Production planning & scheduling
-- Cutting department (marker, lay plan, cutting order)
-- Sewing department (line plan, hourly output, WIP)
-- Washing & Finishing department
-- QC module (inline, end-line, final inspection)
-
-### Phase 4 – HR & Dispatch (Weeks 11-13) [COMPLETED]
-- [x] HR & Employee Management (profiles, compensation structure, line assignments, banking)
-- [x] Biometric-Ready Attendance & Shift Management (punch simulator, overtime @ 1.5x)
-- [x] Leave Management Workflow (casual, sick, annual, maternity, supervisor approvals)
-- [x] Automated Monthly Payroll (1-click batch generation, payslips, deductions & net payable)
-- [x] Packing & Export Dispatch (Carton barcode tracking, Delivery Challans & Gate Passes)
-
-### Phase 5 — Finance & Reporting (Weeks 14-16)
-- Chart of Accounts, Journal Vouchers, Ledger
-- Trial Balance, Profit & Loss, Balance Sheet
-- QuestPDF reports for all modules
-- Dashboard KPIs and charts
-
-### Phase 6 — Polish & Go-Live (Weeks 17-18)
-- Notifications & alerts
-- Settings & configurations
-- Audit logs
-- Performance & load testing
-- Deployment (IIS / Docker)
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`PRO-01`** | Material Requisition (MR) creation linked to Buyer Style IDs | Web API, Next.js UI | 5 |
+| **`PRO-02`** | Request for Quotation (RFQ) & Comparative Statement (CS) grid | Next.js Dynamic Tables | 5 |
+| **`PRO-03`** | Pre-budget validation lock (blocks PO exceeding pre-costing by >0.00%) | Business Rule Validator | 4 |
+| **`PRO-04`** | Purchase Order (PO) creation, approvals & status lifecycle | Workflow Engine, Web API | 6 |
+| **`PRO-05`** | Commercial import & Back-to-Back (B2B) LC tracking | SQL Ledger, Web API | 6 |
+| **`PRO-06`** | Goods Receipt Note (GRN) & Quarantine stock intake handling | Stock Events, RabbitMQ | 5 |
+| **`PRO-07`** | Supplier directory, scoring & performance analytics | Analytical Engine, Dapper | 4 |
+| **`THP-01`** | Raw cotton/yarn inward, spinning, drawing & winding batch logs | Stock Batches, Web API | 6 |
+| **`THP-02`** | Dyeing chemical recipe calculation engine & cost breakdown | C# Recipe Algorithm | 5 |
+| **`THP-03`** | Thread tensile/strength testing & cone barcode packaging | Barcode Gen, Web API | 4 |
+| **`PRO-RPT`**| Reports: Commercial PO, PO vs GRN Variance & Thread Lab Certificates | QuestPDF Fluent API | 5 |
 
 ---
 
-## 6. Role Hierarchy
+### Phase 3: Stock, Warehouse & Cutting Department (Sprint 11–16, 63 Days)
 
-| Role                 | Access Scope                                          |
-|----------------------|-------------------------------------------------------|
-| Super Admin          | Full system, multi-company management                 |
-| Admin                | Full access within own company                        |
-| Accounts Manager     | Accounting & Finance module full access               |
-| Store Manager        | Inventory, Procurement full access                    |
-| Production Manager   | All production department modules                     |
-| Cutting Supervisor   | Cutting department only                               |
-| Sewing Supervisor    | Sewing department only                                |
-| QC Supervisor        | QC module only                                        |
-| HR Manager           | HR, Attendance, Payroll                               |
-| Dispatch Officer     | Packing & Dispatch                                    |
-| Viewer / Auditor     | Read-only access to assigned modules                  |
-
-> Every role has granular CREATE / READ / UPDATE / DELETE permissions per module feature.
-
----
-
-## 7. Backend Modular Monolithic Solution Structure
-
-```
-StitchMind.sln
-|
-+-- src/
-|   +-- StitchMind.API                          (Entry point, Controllers, Middleware)
-|   +-- StitchMind.Shared                       (BaseEntity, Result<T>, Exceptions, Extensions)
-|   |
-|   +-- Modules/
-|       +-- Auth/
-|       |   +-- StitchMind.Auth.Domain
-|       |   +-- StitchMind.Auth.Application     (Commands, Queries, Handlers, DTOs, Validators)
-|       |   +-- StitchMind.Auth.Infrastructure  (Repos, EF Configs, Identity)
-|       |
-|       +-- Procurement/
-|       |   +-- StitchMind.Procurement.Domain
-|       |   +-- StitchMind.Procurement.Application
-|       |   +-- StitchMind.Procurement.Infrastructure
-|       |
-|       +-- Inventory/
-|       |   +-- StitchMind.Inventory.Domain
-|       |   +-- StitchMind.Inventory.Application
-|       |   +-- StitchMind.Inventory.Infrastructure
-|       |
-|       +-- Production/
-|       |   +-- Cutting/
-|       |   |   +-- StitchMind.Production.Cutting.Domain
-|       |   |   +-- StitchMind.Production.Cutting.Application
-|       |   |   +-- StitchMind.Production.Cutting.Infrastructure
-|       |   |
-|       |   +-- Sewing/
-|       |   +-- Washing/
-|       |   +-- QualityControl/
-|       |
-|       +-- HR/
-|       +-- Finance/
-|       +-- Reporting/
-|
-+-- tests/
-    +-- StitchMind.Auth.UnitTests
-    +-- StitchMind.Procurement.UnitTests
-    +-- StitchMind.Integration.Tests
-```
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`WHS-01`** | Bin & Rack 3D coordinate location mapping engine | SQL Tree, Location UI | 5 |
+| **`WHS-02`** | Fabric roll barcode/QR tracking (GSM, Cuttable Width, Shade Group) | Zebra ZPL, Barcode API | 6 |
+| **`WHS-03`** | Customs Bond register & Utilization Permit (UP) balance engine | Audit Logic, SQL Store | 7 |
+| **`WHS-04`** | Store Issue Note (SIN) & Remnant/Cut-piece inventory management | Issue Workflow, Web API | 5 |
+| **`WHS-05`** | Physical inventory cycle counting & variance adjustment authorization | Stock Adjustment Engine | 4 |
+| **`CUT-01`** | CAD marker file ingestion & planned consumption benchmark parser | Marker Ingestion Parser | 6 |
+| **`CUT-02`** | Knit fabric relaxation time-lock & temperature monitoring engine | Time-lock Validators | 4 |
+| **`CUT-03`** | Lay planning, spreading logs & stripe/check pattern matching control | Cutting Tables UI | 5 |
+| **`CUT-04`** | Automated bundle ticket & barcode generation engine (Thermal/A4) | SkiaSharp, Barcode Gen | 6 |
+| **`CUT-05`** | Cut panel numbering, sorting & fusing machine parameter logging | Part Tracker, Web API | 4 |
+| **`CUT-06`** | Subcontract cutting delivery & return shortage reconciliation | Subcontract Ledgers | 5 |
+| **`WHS-RPT`**| Reports: FIFO Stock Ledger, Bond UP Audit & Planned vs Actual Wastage | QuestPDF Fluent API | 6 |
 
 ---
 
-## 8. CQRS Pattern Example
+### Phase 4: Sewing Floor, IoT/Tablet QC & Line Balancing (Sprint 17–22, 64 Days)
 
-### Command Side (Write)
-```csharp
-// Command
-public record CreatePurchaseOrderCommand(
-    Guid SupplierId,
-    DateTime OrderDate,
-    List<PurchaseOrderItemDto> Items
-) : IRequest<Result<Guid>>;
-
-// Handler
-public class CreatePurchaseOrderCommandHandler
-    : IRequestHandler<CreatePurchaseOrderCommand, Result<Guid>>
-{
-    public async Task<Result<Guid>> Handle(
-        CreatePurchaseOrderCommand request,
-        CancellationToken cancellationToken)
-    {
-        // validate -> create domain entity -> save -> return id
-    }
-}
-```
-
-### Query Side (Read)
-```csharp
-// Query
-public record GetPurchaseOrdersQuery(int Page, int PageSize)
-    : IRequest<Result<PagedList<PurchaseOrderDto>>>;
-
-// Handler
-public class GetPurchaseOrdersQueryHandler
-    : IRequestHandler<GetPurchaseOrdersQuery, Result<PagedList<PurchaseOrderDto>>>
-{
-    // reads via Dapper or EF AsNoTracking for performance
-}
-```
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`IE-01`**  | IE operation bulletin, step breakdown & SMV/SAM allocation | IE Master UI, Web API | 6 |
+| **`SEW-01`** | Pitch diagram & real-time line balancing calculation assistant | Calculation Engine | 5 |
+| **`SEW-02`** | Sub-second bundle barcode scanning API for floor stations (<300ms) | Dapper, Fast Scanning API | 7 |
+| **`SEW-03`** | Real-time floor WIP tracking & bottleneck detection algorithm | RabbitMQ, Redis/Memory | 6 |
+| **`SEW-04`** | Digital Andon board WebSocket data feed for overhead line displays | WebSockets, SignalR, UI | 5 |
+| **`SEW-05`** | Sewing machine allocation, breakdown tickets & MTTR/MTBF analytics | Asset Maintenance Log | 5 |
+| **`SEW-06`** | Broken needle exchange compliance policy & fragment verification log | Compliance Workflow | 3 |
+| **`QC-01`**  | Raw fabric 4-Point System inspection engine (Auto Pass/Fail) | 4-Point Math Calculator | 5 |
+| **`QC-02`**  | Tablet-friendly In-Line Traffic Light QC audit interface | Touch-first UI, Fast POST | 5 |
+| **`QC-03`**  | Visual garment defect heatmap & End-of-Line rejection log | SVG/Canvas Heatmap | 6 |
+| **`QC-04`**  | Final pre-shipment AQL sampling engine (ISO 2859-1) & CAPA workflow | Audit Standard Engine | 5 |
+| **`SEW-RPT`**| Reports: Hourly Production (HPM), Line Efficiency, Pareto Defect & AQL Cert | QuestPDF Fluent API | 6 |
 
 ---
 
-## 9. Database Design Strategy
+### Phase 5: Finished Goods & Ex-Factory Shipment (Sprint 23–25, 22 Days)
 
-- Schema-per-module: auth, inventory, procurement, production, hr, finance
-- All PKs: GUID (uniqueidentifier)
-- Soft-delete: IsDeleted, DeletedAt, DeletedBy on all critical tables
-- Audit columns: CreatedAt, CreatedBy, UpdatedAt, UpdatedBy on all tables
-- No direct cross-module foreign keys (use IDs only across module boundaries)
-
----
-
-## 10. Report Module (QuestPDF)
-
-| Report                       | Module        |
-|------------------------------|---------------|
-| Purchase Order (PO)          | Procurement   |
-| Goods Received Note (GRN)    | Procurement   |
-| Stock Summary / Ledger       | Inventory     |
-| Cutting Order Sheet          | Production    |
-| Sewing Production Report     | Production    |
-| QC Inspection Report         | QC            |
-| Delivery Challan             | Dispatch      |
-| Salary / Payroll Sheet       | HR            |
-| Attendance Report            | HR            |
-| General Ledger               | Finance       |
-| Trial Balance                | Finance       |
-| Profit & Loss Statement      | Finance       |
-| Balance Sheet                | Finance       |
-| Buyer Order Summary          | Orders        |
-| KPI Dashboard PDF Export     | Dashboard     |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`SHP-01`** | Carton packing list generator with gross weight check validation | Carton Packing Engine | 5 |
+| **`SHP-02`** | Finished Goods (FG) inventory warehouse management | Finished Stock Ledger | 4 |
+| **`SHP-03`** | Container/truck barcode loading audit & dispatch verification | Barcode Verification | 4 |
+| **`SHP-04`** | Commercial Ex-Factory gate pass execution & order 'Shipped' status lock | Status Workflow, Lock API | 5 |
+| **`SHP-RPT`**| Reports: Official Ex-Factory Gate Pass, Packing List & Dispatch Dossier | QuestPDF Fluent API | 4 |
 
 ---
 
-## 11. API Design Conventions
+### Phase 6: Accounting, Finance & Commercial Trade (Sprint 26–30, 50 Days)
 
-- Base URL: /api/v1/{module}/{resource}
-- HTTP Methods: GET (query), POST (command-create), PUT (command-update), DELETE (command-delete)
-- Response wrapper: { success, data, message, errors }
-- Pagination: { page, pageSize, totalCount, items }
-- Auth header: Authorization: Bearer {token}
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`ACC-01`** | Multi-layer Chart of Accounts (COA) & automated double-entry vouchers | Double-entry Accounting | 7 |
+| **`ACC-02`** | Automated Three-Way Matching (PO + GRN + Vendor Bill verification) | Reconciliation Engine | 7 |
+| **`ACC-03`** | Export Master LC, B2B LC settlements & bill discounting (FDBP) ledger | Commercial Trade Module | 8 |
+| **`ACC-04`** | Order-wise pre-costing vs actual post-costing margin variance engine | Cost Accounting Logic | 7 |
+| **`ACC-05`** | Multi-currency engine (USD/EUR/GBP) with automated Forex gain/loss | FX Conversion Tables | 4 |
+| **`ACC-06`** | Fixed asset depreciation engine & withholding tax/VAT (TDS/VDS) deductions | Automated Ledger Rules | 5 |
+| **`ACC-07`** | Accounts Payable/Receivable aging analysis & payment disbursement run | Financial Scheduling | 5 |
+| **`ACC-RPT`**| Reports: Balance Sheet, P&L, Cash Flow, Trial Balance & Order Profitability | QuestPDF Fluent API | 7 |
 
 ---
 
-*Document owned by: StitchMind Project Team*
-*Last updated: 2026-09-24*
+### Phase 7: HR, Compliance & Dual-Stream Payroll (Sprint 31–34, 44 Days)
 
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`HR-01`**  | Digital service book & child labor age validation screening (<18 yrs block) | Validation, Doc Store | 5 |
+| **`HR-02`**  | Biometric device (ZKTeco/Facial) real-time TCP/IP synchronization listener | TCP/IP Socket Listener | 7 |
+| **`HR-03`**  | Dynamic shift rotation, roster scheduling & late deduction penalty engine | Shift Engine, Scheduler | 5 |
+| **`HR-04`**  | Earned leave encashment & statutory maternity benefits calculator | Compliance Benefit Math | 5 |
+| **`HR-05`**  | Dual-stream payroll (Monthly Staff salary + Floor piece-rate + OT/EOT) | Batch Payroll Engine | 8 |
+| **`HR-06`**  | Automated bank & Mobile Financial Services (bKash/Nagad) payout file exporter | Formatted File Exporter | 4 |
+| **`HR-07`**  | Occupational health clinic logs, worker grievance box & disciplinary actions | HR Incident Management | 4 |
+| **`HR-RPT`** | Reports: Master Salary Sheet, OT Compliance Audit, Bilingual Pay Slips | QuestPDF Fluent API | 6 |
 
 ---
 
-## 12. File Storage Strategy
+### Phase 8: Background Scheduler & Automated Email System (Sprint 35, 13 Days)
 
-| Attribute          | Decision                                           |
-|--------------------|----------------------------------------------------|
-| Phase 1 Storage    | Local Server Disk (D:\StitchMind\Storage\)        |
-| Phase 2 Storage    | Azure Blob Storage (future migration)              |
-| Abstraction Layer  | IFileStorageService interface (swap with no code change) |
-| Files in DB?       | NO — only relative file path stored in DB columns |
-| Max file size      | 20 MB per file                                     |
-| Allowed types      | .jpg, .png, .pdf, .doc, .docx, .xls, .xlsx, .csv  |
-| File serving       | Streamed through authenticated API controller only |
-| Disk needed (Yr1)  | ~40 GB (recommend 200 GB dedicated drive)          |
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`SCH-01`** | Quartz.NET cron-trigger manager & database execution schedule tables | Quartz.NET, C# Worker | 4 |
+| **`SCH-02`** | In-memory QuestPDF rendering pipeline optimization (`MemoryStream` buffers) | C# Memory Profiling | 3 |
+| **`SCH-03`** | Secure SMTP / SES email dispatcher service with automated retry policies | MailKit, Error Handlers | 3 |
+| **`SCH-04`** | End-to-End scheduled email test (8:00 PM automated management digest delivery) | Integration Testing | 3 |
 
-### Storage Folder Layout
-```
-D:\StitchMind\Storage\
-  +-- company\{companyId}\logo\
-  +-- employees\{companyId}\{employeeId}\photo|nid|passport|contracts\
-  +-- procurement\{companyId}\purchase-orders|grn|invoices\
-  +-- production\{companyId}\styles|cutting|compliance\
-  +-- hr\{companyId}\attendance\imports\ | payroll\
-  +-- reports\{companyId}\generated\ (60-min cache, auto-purged)
-  +-- temp\ (daily auto-cleanup)
-```
+---
 
-> Full details: `docs/architecture/FILE_STORAGE.md`
+### Phase 9: System Integration, Stress Testing & Go-Live (Sprint 36, 13 Days)
+
+| Task ID | Task Description & Functional Scope | Implementation Layer | ETA (Days) |
+|---|---|---|---|
+| **`UAT-01`** | End-to-End cross-module lifecycle testing (MR -> PO -> Cut -> Sew -> Ship -> Pay) | Full Team QA | 5 |
+| **`UAT-02`** | 2,000+ concurrent floor barcode scans & tablet stress testing | k6 / JMeter Stress Test | 4 |
+| **`UAT-03`** | Production Docker deployment setup, reverse proxy & automated DB backups | CI/CD, Production Nginx | 4 |
+
+---
+
+## 4. Definition of Done (DoD) & Acceptance Criteria
+
+Every work package adheres to the 8 core acceptance criteria defined in the BRD:
+1. **`AC-01` (Infra):** Zero port collision on multi-container Docker Compose.
+2. **`AC-02` (Security):** Price masking active at DTO/query layer for floor roles.
+3. **`AC-03` (Procure):** Pre-costing budget lock blocks PO >0.00% without CFO authorization.
+4. **`AC-04` (Store):** Inward GRN automatically locks stock in `Quarantine` until QC registers a Pass.
+5. **`AC-05` (Floor):** Floor barcode scans execute in under 300ms and push live updates to Andon boards.
+6. **`AC-06` (Finance):** Automated 3-way matching reconciles PO + GRN + Supplier Bill prior to payment.
+7. **`AC-07` (HR):** Age gate blocks profile creation for any candidate under 18 years.
+8. **`AC-08` (Worker):** In-memory QuestPDF worker compiles and sends daily digest via email automatically.
