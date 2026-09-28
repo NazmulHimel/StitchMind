@@ -1,4 +1,4 @@
-﻿namespace GarmentsERP.Inventory.Domain.Enums;
+namespace GarmentsERP.Inventory.Domain.Enums;
 
 public enum ItemCategory
 {
@@ -57,6 +57,31 @@ public enum ThreadStage
     Winding = 4,
     QualityTesting = 5,
     Packaged = 6
+}
+
+public enum BondTransactionType
+{
+    ImportCredit = 1,
+    FloorIssueDebit = 2,
+    ExportReconciled = 3,
+    ScrapAdjustment = 4
+}
+
+public enum StoreIssueStatus
+{
+    Draft = 1,
+    Approved = 2,
+    IssuedToFloor = 3,
+    Cancelled = 4
+}
+
+public enum WarehouseZone
+{
+    RawMaterialFabric = 1,
+    QuarantineStorage = 2,
+    TrimsAccessories = 3,
+    RemnantStorage = 4,
+    FinishedGoods = 5
 }
 
 public enum ThreadBatchStatus
