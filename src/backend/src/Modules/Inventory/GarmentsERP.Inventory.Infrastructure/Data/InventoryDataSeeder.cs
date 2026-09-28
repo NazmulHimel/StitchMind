@@ -145,6 +145,107 @@ public static class InventoryDataSeeder
         };
         await db.ThreadTensileTests.AddAsync(tensileTest);
 
+        // 9. Seed 3D Warehouse Bin & Rack Coordinates (WHS-01)
+        var loc1 = WarehouseLocation.Create("WH1", "A03", "R02", "T01", "B01", WarehouseZone.RawMaterialFabric, 12, defaultCompanyId);
+        loc1.AssignRoll(6);
+        var loc2 = WarehouseLocation.Create("WH1", "A03", "R02", "T01", "B02", WarehouseZone.RawMaterialFabric, 12, defaultCompanyId);
+        loc2.AssignRoll(8);
+        var loc3 = WarehouseLocation.Create("WH1", "A03", "R02", "T01", "B03", WarehouseZone.RawMaterialFabric, 12, defaultCompanyId);
+        loc3.AssignRoll(10);
+        var loc4 = WarehouseLocation.Create("WH1", "A03", "R02", "T01", "B04", WarehouseZone.RawMaterialFabric, 12, defaultCompanyId);
+        loc4.AssignRoll(12); // Full!
+        var locQuarantine = WarehouseLocation.Create("WH1", "A03", "R05", "T03", "B05", WarehouseZone.QuarantineStorage, 20, defaultCompanyId);
+        locQuarantine.AssignRoll(5);
+        var locRemnant = WarehouseLocation.Create("WH1", "A01", "R01", "T01", "REM", WarehouseZone.RemnantStorage, 30, defaultCompanyId);
+        locRemnant.AssignRoll(3);
+
+        await db.WarehouseLocations.AddRangeAsync(loc1, loc2, loc3, loc4, locQuarantine, locRemnant);
+
+        // 10. Seed Fabric Rolls with Barcodes, Shade Groups & Coordinates (WHS-02)
+        var r1 = FabricRoll.Create(
+            "R-00891", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 102.5m, loc1.LocationCode, defaultCompanyId,
+            "SUP-APEX-01", null, FabricGrade.GradeA, "ROL-2026-00891", lotPassed.Id, "A", -2.5m, -1.2m, loc1.LocationCode);
+        var r2 = FabricRoll.Create(
+            "R-00892", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 100.0m, loc2.LocationCode, defaultCompanyId,
+            "SUP-APEX-02", null, FabricGrade.GradeA, "ROL-2026-00892", lotPassed.Id, "A", -2.4m, -1.2m, loc2.LocationCode);
+        var r3 = FabricRoll.Create(
+            "R-00893", itm2.Id, "DYE-TW-2026-01", 261m, 58m, 98.5m, loc3.LocationCode, defaultCompanyId,
+            "SUP-APEX-03", null, FabricGrade.GradeA, "ROL-2026-00893", lotPassed.Id, "B", -2.6m, -1.3m, loc3.LocationCode);
+        var r4 = FabricRoll.Create(
+            "R-00894", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 105.0m, loc4.LocationCode, defaultCompanyId,
+            "SUP-APEX-04", null, FabricGrade.GradeA, "ROL-2026-00894", lotPassed.Id, "C", -2.8m, -1.5m, loc4.LocationCode);
+        var rRemnant = FabricRoll.Create(
+            "R-00895-REM", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 15.0m, locRemnant.LocationCode, defaultCompanyId,
+            "SUP-APEX-01", null, FabricGrade.GradeA, "ROL-2026-00895-REM", lotPassed.Id, "A", -2.5m, -1.2m, locRemnant.LocationCode);
+        rRemnant.IsRemnant = true;
+
+        await db.FabricRolls.AddRangeAsync(r1, r2, r3, r4, rRemnant);
+
+        // 11. Seed Customs Bond Register & Utilization Permit Ledger (WHS-03)
+        var bondCredit = CustomsBondLedger.RecordCredit(
+            "BOND-REG-2026-001",
+            "UP-2026-BOND-8891",
+            "GRN",
+            "GRN-2026-0210",
+            "FAB-TW-01",
+            "98/2 Cotton Spandex Twill 260 GSM (Navy Blue)",
+            36750m,
+            0m,
+            22050.00m,
+            defaultCompanyId,
+            "Raw material inward credit under Customs Bond Utilization Permit UP-2026-BOND-8891");
+
+        var bondDebit = CustomsBondLedger.RecordDebit(
+            "BOND-REG-2026-001",
+            "UP-2026-BOND-8891",
+            "STORE_ISSUE_NOTE",
+            "SIN-2026-0045",
+            "FAB-TW-01",
+            "98/2 Cotton Spandex Twill 260 GSM (Navy Blue)",
+            406.0m,
+            36750m,
+            defaultCompanyId,
+            "Cutting floor requisition issue debit for Export Order Style ST-2026-CHINO-01");
+
+        await db.CustomsBondLedgers.AddRangeAsync(bondCredit, bondDebit);
+
+        // 12. Seed Store Issue Note (SIN-2026-0045) & Remnant Handling (WHS-04)
+        var sin = new StoreIssueNote
+        {
+            IssueNumber = "SIN-2026-0045",
+            IssueDate = DateTime.UtcNow.AddHours(-4),
+            TargetDepartment = "Cutting Department (Table 01)",
+            StyleNumber = "ST-2026-CHINO-01",
+            BuyerOrderNumber = "ORD-2026-001",
+            RequestedBy = "Mahfuz Rahman (Cutting Master)",
+            IssuedBy = "Enamul Hoque (Warehouse In-Charge)",
+            Status = StoreIssueStatus.IssuedToFloor,
+            Remarks = "Fabric rolls released under approved shade grouping A. Remnant returned to remnant bin.",
+            CompanyId = defaultCompanyId
+        };
+        sin.AddItem(r1.Id, r1.RollBarcode, r1.ShadeGroup, 102.5m, 102.5m, 0m);
+        sin.AddItem(r2.Id, r2.RollBarcode, r2.ShadeGroup, 100.0m, 100.0m, 0m);
+        sin.AddItem(r3.Id, r3.RollBarcode, r3.ShadeGroup, 98.5m, 98.5m, 0m);
+        sin.AddItem(r4.Id, r4.RollBarcode, r4.ShadeGroup, 120.0m, 105.0m, 15.0m, "ROL-2026-00895-REM", locRemnant.LocationCode);
+
+        await db.StoreIssueNotes.AddAsync(sin);
+
+        // 13. Seed Inventory Cycle Count & Variance Adjustment (WHS-05)
+        var cycleCount = new InventoryCycleCount
+        {
+            CycleCountNumber = "CC-2026-M10",
+            AuditDate = DateTime.UtcNow.AddDays(-2),
+            AuditorName = "Mahmud Hasan (Internal Auditor)",
+            LocationZone = "RawMaterialFabric",
+            Remarks = "Monthly routine physical audit across Aisle 03 twill fabric racks. Variances reconciled within +/- 0.3% standard tolerance.",
+            CompanyId = defaultCompanyId
+        };
+        cycleCount.AddLine("FAB-TW-01", "ROL-2026-00891", loc1.LocationCode, 102.5m, 102.5m, "RoutineAudit");
+        cycleCount.AddLine("FAB-TW-01", "ROL-2026-00892", loc2.LocationCode, 100.0m, 99.8m, "EndBitWastage");
+        cycleCount.AuthorizeAdjustment("S. K. Anwar (DGM Supply Chain)");
+
+        await db.InventoryCycleCounts.AddAsync(cycleCount);
+
         await db.SaveChangesAsync();
     }
 }

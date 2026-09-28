@@ -21,6 +21,12 @@ public class InventoryDbContext : DbContext
     public DbSet<ThreadDyeingRecipe> ThreadDyeingRecipes => Set<ThreadDyeingRecipe>();
     public DbSet<RecipeIngredient> RecipeIngredients => Set<RecipeIngredient>();
     public DbSet<ThreadTensileTest> ThreadTensileTests => Set<ThreadTensileTest>();
+    public DbSet<WarehouseLocation> WarehouseLocations => Set<WarehouseLocation>();
+    public DbSet<CustomsBondLedger> CustomsBondLedgers => Set<CustomsBondLedger>();
+    public DbSet<StoreIssueNote> StoreIssueNotes => Set<StoreIssueNote>();
+    public DbSet<StoreIssueNoteItem> StoreIssueNoteItems => Set<StoreIssueNoteItem>();
+    public DbSet<InventoryCycleCount> InventoryCycleCounts => Set<InventoryCycleCount>();
+    public DbSet<InventoryCycleCountLine> InventoryCycleCountLines => Set<InventoryCycleCountLine>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
