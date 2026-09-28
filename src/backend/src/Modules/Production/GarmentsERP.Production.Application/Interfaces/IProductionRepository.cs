@@ -53,5 +53,23 @@ public interface IProductionRepository
     // Metrics
     Task<ProductionMetricsDto> GetProductionMetricsAsync(CancellationToken cancellationToken = default);
 
+    // Phase 4 Cutting Extensions
+    Task<IEnumerable<CADMarker>> GetCADMarkersAsync(CancellationToken cancellationToken = default);
+    Task<CADMarker?> GetCADMarkerByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<CADMarker> AddCADMarkerAsync(CADMarker marker, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<RelaxationSession>> GetRelaxationSessionsAsync(RelaxationStatus? status = null, CancellationToken cancellationToken = default);
+    Task<RelaxationSession?> GetRelaxationSessionByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<RelaxationSession> AddRelaxationSessionAsync(RelaxationSession session, CancellationToken cancellationToken = default);
+    Task UpdateRelaxationSessionAsync(RelaxationSession session, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<FusingMachineLog>> GetFusingLogsAsync(string? cutOrderNumber = null, CancellationToken cancellationToken = default);
+    Task<FusingMachineLog> AddFusingLogAsync(FusingMachineLog log, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<SubcontractCuttingChallan>> GetSubcontractChallansAsync(SubcontractStatus? status = null, CancellationToken cancellationToken = default);
+    Task<SubcontractCuttingChallan?> GetSubcontractChallanByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<SubcontractCuttingChallan> AddSubcontractChallanAsync(SubcontractCuttingChallan challan, CancellationToken cancellationToken = default);
+    Task UpdateSubcontractChallanAsync(SubcontractCuttingChallan challan, CancellationToken cancellationToken = default);
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

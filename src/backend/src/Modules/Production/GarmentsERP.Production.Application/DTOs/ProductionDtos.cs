@@ -241,3 +241,130 @@ public record DeliveryChallanItemDto(
     string Color,
     int QuantityPcs
 );
+
+// --- Phase 4 Cutting DTOs ---
+public record CADMarkerDto(
+    Guid Id,
+    string MarkerName,
+    Guid? StyleId,
+    string StyleNumber,
+    string CADSoftware,
+    decimal CuttableWidthInches,
+    decimal MarkerLengthYards,
+    int GarmentsPerMarker,
+    string SizeDistributionRatio,
+    decimal MarkerEfficiencyPct,
+    decimal PlannedConsumptionPerPcYds,
+    string FileFormat
+);
+
+public record CreateCADMarkerDto(
+    string MarkerName,
+    Guid? StyleId,
+    string StyleNumber,
+    string CADSoftware,
+    decimal CuttableWidthInches,
+    decimal MarkerLengthYards,
+    int GarmentsPerMarker,
+    string SizeDistributionRatio,
+    decimal MarkerEfficiencyPct,
+    string FileFormat
+);
+
+public record RelaxationSessionDto(
+    Guid Id,
+    Guid FabricRollId,
+    string RollBarcode,
+    string DyeLotNumber,
+    string FabricType,
+    DateTime UnrolledAtUtc,
+    int MandatoryDurationHours,
+    DateTime UnlockedAtUtc,
+    bool IsUnlocked,
+    int RemainingHours,
+    int RemainingMinutes,
+    decimal AmbientTemperatureC,
+    decimal RelativeHumidityPct,
+    string OperatorId,
+    string StatusName
+);
+
+public record StartRelaxationSessionDto(
+    Guid FabricRollId,
+    string RollBarcode,
+    string DyeLotNumber,
+    string FabricType,
+    int DurationHours,
+    decimal AmbientTemperatureC,
+    decimal RelativeHumidityPct,
+    string OperatorId
+);
+
+public record AuthorizeSpreadingResultDto(
+    bool Allowed,
+    string Message,
+    string CutOrderNumber,
+    string TableNumber
+);
+
+public record FusingMachineLogDto(
+    Guid Id,
+    string CutOrderNumber,
+    string MachineId,
+    string ComponentName,
+    string InterliningType,
+    decimal TemperatureC,
+    decimal PressureBar,
+    decimal SpeedSeconds,
+    string OperatorName,
+    bool IsApproved,
+    string Remarks,
+    DateTime LoggedAtUtc
+);
+
+public record CreateFusingMachineLogDto(
+    string CutOrderNumber,
+    string MachineId,
+    string ComponentName,
+    string InterliningType,
+    decimal TemperatureC,
+    decimal PressureBar,
+    decimal SpeedSeconds,
+    string OperatorName,
+    string Remarks
+);
+
+public record SubcontractCuttingChallanDto(
+    Guid Id,
+    string ChallanNumber,
+    string SubcontractorName,
+    string StyleNumber,
+    string OrderNumber,
+    decimal FabricSentYds,
+    int ExpectedCutPanels,
+    int ReceivedCutPanels,
+    int DefectivePanels,
+    int ShortageCount,
+    decimal ShortagePercentage,
+    string StatusName,
+    DateTime DispatchedAtUtc,
+    DateTime? ReceivedAtUtc,
+    string ReconciledBy,
+    string Remarks
+);
+
+public record CreateSubcontractCuttingChallanDto(
+    string SubcontractorName,
+    string StyleNumber,
+    string OrderNumber,
+    decimal FabricSentYds,
+    int ExpectedCutPanels,
+    string Remarks
+);
+
+public record ReconcileSubcontractDto(
+    int ReceivedCutPanels,
+    int DefectivePanels,
+    string ReconciledBy,
+    string? Remarks
+);

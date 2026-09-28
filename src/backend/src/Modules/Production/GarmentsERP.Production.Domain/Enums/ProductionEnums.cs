@@ -1,4 +1,4 @@
-﻿namespace GarmentsERP.Production.Domain.Enums;
+namespace GarmentsERP.Production.Domain.Enums;
 
 public enum OrderStatus
 {
@@ -15,7 +15,24 @@ public enum CuttingStatus
     SpreadingLay = 1,
     InProgress = 2,
     CutCompleted = 3,
-    Bundled = 4
+    Bundled = 4,
+    Relaxing = 5,
+    ReadyForCut = 6,
+    IssuedToSewing = 7
+}
+
+public enum RelaxationStatus
+{
+    Relaxing = 0,
+    Unlocked = 1,
+    SpreadingAuthorized = 2
+}
+
+public enum SubcontractStatus
+{
+    Dispatched = 0,
+    Reconciled = 1,
+    VarianceUnderReview = 2
 }
 
 public enum SewingLineStatus
