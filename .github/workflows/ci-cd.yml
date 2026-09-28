@@ -1,0 +1,76 @@
+name: StitchMind ERP - Production CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  # ============================================================================
+  # 1. Backend Build & Comprehensive Test Matrix (All 9 Test Suites)
+  # ============================================================================
+  backend-test:
+    name: Backend Build & Unit/Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET 10 SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore Backend Dependencies
+      run: dotnet restore src/backend/GarmentsERP.slnx
+
+    - name: Build Backend (Release)
+      run: dotnet build src/backend/GarmentsERP.slnx -c Release --no-restore
+
+    - name: Execute Full Test Suite (124+ Tests across 9 projects)
+      run: dotnet test src/backend/GarmentsERP.slnx -c Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+
+  # ============================================================================
+  # 2. Frontend Build & Static Type Check
+  # ============================================================================
+  frontend-build:
+    name: Frontend Typecheck & Production Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/frontend
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js 22
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: 'src/frontend/package-lock.json'
+
+    - name: Install Frontend Dependencies
+      run: npm ci
+
+    - name: Execute Next.js Production Build
+      run: npm run build
+
+  # ============================================================================
+  # 3. Docker Compose & Multi-Container Validation (AC-01 Zero Port Collisions)
+  # ============================================================================
+  docker-validation:
+    name: Docker Multi-Container Compose Config Verification
+    needs: [backend-test, frontend-build]
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate Docker Compose Configuration
+      run: docker compose config
+
+    - name: Build Backend & Frontend Container Images
+      run: |
+        docker compose build api frontend

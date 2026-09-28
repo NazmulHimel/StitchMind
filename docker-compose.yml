@@ -1,0 +1,157 @@
+services:
+  # ============================================================================
+  # 1. Microsoft SQL Server 2022 Database Engine
+  # ============================================================================
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: stitchmind-mssql
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "StitchMind@2026!Secret"
+      MSSQL_PID: "Developer"
+      MSSQL_TCP_PORT: 1433
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - backup_volume:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'StitchMind@2026!Secret' -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - stitchmind-network
+
+  # ============================================================================
+  # 2. RabbitMQ Message Broker & Management Console
+  # ============================================================================
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: stitchmind-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: "stitchmind"
+      RABBITMQ_DEFAULT_PASS: "Rabbit@2026!Secret"
+    ports:
+      - "5672:5672"     # AMQP Protocol
+      - "15672:15672"   # Management Web UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - stitchmind-network
+
+  # ============================================================================
+  # 3. ASP.NET Core 10 Web API Backend
+  # ============================================================================
+  api:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: stitchmind-api
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Server=mssql,1433;Database=GarmentsERP_DB;User Id=sa;Password=StitchMind@2026!Secret;TrustServerCertificate=True;MultipleActiveResultSets=true;"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__Username: "stitchmind"
+      RabbitMQ__Password: "Rabbit@2026!Secret"
+      Smtp__EnableSimulatedDelivery: "true"
+      Smtp__SenderEmail: "reports@stitchmind.com"
+      Smtp__SenderDisplayName: "StitchMind Executive Digest Engine"
+    ports:
+      - "5000:8080"
+    depends_on:
+      mssql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - stitchmind-network
+
+  # ============================================================================
+  # 4. Next.js 16 Production Web Application Portal
+  # ============================================================================
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: stitchmind-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: "production"
+      NEXT_PUBLIC_API_URL: "http://localhost:5000"
+      PORT: "3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - stitchmind-network
+
+  # ============================================================================
+  # 5. Nginx High-Performance Reverse Proxy & SSL Gateway
+  # ============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: stitchmind-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - stitchmind-network
+
+  # ============================================================================
+  # 6. Automated Database Backup Cron Worker (UAT-03)
+  # ============================================================================
+  backup-worker:
+    build:
+      context: ./docker/backup
+      dockerfile: Dockerfile
+    container_name: stitchmind-backup-worker
+    restart: unless-stopped
+    environment:
+      DB_HOST: "mssql"
+      DB_USER: "sa"
+      DB_PASSWORD: "StitchMind@2026!Secret"
+      DB_NAME: "GarmentsERP_DB"
+    volumes:
+      - backup_volume:/backups
+    depends_on:
+      mssql:
+        condition: service_healthy
+    networks:
+      - stitchmind-network
+
+# ==============================================================================
+# Persistent Volumes & Network Topology (AC-01 Zero Port Collisions)
+# ==============================================================================
+volumes:
+  mssql_data:
+    name: stitchmind_mssql_data
+  rabbitmq_data:
+    name: stitchmind_rabbitmq_data
+  backup_volume:
+    name: stitchmind_backups_data
+
+networks:
+  stitchmind-network:
+    name: stitchmind_network
+    driver: bridge

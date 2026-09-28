@@ -147,6 +147,15 @@ const DEFAULT_MENU_TREE: MenuItem[] = [
       { module: "Auth", label: "User Directory", icon: "UserPlus", route: "/settings", sortOrder: 1, permissions: ["Auth.Read"], children: [] },
       { module: "Roles", label: "Roles & Permissions", icon: "Key", route: "/settings/roles", sortOrder: 2, permissions: ["Roles.Read"], children: [] }
     ]
+  },
+  {
+    module: "UAT",
+    label: "UAT & Go-Live Verification",
+    icon: "ShieldCheck",
+    route: "/uat",
+    sortOrder: 12,
+    permissions: [],
+    children: []
   }
 ];
 
