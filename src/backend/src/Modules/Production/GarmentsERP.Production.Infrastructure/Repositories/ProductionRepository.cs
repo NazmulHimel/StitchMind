@@ -320,4 +320,96 @@ public class ProductionRepository : IProductionRepository
         return Task.CompletedTask;
     }
 
+    // Phase 4 Cutting Extensions
+    public async Task<IEnumerable<CADMarker>> GetCADMarkersAsync(CancellationToken cancellationToken = default)
+    {
+        return await _context.CADMarkers
+            .AsNoTracking()
+            .OrderByDescending(m => m.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<CADMarker?> GetCADMarkerByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.CADMarkers
+            .FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+    }
+
+    public async Task<CADMarker> AddCADMarkerAsync(CADMarker marker, CancellationToken cancellationToken = default)
+    {
+        await _context.CADMarkers.AddAsync(marker, cancellationToken);
+        return marker;
+    }
+
+    public async Task<IEnumerable<RelaxationSession>> GetRelaxationSessionsAsync(RelaxationStatus? status = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.RelaxationSessions.AsNoTracking();
+        if (status.HasValue)
+        {
+            query = query.Where(s => s.Status == status.Value);
+        }
+        return await query.OrderByDescending(s => s.UnrolledAtUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<RelaxationSession?> GetRelaxationSessionByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.RelaxationSessions
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+    }
+
+    public async Task<RelaxationSession> AddRelaxationSessionAsync(RelaxationSession session, CancellationToken cancellationToken = default)
+    {
+        await _context.RelaxationSessions.AddAsync(session, cancellationToken);
+        return session;
+    }
+
+    public Task UpdateRelaxationSessionAsync(RelaxationSession session, CancellationToken cancellationToken = default)
+    {
+        _context.RelaxationSessions.Update(session);
+        return Task.CompletedTask;
+    }
+
+    public async Task<IEnumerable<FusingMachineLog>> GetFusingLogsAsync(string? cutOrderNumber = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.FusingMachineLogs.AsNoTracking();
+        if (!string.IsNullOrEmpty(cutOrderNumber))
+        {
+            query = query.Where(f => f.CutOrderNumber == cutOrderNumber);
+        }
+        return await query.OrderByDescending(f => f.LoggedAtUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<FusingMachineLog> AddFusingLogAsync(FusingMachineLog log, CancellationToken cancellationToken = default)
+    {
+        await _context.FusingMachineLogs.AddAsync(log, cancellationToken);
+        return log;
+    }
+
+    public async Task<IEnumerable<SubcontractCuttingChallan>> GetSubcontractChallansAsync(SubcontractStatus? status = null, CancellationToken cancellationToken = default)
+    {
+        var query = _context.SubcontractCuttingChallans.AsNoTracking();
+        if (status.HasValue)
+        {
+            query = query.Where(s => s.Status == status.Value);
+        }
+        return await query.OrderByDescending(s => s.DispatchedAtUtc).ToListAsync(cancellationToken);
+    }
+
+    public async Task<SubcontractCuttingChallan?> GetSubcontractChallanByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _context.SubcontractCuttingChallans
+            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+    }
+
+    public async Task<SubcontractCuttingChallan> AddSubcontractChallanAsync(SubcontractCuttingChallan challan, CancellationToken cancellationToken = default)
+    {
+        await _context.SubcontractCuttingChallans.AddAsync(challan, cancellationToken);
+        return challan;
+    }
+
+    public Task UpdateSubcontractChallanAsync(SubcontractCuttingChallan challan, CancellationToken cancellationToken = default)
+    {
+        _context.SubcontractCuttingChallans.Update(challan);
+        return Task.CompletedTask;
+    }
 }

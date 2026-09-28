@@ -23,6 +23,10 @@ public class ProductionDbContext : DbContext
     public DbSet<CartonPack> CartonPacks => Set<CartonPack>();
     public DbSet<DeliveryChallan> DeliveryChallans => Set<DeliveryChallan>();
     public DbSet<DeliveryChallanItem> DeliveryChallanItems => Set<DeliveryChallanItem>();
+    public DbSet<CADMarker> CADMarkers => Set<CADMarker>();
+    public DbSet<RelaxationSession> RelaxationSessions => Set<RelaxationSession>();
+    public DbSet<FusingMachineLog> FusingMachineLogs => Set<FusingMachineLog>();
+    public DbSet<SubcontractCuttingChallan> SubcontractCuttingChallans => Set<SubcontractCuttingChallan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

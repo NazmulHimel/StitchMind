@@ -252,7 +252,75 @@ public static class ProductionDataSeeder
         await context.BuyerOrders.AddRangeAsync(order1, order2, order3, orderChino);
         await context.SaveChangesAsync();
 
-        // 3. Seed Cutting Orders & Bundles
+        // 3. Seed CAD Markers (CUT-01)
+        var markerChino = new CADMarker
+        {
+            MarkerName = "MKR-CHINO-SZ32-34-A",
+            StyleNumber = "ST-2026-CHINO-01",
+            CADSoftware = "Gerber AccuMark v16",
+            CuttableWidthInches = 58.0m,
+            MarkerLengthYards = 8.42m,
+            GarmentsPerMarker = 4,
+            SizeDistributionRatio = "32/32: 2 pcs, 34/32: 2 pcs",
+            MarkerEfficiencyPct = 87.20m,
+            PlannedConsumptionPerPcYds = 2.1050m,
+            FileFormat = "ASTM/AAMA DXF"
+        };
+        var markerPolo = new CADMarker
+        {
+            MarkerName = "MKR-POLO-S-XL",
+            StyleNumber = "ST-882",
+            CADSoftware = "Lectra Diamino Expert",
+            CuttableWidthInches = 62.0m,
+            MarkerLengthYards = 6.85m,
+            GarmentsPerMarker = 4,
+            SizeDistributionRatio = "S: 1, M: 1, L: 1, XL: 1",
+            MarkerEfficiencyPct = 88.60m,
+            PlannedConsumptionPerPcYds = 1.7125m,
+            FileFormat = "HPGL Plotter"
+        };
+        await context.CADMarkers.AddRangeAsync(markerChino, markerPolo);
+
+        // 3b. Seed Relaxation Sessions (CUT-02)
+        var roll1Guid = Guid.Parse("33333333-3333-3333-3333-333333333301");
+        var roll2Guid = Guid.Parse("33333333-3333-3333-3333-333333333302");
+        var roll3Guid = Guid.Parse("33333333-3333-3333-3333-333333333303");
+        var roll4Guid = Guid.Parse("33333333-3333-3333-3333-333333333304");
+
+        var relax1 = RelaxationSession.StartSession(roll1Guid, "ROL-2026-00891", "LOT-TW-2026-01", "98/2 Cotton Spandex Twill (260 GSM)", 24, 24.5m, 65.0m, "Cutter-Master-01", DateTime.UtcNow.AddHours(-26));
+        var relax2 = RelaxationSession.StartSession(roll2Guid, "ROL-2026-00892", "LOT-TW-2026-01", "98/2 Cotton Spandex Twill (260 GSM)", 24, 24.5m, 65.0m, "Cutter-Master-01", DateTime.UtcNow.AddHours(-25.5));
+        var relax3 = RelaxationSession.StartSession(roll3Guid, "ROL-2026-00893", "LOT-TW-2026-01", "98/2 Cotton Spandex Twill (260 GSM)", 24, 24.2m, 66.0m, "Cutter-Master-01", DateTime.UtcNow.AddHours(-24.5));
+        var relax4 = RelaxationSession.StartSession(roll4Guid, "ROL-2026-00894", "LOT-TW-2026-01", "98/2 Cotton Spandex Twill (260 GSM)", 24, 24.8m, 64.0m, "Cutter-Master-02", DateTime.UtcNow.AddHours(-4.0)); // LOCKED! 20 hrs remaining
+
+        await context.RelaxationSessions.AddRangeAsync(relax1, relax2, relax3, relax4);
+
+        // 3c. Seed Cutting Orders & Bundles (CUT-03 & CUT-04)
+        var cutChino = new CuttingOrder
+        {
+            CuttingOrderNumber = "CUT-2026-0001",
+            BuyerOrderId = orderChino.Id,
+            StyleNumber = "ST-2026-CHINO-01",
+            FabricType = "98/2 Cotton Spandex Twill (260 GSM)",
+            TotalRequiredQty = 240,
+            TotalPlies = 60,
+            MarkerLength = 8.42m,
+            FabricWidth = 58.0m,
+            EfficiencyPercentage = 87.20m,
+            Status = CuttingStatus.CutCompleted,
+            TableNumber = "Table-03",
+            CuttingDate = DateTime.UtcNow.AddHours(-18),
+            MarkerId = markerChino.Id,
+            MarkerName = markerChino.MarkerName,
+            ShadeGroup = "Shade A",
+            GarmentsPerMarker = 4,
+            TotalGarmentsPlanned = 240,
+            ActualFabricConsumedYds = 508.5m,
+            EndLossRemnantYds = 3.5m,
+            CuttingWastageVariancePct = 0.68m,
+            AllocatedRollBarcodes = "ROL-2026-00891, ROL-2026-00892, ROL-2026-00893",
+            ApprovedBy = "Tariqul Islam (Cutting In-charge)"
+        };
+
         var cut1 = new CuttingOrder
         {
             CuttingOrderNumber = "CO-8801",
@@ -266,7 +334,10 @@ public static class ProductionDataSeeder
             EfficiencyPercentage = 88.6m,
             Status = CuttingStatus.CutCompleted,
             TableNumber = "Table-01",
-            CuttingDate = DateTime.UtcNow.AddDays(-2)
+            CuttingDate = DateTime.UtcNow.AddDays(-2),
+            ShadeGroup = "Shade A",
+            TotalGarmentsPlanned = 2500,
+            ApprovedBy = "Tariqul Islam"
         };
 
         var cut2 = new CuttingOrder
@@ -282,21 +353,79 @@ public static class ProductionDataSeeder
             EfficiencyPercentage = 91.2m,
             Status = CuttingStatus.InProgress,
             TableNumber = "Table-02",
-            CuttingDate = DateTime.UtcNow.AddDays(-1)
+            CuttingDate = DateTime.UtcNow.AddDays(-1),
+            ShadeGroup = "Shade B",
+            TotalGarmentsPlanned = 5000,
+            ApprovedBy = "Tariqul Islam"
         };
 
-        await context.CuttingOrders.AddRangeAsync(cut1, cut2);
+        await context.CuttingOrders.AddRangeAsync(cutChino, cut1, cut2);
         await context.SaveChangesAsync();
+
+        // 10 Serialized Component Bundles for CUT-2026-0001 (CUT-04)
+        var chinoBundles = new List<CutBundle>
+        {
+            new() { BundleNumber = "BND-2026-0001-01", Barcode = "BND-2026-0001-01", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "32/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "FRONT PANEL", Quantity = 24, SerialStart = 1, SerialEnd = 24, BundleSequence = 1, TotalBundlesInOrder = 10, CurrentFloorStation = "SEWING_INPUT", CurrentSection = BundleSection.Sewing },
+            new() { BundleNumber = "BND-2026-0001-02", Barcode = "BND-2026-0001-02", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "32/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "BACK PANEL", Quantity = 24, SerialStart = 1, SerialEnd = 24, BundleSequence = 2, TotalBundlesInOrder = 10, CurrentFloorStation = "SEWING_INPUT", CurrentSection = BundleSection.Sewing },
+            new() { BundleNumber = "BND-2026-0001-03", Barcode = "BND-2026-0001-03", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "32/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "WAISTBAND", Quantity = 24, SerialStart = 1, SerialEnd = 24, BundleSequence = 3, TotalBundlesInOrder = 10, CurrentFloorStation = "FUSING_MACHINE", CurrentSection = BundleSection.Cutting },
+            new() { BundleNumber = "BND-2026-0001-04", Barcode = "BND-2026-0001-04", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "32/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "FLY & POCKET", Quantity = 24, SerialStart = 1, SerialEnd = 24, BundleSequence = 4, TotalBundlesInOrder = 10, CurrentFloorStation = "CUTTING_OUTPUT", CurrentSection = BundleSection.Cutting },
+            new() { BundleNumber = "BND-2026-0001-05", Barcode = "BND-2026-0001-05", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "34/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "FRONT PANEL", Quantity = 24, SerialStart = 25, SerialEnd = 48, BundleSequence = 5, TotalBundlesInOrder = 10, CurrentFloorStation = "SEWING_INPUT", CurrentSection = BundleSection.Sewing },
+            new() { BundleNumber = "BND-2026-0001-06", Barcode = "BND-2026-0001-06", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "34/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "BACK PANEL", Quantity = 24, SerialStart = 25, SerialEnd = 48, BundleSequence = 6, TotalBundlesInOrder = 10, CurrentFloorStation = "SEWING_INPUT", CurrentSection = BundleSection.Sewing },
+            new() { BundleNumber = "BND-2026-0001-07", Barcode = "BND-2026-0001-07", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "34/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "WAISTBAND", Quantity = 24, SerialStart = 25, SerialEnd = 48, BundleSequence = 7, TotalBundlesInOrder = 10, CurrentFloorStation = "FUSING_MACHINE", CurrentSection = BundleSection.Cutting },
+            new() { BundleNumber = "BND-2026-0001-08", Barcode = "BND-2026-0001-08", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "34/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "FLY & POCKET", Quantity = 24, SerialStart = 25, SerialEnd = 48, BundleSequence = 8, TotalBundlesInOrder = 10, CurrentFloorStation = "CUTTING_OUTPUT", CurrentSection = BundleSection.Cutting },
+            new() { BundleNumber = "BND-2026-0001-09", Barcode = "BND-2026-0001-09", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "32/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "FRONT PANEL", Quantity = 24, SerialStart = 49, SerialEnd = 72, BundleSequence = 9, TotalBundlesInOrder = 10, CurrentFloorStation = "CUTTING_OUTPUT", CurrentSection = BundleSection.Cutting },
+            new() { BundleNumber = "BND-2026-0001-10", Barcode = "BND-2026-0001-10", CuttingOrderId = cutChino.Id, StyleNumber = "ST-2026-CHINO-01", Size = "34/32", Color = "Khaki Beige", ShadeGroup = "A", ComponentName = "BACK PANEL", Quantity = 24, SerialStart = 73, SerialEnd = 96, BundleSequence = 10, TotalBundlesInOrder = 10, CurrentFloorStation = "CUTTING_OUTPUT", CurrentSection = BundleSection.Cutting }
+        };
 
         // Bundles for cut1
         var bundles = new List<CutBundle>
         {
-            new() { BundleNumber = "CO-8801-01", CuttingOrderId = cut1.Id, Size = "S", Color = "Navy Blue", Quantity = 50, Barcode = "BND-CO-8801-001-S", SerialStart = 1, SerialEnd = 50, CurrentSection = BundleSection.Sewing },
-            new() { BundleNumber = "CO-8801-02", CuttingOrderId = cut1.Id, Size = "M", Color = "Navy Blue", Quantity = 50, Barcode = "BND-CO-8801-002-M", SerialStart = 51, SerialEnd = 100, CurrentSection = BundleSection.Sewing },
-            new() { BundleNumber = "CO-8801-03", CuttingOrderId = cut1.Id, Size = "L", Color = "Navy Blue", Quantity = 50, Barcode = "BND-CO-8801-003-L", SerialStart = 101, SerialEnd = 150, CurrentSection = BundleSection.Cutting },
-            new() { BundleNumber = "CO-8801-04", CuttingOrderId = cut1.Id, Size = "XL", Color = "Navy Blue", Quantity = 50, Barcode = "BND-CO-8801-004-XL", SerialStart = 151, SerialEnd = 200, CurrentSection = BundleSection.Cutting }
+            new() { BundleNumber = "CO-8801-01", Barcode = "BND-CO-8801-001-S", CuttingOrderId = cut1.Id, Size = "S", Color = "Navy Blue", Quantity = 50, SerialStart = 1, SerialEnd = 50, CurrentSection = BundleSection.Sewing },
+            new() { BundleNumber = "CO-8801-02", Barcode = "BND-CO-8801-002-M", CuttingOrderId = cut1.Id, Size = "M", Color = "Navy Blue", Quantity = 50, SerialStart = 51, SerialEnd = 100, CurrentSection = BundleSection.Sewing },
+            new() { BundleNumber = "CO-8801-03", Barcode = "BND-CO-8801-003-L", CuttingOrderId = cut1.Id, Size = "L", Color = "Navy Blue", Quantity = 50, SerialStart = 101, SerialEnd = 150, CurrentSection = BundleSection.Cutting },
+            new() { BundleNumber = "CO-8801-04", Barcode = "BND-CO-8801-004-XL", CuttingOrderId = cut1.Id, Size = "XL", Color = "Navy Blue", Quantity = 50, SerialStart = 151, SerialEnd = 200, CurrentSection = BundleSection.Cutting }
         };
+        await context.CutBundles.AddRangeAsync(chinoBundles);
         await context.CutBundles.AddRangeAsync(bundles);
+
+        // 3d. Seed Fusing Machine Parameters Log (CUT-05)
+        var fusingLog = new FusingMachineLog
+        {
+            CutOrderNumber = "CUT-2026-0001",
+            MachineId = "FUS-02",
+            ComponentName = "Waistband",
+            InterliningType = "Fusible Microdot Woven 70 GSM",
+            TemperatureC = 150.0m,
+            PressureBar = 3.5m,
+            SpeedSeconds = 12.0m,
+            OperatorName = "Mizanur Rahman",
+            IsApproved = true,
+            Remarks = "Adhesion peel test passed (1.45 kg/inch). No surface bubbling.",
+            LoggedAtUtc = DateTime.UtcNow.AddHours(-15)
+        };
+        await context.FusingMachineLogs.AddAsync(fusingLog);
+
+        // 3e. Seed Subcontract Cutting Delivery & Reconciliation (CUT-06)
+        var subChallan = new SubcontractCuttingChallan
+        {
+            ChallanNumber = "SCC-2026-0012",
+            SubcontractorName = "Apex Precision Cutting Mills",
+            StyleNumber = "ST-2026-CHINO-01",
+            OrderNumber = "BO-2026-0890",
+            FabricSentYds = 1200.0m,
+            ExpectedCutPanels = 1440,
+            ReceivedCutPanels = 1432,
+            DefectivePanels = 4,
+            ShortageCount = 4,
+            ShortagePercentage = 0.28m,
+            Status = SubcontractStatus.Reconciled,
+            DispatchedAtUtc = DateTime.UtcNow.AddDays(-3),
+            ReceivedAtUtc = DateTime.UtcNow.AddDays(-1),
+            ReconciledBy = "Tariqul Islam",
+            Remarks = "Shortage within 0.5% standard subcontract tolerance. Reconciled."
+        };
+        await context.SubcontractCuttingChallans.AddAsync(subChallan);
+        await context.SaveChangesAsync();
 
         // 4. Seed Sewing Lines
         var line1 = new SewingLine { LineNumber = "Line-01", LineName = "Polo Shirt Line", Floor = "Floor 2", TargetEfficiency = 88.0m, CapacityPerDay = 1400, Supervisor = "Rafiqul Islam", Status = SewingLineStatus.Active };

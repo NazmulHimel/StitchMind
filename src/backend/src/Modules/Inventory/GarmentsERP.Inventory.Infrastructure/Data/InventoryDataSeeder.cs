@@ -162,16 +162,16 @@ public static class InventoryDataSeeder
         await db.WarehouseLocations.AddRangeAsync(loc1, loc2, loc3, loc4, locQuarantine, locRemnant);
 
         // 10. Seed Fabric Rolls with Barcodes, Shade Groups & Coordinates (WHS-02)
-        var r1 = FabricRoll.Create(
+        var twillRoll1 = FabricRoll.Create(
             "R-00891", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 102.5m, loc1.LocationCode, defaultCompanyId,
             "SUP-APEX-01", null, FabricGrade.GradeA, "ROL-2026-00891", lotPassed.Id, "A", -2.5m, -1.2m, loc1.LocationCode);
-        var r2 = FabricRoll.Create(
+        var twillRoll2 = FabricRoll.Create(
             "R-00892", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 100.0m, loc2.LocationCode, defaultCompanyId,
             "SUP-APEX-02", null, FabricGrade.GradeA, "ROL-2026-00892", lotPassed.Id, "A", -2.4m, -1.2m, loc2.LocationCode);
-        var r3 = FabricRoll.Create(
+        var twillRoll3 = FabricRoll.Create(
             "R-00893", itm2.Id, "DYE-TW-2026-01", 261m, 58m, 98.5m, loc3.LocationCode, defaultCompanyId,
             "SUP-APEX-03", null, FabricGrade.GradeA, "ROL-2026-00893", lotPassed.Id, "B", -2.6m, -1.3m, loc3.LocationCode);
-        var r4 = FabricRoll.Create(
+        var twillRoll4 = FabricRoll.Create(
             "R-00894", itm2.Id, "DYE-TW-2026-01", 260m, 58m, 105.0m, loc4.LocationCode, defaultCompanyId,
             "SUP-APEX-04", null, FabricGrade.GradeA, "ROL-2026-00894", lotPassed.Id, "C", -2.8m, -1.5m, loc4.LocationCode);
         var rRemnant = FabricRoll.Create(
@@ -179,7 +179,7 @@ public static class InventoryDataSeeder
             "SUP-APEX-01", null, FabricGrade.GradeA, "ROL-2026-00895-REM", lotPassed.Id, "A", -2.5m, -1.2m, locRemnant.LocationCode);
         rRemnant.IsRemnant = true;
 
-        await db.FabricRolls.AddRangeAsync(r1, r2, r3, r4, rRemnant);
+        await db.FabricRolls.AddRangeAsync(twillRoll1, twillRoll2, twillRoll3, twillRoll4, rRemnant);
 
         // 11. Seed Customs Bond Register & Utilization Permit Ledger (WHS-03)
         var bondCredit = CustomsBondLedger.RecordCredit(

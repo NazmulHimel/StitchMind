@@ -55,4 +55,18 @@ public class QuestPdfReportService : IPdfReportService
         var pdfBytes = document.GeneratePdf();
         return Task.FromResult(pdfBytes);
     }
+
+    public Task<byte[]> GenerateCuttingLaySheetAsync(CuttingLaySheetReportModel model, CancellationToken ct = default)
+    {
+        var document = new CuttingLaySheetPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
+
+    public Task<byte[]> GenerateBundleTicketsAsync(BundleTicketReportModel model, CancellationToken ct = default)
+    {
+        var document = new BundleTicketSheetPdfDocument(model);
+        var pdfBytes = document.GeneratePdf();
+        return Task.FromResult(pdfBytes);
+    }
 }
