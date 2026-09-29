@@ -31,6 +31,9 @@ using GarmentsERP.Shared.Extensions;
 using GarmentsERP.Shared.Interceptors;
 using GarmentsERP.Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -183,33 +186,115 @@ app.MapGet("/health", () => Results.Ok(new
 app.MapControllers();
 
 // 7. Database Seeder
+static async Task EnsureSchemaAndTablesCreatedAsync(DbContext db, string schemaName)
+{
+    if (db.Database.IsRelational())
+    {
+        try
+        {
+            await db.Database.ExecuteSqlRawAsync($"IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = '{schemaName}') EXEC('CREATE SCHEMA [{schemaName}]');");
+        }
+        catch { }
+
+        var creator = db.Database.GetService<IRelationalDatabaseCreator>();
+        try
+        {
+            await creator.CreateTablesAsync();
+        }
+        catch
+        {
+            // tables might already exist
+        }
+    }
+    else
+    {
+        await db.Database.EnsureCreatedAsync();
+    }
+}
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var logger = services.GetRequiredService<ILogger<Program>>();
+
+    // Auth Module
     try
     {
         var authContext = services.GetRequiredService<AuthDbContext>();
+        try
+        {
+            await authContext.Database.ExecuteSqlRawAsync(
+                "IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('auth.Roles') AND name = 'CanViewFinancialCosts') " +
+                "ALTER TABLE [auth].[Roles] ADD [CanViewFinancialCosts] bit NOT NULL CONSTRAINT DF_Roles_CanViewFinancialCosts DEFAULT 1;");
+        }
+        catch { }
+
         var passwordService = services.GetRequiredService<IPasswordService>();
         await AuthDataSeeder.SeedAsync(authContext, passwordService, logger);
-
-        var procContext = services.GetRequiredService<ProcurementDbContext>();
-        await ProcurementDataSeeder.SeedAsync(procContext);
-
-        var invContext = services.GetRequiredService<InventoryDbContext>();
-        await InventoryDataSeeder.SeedAsync(invContext);
-
-        var prodContext = services.GetRequiredService<ProductionDbContext>();
-        await ProductionDataSeeder.SeedAsync(prodContext);
-                var finContext = services.GetRequiredService<FinanceDbContext>();
-        await FinanceDataSeeder.SeedAsync(finContext, logger);
-        var hrContext = services.GetRequiredService<HrDbContext>();
-        await HrDataSeeder.SeedAsync(hrContext);
-
     }
     catch (Exception ex)
     {
-        logger.LogWarning("Database seeding skipped or failed: {Message}", ex.Message);
+        logger.LogWarning("Auth database seeding skipped or failed: {Message}", ex.Message);
+    }
+
+    // Procurement Module
+    try
+    {
+        var procContext = services.GetRequiredService<ProcurementDbContext>();
+        await EnsureSchemaAndTablesCreatedAsync(procContext, "procurement");
+        await ProcurementDataSeeder.SeedAsync(procContext);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning("Procurement database seeding skipped or failed: {Message}", ex.Message);
+    }
+
+    // Inventory Module
+    try
+    {
+        var invContext = services.GetRequiredService<InventoryDbContext>();
+        await EnsureSchemaAndTablesCreatedAsync(invContext, "inventory");
+        await InventoryDataSeeder.SeedAsync(invContext);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning("Inventory database seeding skipped or failed: {Message}", ex.Message);
+    }
+
+    // Production Module
+    try
+    {
+        var prodContext = services.GetRequiredService<ProductionDbContext>();
+        await EnsureSchemaAndTablesCreatedAsync(prodContext, "production");
+        await ProductionDataSeeder.SeedAsync(prodContext);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning("Production database seeding skipped or failed: {Message}", ex.Message);
+    }
+
+    // Finance Module
+    try
+    {
+        var finContext = services.GetRequiredService<FinanceDbContext>();
+        await EnsureSchemaAndTablesCreatedAsync(finContext, "finance");
+        await FinanceDataSeeder.SeedAsync(finContext, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning("Finance database seeding skipped or failed: {Message}", ex.Message);
+    }
+
+    // HR Module
+    try
+    {
+        var hrContext = services.GetRequiredService<HrDbContext>();
+        await EnsureSchemaAndTablesCreatedAsync(hrContext, "hr");
+        await HrDataSeeder.SeedAsync(hrContext);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning("HR database seeding skipped or failed: {Message}", ex.Message);
     }
 }
 

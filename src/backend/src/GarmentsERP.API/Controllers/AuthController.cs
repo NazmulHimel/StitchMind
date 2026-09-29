@@ -1,7 +1,10 @@
-﻿using GarmentsERP.Auth.Application.Commands.Login;
+using GarmentsERP.Auth.Application.Commands.ForgotPassword;
+using GarmentsERP.Auth.Application.Commands.Login;
 using GarmentsERP.Auth.Application.Commands.Logout;
 using GarmentsERP.Auth.Application.Commands.RefreshToken;
 using GarmentsERP.Auth.Application.Commands.RegisterUser;
+using GarmentsERP.Auth.Application.Commands.ResetPassword;
+using GarmentsERP.Auth.Application.Commands.VerifyOtp;
 using GarmentsERP.Auth.Application.DTOs;
 using GarmentsERP.Auth.Application.Queries.GetCurrentUser;
 using GarmentsERP.Auth.Application.Queries.GetMenuItems;
@@ -88,6 +91,60 @@ public class AuthController : ControllerBase
             return BadRequest(ApiResponse<object>.Fail(result.Error ?? "Logout failed."));
 
         return Ok(ApiResponse<string>.Ok("Logged out successfully."));
+    }
+
+    /// <summary>
+    /// Request a 6-digit OTP code sent to the registered email for password reset.
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request, CancellationToken ct)
+    {
+        var command = new ForgotPasswordCommand(request.Email);
+        var result = await _sender.Send(command, ct);
+
+        if (!result.IsSuccess)
+            return BadRequest(ApiResponse<object>.Fail(result.Error ?? "Failed to process request."));
+
+        return Ok(ApiResponse<string>.Ok("If the email is registered in our system, a 6-digit verification code has been sent."));
+    }
+
+    /// <summary>
+    /// Verify the 6-digit OTP code sent to user email.
+    /// </summary>
+    [HttpPost("verify-otp")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequestDto request, CancellationToken ct)
+    {
+        var command = new VerifyOtpCommand(request.Email, request.Otp);
+        var result = await _sender.Send(command, ct);
+
+        if (!result.IsSuccess)
+            return BadRequest(ApiResponse<object>.Fail(result.Error ?? "Invalid or expired OTP."));
+
+        return Ok(ApiResponse<bool>.Ok(true, "OTP verified successfully."));
+    }
+
+    /// <summary>
+    /// Reset password using verified OTP and set new password.
+    /// </summary>
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request, CancellationToken ct)
+    {
+        var command = new ResetPasswordCommand(request.Email, request.Otp, request.NewPassword, request.ConfirmPassword);
+        var result = await _sender.Send(command, ct);
+
+        if (!result.IsSuccess)
+            return BadRequest(ApiResponse<object>.Fail(result.Error ?? "Failed to reset password."));
+
+        return Ok(ApiResponse<string>.Ok("Password reset successfully. You can now sign in with your new password."));
     }
 
     /// <summary>

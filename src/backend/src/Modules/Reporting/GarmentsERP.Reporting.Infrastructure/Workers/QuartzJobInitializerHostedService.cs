@@ -1,6 +1,9 @@
 using GarmentsERP.Reporting.Application.Interfaces;
 using GarmentsERP.Reporting.Infrastructure.Data;
 using GarmentsERP.Reporting.Infrastructure.Data.Seed;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -33,8 +36,24 @@ public class QuartzJobInitializerHostedService : IHostedService
 
         try
         {
-            // Ensure DB schema & seed default cron jobs
-            await db.Database.EnsureCreatedAsync(cancellationToken);
+            // Ensure DB schema & tables exist even if database was already created
+            if (db.Database.IsRelational())
+            {
+                var creator = db.Database.GetService<Microsoft.EntityFrameworkCore.Storage.IRelationalDatabaseCreator>();
+                try
+                {
+                    await creator.CreateTablesAsync(cancellationToken);
+                }
+                catch
+                {
+                    // Tables might already exist
+                }
+            }
+            else
+            {
+                await db.Database.EnsureCreatedAsync(cancellationToken);
+            }
+
             await SchedulerDataSeeder.SeedAsync(db, _logger);
 
             // Register with Quartz scheduler
