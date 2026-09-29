@@ -1,4 +1,4 @@
-﻿using GarmentsERP.Auth.Application.Interfaces;
+using GarmentsERP.Auth.Application.Interfaces;
 using GarmentsERP.Auth.Infrastructure.Data;
 using GarmentsERP.Auth.Infrastructure.Repositories;
 using GarmentsERP.Auth.Infrastructure.Services;
@@ -26,6 +26,8 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordService, PasswordService>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
         services.AddSingleton<IMenuBuilderService, MenuBuilderService>();
+        services.AddSingleton<IOtpService, OtpService>();
+        services.AddScoped<IAuthEmailService, AuthEmailService>();
 
         return services;
     }

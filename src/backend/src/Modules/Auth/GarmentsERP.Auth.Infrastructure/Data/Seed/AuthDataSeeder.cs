@@ -18,6 +18,9 @@ public static class AuthDataSeeder
             if (context.Database.IsSqlServer())
             {
                 await context.Database.MigrateAsync();
+                await context.Database.ExecuteSqlRawAsync(
+                    "IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('auth.Roles') AND name = 'CanViewFinancialCosts') " +
+                    "ALTER TABLE [auth].[Roles] ADD [CanViewFinancialCosts] bit NOT NULL CONSTRAINT DF_Roles_CanViewFinancialCosts DEFAULT 1;");
             }
             else
             {

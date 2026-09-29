@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth, DEMO_ROLES } from "@/lib/auth-context";
+import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
 import { Sparkles, Lock, User, Eye, EyeOff, ShieldCheck, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
@@ -38,11 +39,6 @@ export default function LoginPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleQuickRole = (roleKey: string) => {
-    switchDemoRole(roleKey);
-    router.push("/dashboard");
   };
 
   return (
@@ -199,7 +195,7 @@ export default function LoginPage() {
               />
               <span>Remember me</span>
             </label>
-            <a href="#" style={{ color: "var(--primary)", fontWeight: 600 }}>Forgot password?</a>
+            <Link href="/forgot-password" style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "none" }}>Forgot password?</Link>
           </div>
 
           <button
@@ -213,39 +209,10 @@ export default function LoginPage() {
               marginTop: 6
             }}
           >
-            <span>{isSubmitting ? "Signing In..." : "Sign In to Dashboard"}</span>
+            <span>{isSubmitting ? "Signing In..." : "Sign In"}</span>
             <ArrowRight size={16} />
           </button>
         </form>
-
-        {/* 1-Click Fast Role Sign-in for Testing */}
-        <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid #e2e8f0" }}>
-          <div style={{ fontSize: "0.76rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10, textAlign: "center" }}>
-            1-Click Demo Quick Switcher
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-            {Object.keys(DEMO_ROLES).slice(0, 6).map((rk) => (
-              <button
-                key={rk}
-                type="button"
-                onClick={() => handleQuickRole(rk)}
-                style={{
-                  padding: "6px 8px",
-                  background: "#f1f5f9",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: 6,
-                  color: "#334155",
-                  fontSize: "0.72rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  textAlign: "center"
-                }}
-              >
-                {rk.replace("Supervisor", " Sup.")}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
